@@ -17,10 +17,10 @@
 
 :- module(dfs_vector_space,
         [
-                dfs_derive_model_vector/2,
-                dfs_derive_model_matrix/2,
-                dfs_derive_model/2,
-                dfs_derive_model_set/2,
+                dfs_model_to_vector/2,
+                dfs_models_to_matrix/2,
+                dfs_vector_to_model/2,
+                dfs_matrix_to_models/2,
                 dfs_vector/3
         ]).
 
@@ -92,35 +92,35 @@ arguments(N,Cs,[Arg|Args]) :-
         N0 is N - 1,
         arguments(N0,Cs,Args).
 
-% dfs_derive_model_vector(+Model,-ModelVector)
+% dfs_model_to_vector(+Model,-ModelVector)
 
-dfs_derive_model_vector(M,MV) :-
+dfs_model_to_vector(M,MV) :-
         dfs_init_g(M,G),
         atomic_propositions(M,APs),
-        dfs_derive_model_vector_(M,APs,G,MV).
+        dfs_model_to_vector_(M,APs,G,MV).
 
-dfs_derive_model_vector_(_,[],_,[]) :- !.
-dfs_derive_model_vector_(M,[AP|APs],G,[(AP,1)|Ts]) :-
+dfs_model_to_vector_(_,[],_,[]) :- !.
+dfs_model_to_vector_(M,[AP|APs],G,[(AP,1)|Ts]) :-
         dfs_interpret(AP,M,G), !,
-        dfs_derive_model_vector_(M,APs,G,Ts).
-dfs_derive_model_vector_(M,[AP|APs],G,[(AP,0)|Ts]) :-
-        dfs_derive_model_vector_(M,APs,G,Ts).
+        dfs_model_to_vector_(M,APs,G,Ts).
+dfs_model_to_vector_(M,[AP|APs],G,[(AP,0)|Ts]) :-
+        dfs_model_to_vector_(M,APs,G,Ts).
 
-% dfs_derive_model_matrix(+ModelSet,-ModelMatrix)
+% dfs_models_to_matrix(+ModelSet,-ModelMatrix)
 
-dfs_derive_model_matrix(MS,MM) :-
+dfs_models_to_matrix(MS,MM) :-
         atomic_propositions(MS,APs),
-        dfs_derive_model_matrix_(MS,APs,MM).
+        dfs_models_to_matrix_(MS,APs,MM).
 
-dfs_derive_model_matrix_([],_,[]) :- !.
-dfs_derive_model_matrix_([M|MS],APs,[MV|MVs]) :-
+dfs_models_to_matrix_([],_,[]) :- !.
+dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_init_g(M,G),
-        dfs_derive_model_vector_(M,APs,G,MV),
-        dfs_derive_model_matrix_(MS,APs,MVs).
+        dfs_model_to_vector_(M,APs,G,MV),
+        dfs_models_to_matrix_(MS,APs,MVs).
 
-% dfs_derive_model(+ModelVector,-Model)
+% dfs_vector_to_model(+ModelVector,-Model)
 
-dfs_derive_model(MV,(Um,Vm)) :-
+dfs_vector_to_model(MV,(Um,Vm)) :-
         constants(MV,Cs),
         length(Cs,N),
         dfs_entities(N,Um),
@@ -130,12 +130,12 @@ dfs_derive_model(MV,(Um,Vm)) :-
         derive_properties(Ps,MV,CIs,Vm1),
         append(Vm0,Vm1,Vm).
 
-% dfs_derive_model_set(+ModelMatrix,-ModelSet)
+% dfs_matrix_to_models(+ModelMatrix,-ModelSet)
 
-dfs_derive_model_set([],[]) :- !.
-dfs_derive_model_set([MV|MVs],[M|MS]) :-
-        dfs_derive_model(MV,M),
-        dfs_derive_model_set(MVs,MS).
+dfs_matrix_to_models([],[]) :- !.
+dfs_matrix_to_models([MV|MVs],[M|MS]) :-
+        dfs_vector_to_model(MV,M),
+        dfs_matrix_to_models(MVs,MS).
 
 % derive_constants(+Constants,+Entities,-Vm)
 
@@ -180,5 +180,5 @@ dfs_vector(P,[(Um,Vm)|MS],[U|Us]) :-
         ;  U = 0 ),
         dfs_vector(P,MS,Us).
 dfs_vector(P,MM,V) :-
-        dfs_derive_model_set(MM,MS),
+        dfs_matrix_to_models(MM,MS),
         dfs_vector(P,MS,V).

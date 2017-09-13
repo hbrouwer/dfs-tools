@@ -38,7 +38,7 @@ dfs_validity(P,[(Um,Vm)|MS]) :-
         dfs_interpret(P,(Um,Vm),G),
         dfs_validity(P,MS).
 dfs_validity(P,MM) :-
-        dfs_derive_model_set(MM,MS),
+        dfs_matrix_to_models(MM,MS),
         dfs_validity(P,MS).
 
 %% dfs_satisfiability(+Formula,+ModelSet|+ModelMatrix)
@@ -54,7 +54,7 @@ dfs_satisfiability(P,[(Um,Vm)|MS]) :-
         -> true
         ;  dfs_satisfiability(P,MS) ).
 dfs_satisfiability(P,MM) :-
-        dfs_derive_model_set(MM,MS),
+        dfs_matrix_to_models(MM,MS),
         dfs_satisfiability(P,MS).
 
 %% dfs_entailment(+Formula,+ModelSet|+ModelMatrix)
@@ -69,7 +69,7 @@ dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
         dfs_interpret(imp(P,Q),(Um,Vm),G),
         dfs_entailment(P,Q,MS).
 dfs_entailment(P,MM) :-
-        dfs_derive_model_set(MM,MS),
+        dfs_matrix_to_models(MM,MS),
         dfs_entailment(P,MS).
 
 %% dfs_logical_equivalence(+Formula,+ModelSet|+ModelMatrix)
@@ -84,5 +84,5 @@ dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-
         dfs_interpret(iff(P,Q),(Um,Vm),G),
         dfs_logical_equivalence(P,Q,MS).
 dfs_logical_equivalence(P,MM) :-
-        dfs_derive_model_set(MM,MS),
+        dfs_matrix_to_models(MM,MS),
         dfs_logical_equivalence(P,MS).
