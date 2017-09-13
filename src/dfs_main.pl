@@ -17,6 +17,7 @@
 
 :- module(dfs,
         [
+                dfs_models/1,
                 dfs_pprint_model/1,
                 dfs_pprint_model_matrix/1
         ]).
@@ -28,7 +29,10 @@
 
 :- use_module(library(clpfd),[transpose/2]).
 
-:- dynamic(model/1).
+% models(-ModelSet)
+
+dfs_models(MS) :-
+        findall(M,user:model(M),MS).
 
 % dfs_pprint_model(+Model)
 
@@ -85,25 +89,3 @@ pprint_dfs_vector([(_,S)|Ts]) :-
         format('~0f',[S]),
         ( Ts \= [] -> format('') ; true ),
         pprint_dfs_vector(Ts).
-
-% models(-ModelSet)
-
-models(MS) :-
-        findall(M,user:model(M),MS).
-
-% assert_model(+Model)
-
-assert_model(M) :-
-        assert(model(M)).
-
-% assert_models(+ModelSet)
-
-assert_models([]) :- !.
-assert_models([M|MS]) :-
-        assert_model(M),
-        assert_models(MS).
-
-% retract_models/0
-
-retract_models :-
-        retractall(model(_)).

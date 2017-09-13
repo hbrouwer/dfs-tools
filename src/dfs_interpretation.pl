@@ -145,6 +145,10 @@ dfs_interpret(and(P,Q),M,G) :-
 dfs_interpret(or(P,Q),M,G) :-
         !, % P | Q
         ( dfs_interpret(P,M,G), ! ; dfs_interpret(Q,M,G) ).
+dfs_interpret(xor(P,Q),M,G) :-
+        !, % P (+) Q
+        ( dfs_interpret(P,M,G), \+ dfs_interpret(Q,M,G), !
+        ; \+ dfs_interpret(P,M,G), dfs_interpret(Q,M,G) ).
 dfs_interpret(imp(P,Q),M,G) :- 
         !, % P --> Q
         ( \+ dfs_interpret(P,M,G), ! ; dfs_interpret(Q,M,G) ).
