@@ -25,7 +25,7 @@
 
 :- use_module(dfs_vector_space).
 
-% dfs_prior_probability(+Formula,++ModelSet|+ModelMatrix,-PriorPr)
+% dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
 
 dfs_prior_probability(P,Ms,Pr) :-
         !, dfs_vector(P,Ms,V),

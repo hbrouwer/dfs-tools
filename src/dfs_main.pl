@@ -19,13 +19,15 @@
         [
                 dfs_models/1,
                 dfs_pprint_model/1,
-                dfs_pprint_model_matrix/1
+                dfs_pprint_model_matrix/1,
+                dfs_pprint_fapply_deriv/1
         ]).
 
 :- reexport(dfs_interpretation).
 :- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
 :- reexport(dfs_vector_space).
+:- reexport(dfs_type_theory).
 
 :- use_module(library(clpfd),[transpose/2]).
 
@@ -81,7 +83,7 @@ pprint_model_matrix_([DV|DVs]) :-
         memberchk((P,_),DV),
         format('%%%% '),
         pprint_dfs_vector(DV),
-        format(' ~w \n',[P]),
+        format(' ~w\n',[P]),
         pprint_model_matrix_(DVs).
 
 pprint_dfs_vector([]) :- !.
@@ -89,3 +91,17 @@ pprint_dfs_vector([(_,S)|Ts]) :-
         format('~0f',[S]),
         ( Ts \= [] -> format('') ; true ),
         pprint_dfs_vector(Ts).
+
+% dfs_pprint_fapply(Tuples)
+
+dfs_pprint_fapply_deriv(Ts) :-
+        format('\n'),
+        dfs_pprint_fapply_deriv_(Ts),
+        format('\n').
+
+dfs_pprint_fapply_deriv_([]) :- !.
+dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
+        format('%%%% '),
+        foreach(member(U,V),format('~2f ',[U])),
+        format('~w\n',[F]),
+        dfs_pprint_fapply_deriv_(Ts).
