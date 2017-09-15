@@ -28,9 +28,7 @@
 
 %% dfs_validity(+Formula,+ModelSet|+ModelMatrix)
 %
-%  A formula P is valid (|= P) iff:
-% 
-%       P is true (not false) in all models
+%  A formula P is valid (|= P) iff P is true (not false) in all models
 
 dfs_validity(_,[]) :- !.
 dfs_validity(P,[(Um,Vm)|MS]) :-
@@ -43,9 +41,7 @@ dfs_validity(P,MM) :-
 
 %% dfs_satisfiability(+Formula,+ModelSet|+ModelMatrix)
 %
-%  A formula P is satisfiable iff:
-%
-%       P is true in at least one model M
+%  A formula P is satisfiable iff P is true in at least one model M
 
 dfs_satisfiability(_,[]) :- !, false.
 dfs_satisfiability(P,[(Um,Vm)|MS]) :-
@@ -59,9 +55,8 @@ dfs_satisfiability(P,MM) :-
 
 %% dfs_entailment(+Formula,+ModelSet|+ModelMatrix)
 % 
-%  A formula P entails a formula Q (P |= Q) iff:
-%
-%       Q is true in every model that satisfies P.
+%  A formula P entails a formula Q (P |= Q) iff Q is true in every model that
+%  satisfies P
 
 dfs_entailment(_,_,[]) :- !, true.
 dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
@@ -74,9 +69,8 @@ dfs_entailment(P,MM) :-
 
 %% dfs_logical_equivalence(+Formula,+ModelSet|+ModelMatrix)
 %
-%  A formula P is logically equivalent to formula Q iff:
-%
-%       [P]^M,g = [Q]^M,g for all models M and variable assignments g
+%  A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g for
+%  all models M and variable assignments g
 
 dfs_logical_equivalence(_,_,[]) :- !, true.
 dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-

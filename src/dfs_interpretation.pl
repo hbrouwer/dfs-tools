@@ -98,22 +98,22 @@ dfs_assign(G,(Um,_),As,Gp) :-
         reverse(GpRev,Gp).
 
 dfs_assign_([],_,_,Gp,Gp) :- !.
-dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :- %% V = E
+dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = E
         \+ memberchk(V/_,As), !,
         dfs_assign_(G,Um,As,[(V,E)|GpAcc],Gp).
-dfs_assign_([(V,_)|G],Um,As,GpAcc,Gp) :- %% V = E'
+dfs_assign_([(V,_)|G],Um,As,GpAcc,Gp) :-        %% V = E'
         memberchk(V/Ep,As),
         memberchk(Ep,Um), !,
         dfs_assign_(G,Um,As,[(V,Ep)|GpAcc],Gp).
-dfs_assign_([(V,_)|G],Um,As,GpAcc,Gp) :- %% V = g(V')
+dfs_assign_([(V,_)|G],Um,As,GpAcc,Gp) :-        %% V = g(V')
         memberchk(V/g(Vp),As),
         ( memberchk((Vp,Ep),G) ; memberchk((Vp,Ep),GpAcc) ), !,
         dfs_assign_(G,Um,As,[(V,Ep)|GpAcc],Gp).
-dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :- %% V = g(V)
+dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = g(V)
         memberchk(V/g(V),As),
         dfs_assign_(G,Um,As,[(V,E)|GpAcc],Gp).
 
-%% dfs_terms_to_entities(+Terms,+TermInstantiation,-Entities)
+%% dfs_terms_to_entities(+Terms,+TermInstantiations,-Entities)
 %
 %  Maps Terms into Entities, given their instantiations.
 

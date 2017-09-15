@@ -26,37 +26,6 @@
 
 :- use_module(dfs_interpretation).
 
-% constants(+Model|+ModelVector,-Constants)
-
-constants((_,Vm),Cs) :-
-        !, findall(C,member(C=_,Vm),Cs).
-constants([(AP,S)|Ts],Cs) :-
-        findall(Cs0,
-                ( member((AP0,_),[(AP,S)|Ts]),
-                  AP0 =.. [_|Cs0] ),
-                Cs1),
-        flatten(Cs1,Cs2),
-        list_to_ord_set(Cs2,Cs).
-
-% predicates(+Model|+ModelVector,-Predicates)
-
-predicates((_,Vm),Ps) :-
-        !, findall((Pred,N),
-                ( member(Prop,Vm),
-                  Prop =.. [Pred|[[Arg|_]]],
-                  Pred \= (=),
-                  (  atom(Arg)
-                  -> N = 1
-                  ;  length(Arg,N) ) ),
-                Ps).
-predicates([(AP,S)|Ts],Ps) :-
-        findall((Pred,N),
-                ( member((AP0,_),[(AP,S)|Ts]),
-                  AP0 =.. [Pred|Cs],
-                  length(Cs,N) ),
-                Ps0),
-        list_to_ord_set(Ps0,Ps).
-
 % atomic_propositions(+Model|+ModelSet|+ModelVec|+ModelMtx,-AtomicProps)
 
 atomic_propositions((Um,Vm),APs) :-
@@ -69,28 +38,25 @@ atomic_propositions([(AP,_)|MV],APs) :-
 atomic_propositions([MV|_],APs) :-
         atomic_propositions(MV,APs).
 
-atomic_propositions_([],APs,APs) :- !.
-atomic_propositions_([M|MS],APsAcc,APs) :-
-        predicates(M,Ps),
-        constants(M,Cs),
-        dfs_init_g(M,G),
+atomic_propositions_([],APsAcc,APs) :- 
+        !, list_to_ord_set(APsAcc,APs).
+atomic_propositions_([(Um,Vm)|MS],APsAcc,APs) :-
+        dfs_init_g((Um,Vm),G),
+        dfs_term_instantiations((Um,Vm),G,TIs),
         findall(AP,
-                ( member((P,N),Ps),
-                  arguments(N,Cs,As),
-                  AP =.. [P|As],
-                  dfs_interpret(AP,M,G) ),
+                ( member(Prop,Vm),
+                  Prop =.. [Pred|[AsList]],
+                  Pred \= (=),
+                  member(As,AsList),
+                  (  atom(As)
+                  -> dfs_terms_to_entities(Ts,TIs,[As]) %% unary predicates
+                  ;  dfs_terms_to_entities(Ts,TIs,As)   %% n-ary predicates
+                  ),       
+                  AP =.. [Pred|Ts],
+                  \+ memberchk(AP,APsAcc) ),
                 APs0),
         append(APs0,APsAcc,APsAcc0),
-        list_to_ord_set(APsAcc0,APsAcc1),
-        atomic_propositions_(MS,APsAcc1,APs).
-
-% arguments(+N,+Constants,-Args)
-
-arguments(0,_,[]) :- !.
-arguments(N,Cs,[Arg|Args]) :-
-        select(Arg,Cs,_),
-        N0 is N - 1,
-        arguments(N0,Cs,Args).
+        atomic_propositions_(MS,APsAcc0,APs).
 
 % dfs_model_to_vector(+Model,-ModelVector)
 
@@ -102,6 +68,7 @@ dfs_model_to_vector(M,MV) :-
 dfs_model_to_vector_(_,[],_,[]) :- !.
 dfs_model_to_vector_(M,[AP|APs],G,[(AP,1)|Ts]) :-
         dfs_interpret(AP,M,G), !,
+        !,
         dfs_model_to_vector_(M,APs,G,Ts).
 dfs_model_to_vector_(M,[AP|APs],G,[(AP,0)|Ts]) :-
         dfs_model_to_vector_(M,APs,G,Ts).
@@ -121,14 +88,11 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
 % dfs_vector_to_model(+ModelVector,-Model)
 
 dfs_vector_to_model(MV,(Um,Vm)) :-
-        constants(MV,Cs),
-        length(Cs,N),
-        dfs_entities(N,Um),
-        derive_constants(Cs,Um,Vm0),
-        dfs_constant_instantiations((_,Vm0),CIs),
-        predicates(MV,Ps),
-        derive_properties(Ps,MV,CIs,Vm1),
-        append(Vm0,Vm1,Vm).
+        constants_and_universe(MV,Cs,Um),
+        ifunc_inst_constants(Cs,Um,VmCs),
+        dfs_constant_instantiations((_,VmCs),CIs),
+        ifunc_inst_properties(MV,CIs,VmPs),
+        append(VmCs,VmPs,Vm).
 
 % dfs_matrix_to_models(+ModelMatrix,-ModelSet)
 
@@ -137,40 +101,45 @@ dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_vector_to_model(MV,M),
         dfs_matrix_to_models(MVs,MS).
 
-% derive_constants(+Constants,+Entities,-Vm)
+% constants_and_universe(+ModelVector,-Constants,-Entities)
 
-derive_constants([],[],[]) :- !.
-derive_constants([C|Cs],[E|Es],[C=E|Vm]) :-
-        derive_constants(Cs,Es,Vm).
+constants_and_universe(MV,Cs,Um) :-
+        setof(C,AP^P^As^S^(member((AP,S),MV),AP =.. [P|As],member(C,As)),Cs),
+        length(Cs,N),
+        dfs_entities(N,Um).
 
-% derive_properties(+Predicates,+ModelVector,+ConstInsts,-Vm)
+% ifunc_inst_constants(+Constants,+Entities,-VmCs)
 
-derive_properties([],_,_,[]) :- !.
-derive_properties([(Pred,N)|Ps],MV,CIs,[Prop|VM]) :-
-        derive_property_instantiations((Pred,N),MV,CIs,PIs),
-        PIs \= [], !,
-        Prop =.. [Pred|[PIs]],
-        derive_properties(Ps,MV,CIs,VM).
-derive_properties([_|Ps],MV,CIs,VM) :-
-        derive_properties(Ps,MV,CIs,VM).
+ifunc_inst_constants([],[],[]) :- !.
+ifunc_inst_constants([C|Cs],[E|Es],[C=E|VmCs]) :-
+        ifunc_inst_constants(Cs,Es,VmCs).
 
-% derive_property_instantions(+Pred,+ModelVector,+ConstInsts,-Vm)
+% ifunc_inst_properties(+ModelVector,+ConstantInstations,-VmPs)
 
-derive_property_instantiations(_,[],_,[]) :- !.
-derive_property_instantiations((Pred,N),[(AP,1)|Ts],CIs,[Es|PIs]) :-
-        AP =.. [Pred|Args], !,
-        (  N == 1
-        -> dfs_terms_to_entities(Args,CIs,[Es])  %% unary predicates
-        ;  dfs_terms_to_entities(Args,CIs,Es) ), %% n-ary predicates
-        derive_property_instantiations((Pred,N),Ts,CIs,PIs).
-derive_property_instantiations((Pred,N),[_|Ts],CIs,PIs) :-
-        derive_property_instantiations((Pred,N),Ts,CIs,PIs).
+ifunc_inst_properties(MV,CIs,VmPs) :-
+        setof(P,AP^As^(member((AP,1),MV),AP =.. [P|As]),Ps),
+        ifunc_inst_properties_(Ps,MV,CIs,VmPs).
+
+ifunc_inst_properties_([],_,_,[]) :- !.
+ifunc_inst_properties_([P|Ps],MV,CIs,[Prop|VM]) :-
+        ifunc_inst_property(P,MV,CIs,PIs),
+        Prop =.. [P|[PIs]],
+        ifunc_inst_properties_(Ps,MV,CIs,VM).
+
+ifunc_inst_property(_,[],_,[]) :- !.
+ifunc_inst_property(P,[(AP,1)|Ts],CIs,[Es|PIs]) :-
+        AP =.. [P|[A|As]], !,
+        (  As == []
+        -> dfs_terms_to_entities([A|As],CIs,[Es])       %% unary predicates
+        ;  dfs_terms_to_entities([A|As],CIs,Es) ),      %% n-ary predicates
+        ifunc_inst_property(P,Ts,CIs,PIs).
+ifunc_inst_property(P,[_|Ts],CIs,PIs) :-
+        ifunc_inst_property(P,Ts,CIs,PIs).
 
 %% dfs_vector(+Formula,+ModelSet|+ModelMatrix,-Vector)
 %
-%  A formula P is true in a model M iff:
-%
-%       [P]^M,g = 1 given an arbitrary variable assignment g
+%  A formula P is true in a model M iff [P]^M,g = 1 given an arbitrary
+%  variable assignment g
 
 dfs_vector(_,[],[]) :- !.
 dfs_vector(P,[(Um,Vm)|MS],[U|Us]) :-
