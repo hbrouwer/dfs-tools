@@ -26,17 +26,10 @@
 
 :- use_module(dfs_interpretation).
 
-% atomic_propositions(+Model|+ModelSet|+ModelVec|+ModelMtx,-AtomicProps)
+% atomic_propositions(+ModelSet|-AtomicProps)
 
-atomic_propositions((Um,Vm),APs) :-
-        !, atomic_propositions_([(Um,Vm)],[],APs).
-atomic_propositions([(Um,Vm)|MS],APs) :-
-        is_list(Um),
-        !, atomic_propositions_([(Um,Vm)|MS],[],APs).
-atomic_propositions([(AP,_)|MV],APs) :-
-        !, findall(AP0,member((AP0,_),[(AP,_)|MV]),APs).
-atomic_propositions([MV|_],APs) :-
-        atomic_propositions(MV,APs).
+atomic_propositions(MS,APs) :-
+        !, atomic_propositions_(MS,[],APs).
 
 atomic_propositions_([],APsAcc,APs) :- 
         !, list_to_ord_set(APsAcc,APs).
