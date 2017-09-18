@@ -26,7 +26,7 @@
 
 :- use_module(dfs_interpretation).
 
-% atomic_propositions(+ModelSet|-AtomicProps)
+% atomic_propositions(+ModelSet,-AtomicProps)
 
 atomic_propositions(MS,APs) :-
         !, atomic_propositions_(MS,[],APs).
@@ -55,7 +55,7 @@ atomic_propositions_([(Um,Vm)|MS],APsAcc,APs) :-
 
 dfs_model_to_vector(M,MV) :-
         dfs_init_g(M,G),
-        atomic_propositions(M,APs),
+        atomic_propositions([M],APs),
         dfs_model_to_vector_(M,APs,G,MV).
 
 dfs_model_to_vector_(_,[],_,[]) :- !.
