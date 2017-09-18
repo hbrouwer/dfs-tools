@@ -27,15 +27,10 @@
 
 % dfs_fapply(+Function,+Argument,-Function)
 
-dfs_fapply(F0::(e,T),F1::e,F2::T) :-
-        !, dfs_fapply_(F0,F1,F2).
-dfs_fapply(F0::((e,t),T),F1::(e,t),F2::T) :-
-        !, dfs_fapply_(F0,F1,F2).
-
-dfs_fapply_(F0,F1,F2) :-
+dfs_fapply(F0::(T1,T2),F1::T1,F2::T2) :-
         F0 =.. [P|As0],
-        append([F1],As0,As1),
-        F2 =.. [P|As1].
+        append([F1],As0,As2),
+        F2 =.. [P|As2].
 
 % dfs_fapply_deriv(+FunctionList,+ModelMatrix,-Derivation)
 
