@@ -24,6 +24,7 @@
         ]).
 
 :- reexport(dfs_interpretation).
+:- reexport(dfs_io).
 :- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
 :- reexport(dfs_vector_space).
