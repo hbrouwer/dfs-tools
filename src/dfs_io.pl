@@ -89,7 +89,6 @@ write_model_vector([(_,U)|Us],Stream) :-
 dfs_read_matrix(File,MM) :-
         open(File,read,Stream),
         read_atomic_propositions(Stream,APs),
-        write(APs), nl,
         read_model_matrix(Stream,APs,MM),
         close(Stream).
 
