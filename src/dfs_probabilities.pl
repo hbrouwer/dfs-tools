@@ -20,7 +20,10 @@
                 dfs_prior_probability/3,
                 dfs_conj_probability/4,
                 dfs_cond_probability/4,
-                dfs_inference_score/4
+                dfs_inference_score/4,
+                dfs_surprisal/4,
+                dfs_delta_entropy/4,
+                dfs_entropy/3
         ]).
 
 :- use_module(dfs_vector_space).
@@ -30,7 +33,7 @@
 %  Pr(P) = |{i|v_i(P) = 1}| / |M|
 
 dfs_prior_probability(P,Ms,Pr) :-
-        !, dfs_vector(P,Ms,V),
+        dfs_vector(P,Ms,V),
         sum_list(V,S),
         length(V,L),
         Pr is S / L.
@@ -57,17 +60,54 @@ dfs_cond_probability(P,Q,Ms,Pr) :-
         -> Pr is PrPQ / PrP
         ;  Pr is nan ).
 
-%% dfs_inference_score(+Formula1,Formula2,+ModelSet|+ModelMatrix,-Score)
+%% dfs_inference_score(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Score)
 %
 %                   | (Pr(P&Q) - P(Q)) / (1 - Pr(Q))    iff Pr(P&Q) > Pr(Q)  
 %  inference(P,Q) = |
 %                   | (Pr(P&Q) - P(Q)) / Pr(Q)          otherwise
 
-dfs_inference_score(P,Q,Ms,CS) :-
+dfs_inference_score(P,Q,Ms,IS) :-
         dfs_cond_probability(P,Q,Ms,PrPQ),
         dfs_prior_probability(P,Ms,PrQ),
         (  PrQ > 0
         -> (  PrPQ > PrQ
-           -> CS is (PrPQ - PrQ) / (1 - PrQ)
-           ;  CS is (PrPQ - PrQ) / PrQ )
-        ;  CS is nan ).
+           -> IS is (PrPQ - PrQ) / (1 - PrQ)
+           ;  IS is (PrPQ - PrQ) / PrQ )
+        ;  IS is nan ).
+
+%% dfs_surprisal(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Surprisal)
+%
+%  surprisal(P,Q) = -log(P|Q)
+
+dfs_surprisal(P,Q,Ms,S) :-
+        dfs_cond_probability(P,Q,Ms,PrPQ),
+        (  PrPQ > 0.0
+        -> S is -log(PrPQ)
+        ;  S is inf ).
+
+%% dfs_delta_entropy(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-EntropyDelta)
+%
+% XXX
+
+dfs_delta_entropy(P,Q,Ms,DH) :-
+        dfs_entropy(P,Ms,Hnew),
+        dfs_entropy(Q,Ms,Hold),
+        DH is Hold - Hnew.
+
+%% dfs_entropy(+Formula,+ModelSet|+ModelMatrix,-Entropy)
+
+dfs_entropy(P,Ms,H) :-
+        dfs_vector(P,Ms,V),
+        sum_list(V,S),
+        length(V,L),
+        PrP is S / L,
+        dfs_entropy_(V,PrP,0,H).
+
+dfs_entropy_([],_,HAcc,H) :-
+        !, H is -HAcc.
+dfs_entropy_([U|Us],PrP,HAcc,H) :-
+        PrUQ is (1.0 * U) / PrP,
+        (  PrUQ > 0.0
+        -> HAcc0 is HAcc + PrUQ * log(PrUQ)
+        ;  HAcc0 is HAcc ),
+        dfs_entropy_(Us,PrP,HAcc0,H).
