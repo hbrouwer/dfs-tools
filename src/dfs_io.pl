@@ -108,7 +108,16 @@ read_model_matrix(Stream,APs,MVs) :-
         -> read_model_matrix(Stream,APs,MVsAcc),
            atom_codes(Atom,Line),
            atomic_list_concat(Atoms,' ',Atom),
-           findall(U,(member(U0,Atoms),read_term_from_atom(U0,U,[])),Us),
+           % findall(U,(member(U0,Atoms),read_term_from_atom(U0,U,[])),Us),
+           %%%% read as binary vectors
+           findall(U,
+                ( member(U0,Atoms),
+                  read_term_from_atom(U0,U1,[]),
+                  (  U1 > 0.0
+                  -> U = 1
+                  ;  U = 0 ) ),
+                Us ),
+           %%%% 
            vector_to_model_vector(Us,APs,MV),
            MVs = [MV|MVsAcc]
         ;  MVs = [] ).

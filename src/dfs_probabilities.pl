@@ -87,7 +87,7 @@ dfs_surprisal(P,Q,Ms,S) :-
 
 %% dfs_delta_entropy(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-EntropyDelta)
 %
-% XXX
+%  DH(P,Q) = H(Q) - H(P)
 
 dfs_delta_entropy(P,Q,Ms,DH) :-
         dfs_entropy(P,Ms,Hnew),
@@ -95,6 +95,13 @@ dfs_delta_entropy(P,Q,Ms,DH) :-
         DH is Hold - Hnew.
 
 %% dfs_entropy(+Formula,+ModelSet|+ModelMatrix,-Entropy)
+%
+%  H(P) = -sum_{s in S} P(s|P) * log(s|P)
+%
+%  where the set S conststs of all possible points in the DFS space that are
+%  fully specified with respsect to the atomic propositions; that is, eachq
+%  point s in S constitutes a unique logical combination of all atomic
+%  propostions.
 
 dfs_entropy(P,Ms,H) :-
         dfs_vector(P,Ms,V),
