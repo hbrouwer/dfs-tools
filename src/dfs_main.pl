@@ -27,8 +27,9 @@
 :- reexport(dfs_io).
 :- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
-:- reexport(dfs_vector_space).
 :- reexport(dfs_type_theory).
+:- reexport(dfs_sampling).
+:- reexport(dfs_vector_space).
 
 :- use_module(library(clpfd),[transpose/2]).
 
