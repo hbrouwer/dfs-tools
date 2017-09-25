@@ -55,7 +55,47 @@ constants_and_universe(Cs,Um) :-
 
 %% dfs_sample_properties(+Properties,+Universe,+G,IFuncConstants,-IFunc)
 %
-%  XXX
+%  Samples property instantiations using a non-deterministic, probabilistic
+%  and incremental inference-driven sampling algorithm. 
+%
+%  The aim is to arrive at an interpretation function that satisfies a set 
+%  of imposed probabilistic and hard constraints. To this end, we start out
+%  with with an empty interpretation function, to which we will incrementally
+%  add properties. We call this interpretation function the Light World (LVm),
+%  and this function will contain all properties that are true in the model.
+%  In parallel to thee Light World, we will also construct a Dark World (DVm)
+%  function that will contain all properties that are false in the model. 
+%
+%  Given LVm and DVm, a set of randomly ordered properties P, and a set of 
+%  constraints C, we then do the following for each property p:
+%
+%  (1) Add p to LVm, yielding LVm';
+%
+%  (2) LT = true iff for each constraint c:
+%       
+%       (a) c is satisfied by LVm';
+%
+%       (b) or if the complement of c is not satisfied by DVm.
+%
+%  (3) Add p to DVm, yielding DVm';
+% 
+%  (4) DT = true iff for each constraint c:
+%       
+%       (a) c is satisfied by LVm;
+%
+%       (b) or if the complement of c is not satisfied by DVm'.
+%   
+%  (5) Depending on the outcome of (2) and (4):
+%
+%       (a) LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
+% 
+%       (b) LT & !DT: Infer p to be true in Light World: LVm = LVm'
+% 
+%       (c) !LT & DT: Infer p to be true in Dark World: DVm = DVm'
+%
+%       (d) !LT & !DT: The model is inconsistent, and needs to be discarded.
+%
+%  (6) Repeat (1) for next p, until each p is a property in LVm or DVm.
 
 dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
@@ -69,8 +109,8 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         P =.. [Prop|Args],
         dfs_terms_to_entities(Args,CIs,Es),
         add_property(LVm0,Prop,Es,LVm1),
-        add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
+        add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
         -> probability(P,LVm0,Pr), !,
@@ -116,9 +156,9 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
         \+ dfs_interpret(Cc,DM,G),
         satisfies_constraints(Cs,LM,DM,G).
 
-%% complement(+Formula,-ComplementFormula)
+%% complement(?Formula,?ComplementFormula)
 %
-%  XXX
+%  Complement of truth/falsehood conditions.
 
 complement(neg(P0),neg(P1)) :-
         !, % !P => !P
@@ -149,4 +189,4 @@ complement(exists(X,P0),forall(X,P1)) :-
 complement(forall(X,P0),exists(X,P1)) :-
         !, % ∀x P => ∃x P
         complement(P0,P1).
-complement(P,P) :- !.
+complement(P,P).

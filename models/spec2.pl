@@ -68,10 +68,13 @@ probability(_,_,0.5).
 % constraint(person(thom)).
 % constraint(person(beth)).
 % constraint(person(dave)).
+
 %constraint(forall(x,forall(y,imp(drink(x,y),and(person(x),beverage(y)))))).
 %constraint(thom=thom).
 % constraint(forall(x,imp(person(x),leave(x)))).
 % constraint(exists(x,and(person(x),pay(x)))).
+
+constraint(exists(x,person(x))).
 
 % If a person eats or drinks something, he must have ordered it.
 constraint(forall(x,imp(person(x),forall(y,imp(or(and(food(y),eat(x,y)),and(beverage(y),drink(x,y))),order(x,y)))))).

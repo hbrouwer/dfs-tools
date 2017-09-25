@@ -113,9 +113,9 @@ dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = g(V)
         memberchk(V/g(V),As),
         dfs_assign_(G,Um,As,[(V,E)|GpAcc],Gp).
 
-%% dfs_terms_to_entities(+Terms,+TermInstantiations,-Entities)
+%% dfs_terms_to_entities(?Terms,+TermInstantiations,?Entities)
 %
-%  Maps Terms into Entities, given their instantiations.
+%  Maps Terms into Entities (or vice versa), given their instantiations.
 
 dfs_terms_to_entities([],_,[]) :- !.
 dfs_terms_to_entities([T|Ts],TIs,[E|Es]) :-
