@@ -45,20 +45,27 @@ property(leave(Person)) :-
 person('beth').
 person('dave').
 person('thom').
+% person('rick').
+% person('morty').
 
 %% places
 
 place('cinema').
 place('restaurant').
+place('bar').
 
 %% orders
 
 food('dinner').
 food('popcorn').
+% food('kebap').
+% food('frites').
 
 drink('water').
 drink('cola').
 drink('champagne').
+% drink('wine').
+% drink('beer').
 
 %probability(pay(beth),_,0.5).
 %probability(pay(dave),_,0.5).

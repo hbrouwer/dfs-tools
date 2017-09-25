@@ -91,7 +91,8 @@ constants_and_universe(Cs,Um) :-
 %       -- !LT & !DT: The model is inconsistent, and needs to be discarded.
 %
 %  (6) Repeat (1) for next p. If each p is a property in either LVm or DVm,
-%      LVm is the final interpretation function.
+%      and LVm satisfies all constraints, LVm is the final interpretation 
+%      function.
 
 dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
