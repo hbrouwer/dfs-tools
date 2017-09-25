@@ -63,7 +63,7 @@ constants_and_universe(Cs,Um) :-
 %  with with an empty interpretation function, to which we will incrementally
 %  add properties. We call this interpretation function the Light World (LVm),
 %  and this function will contain all properties that are true in the model.
-%  In parallel to thee Light World, we will also construct a Dark World (DVm)
+%  In parallel to the Light World, we will also construct a Dark World (DVm)
 %  function that will contain all properties that are false in the model. 
 %
 %  Given LVm and DVm, a set of randomly ordered properties P, and a set of 
@@ -73,24 +73,25 @@ constants_and_universe(Cs,Um) :-
 %
 %  (2) LT = true iff for each constraint c:
 %       
-%       (a) c is satisfied by LVm';
-%       (b) or if the complement of c is not satisfied by DVm.
+%       -- c is satisfied by LVm';
+%       -- or if the complement of c is not satisfied by DVm.
 %
 %  (3) Add p to DVm, yielding DVm';
 % 
 %  (4) DT = true iff for each constraint c:
 %       
-%       (a) c is satisfied by LVm;
-%       (b) or if the complement of c is not satisfied by DVm'.
+%       -- c is satisfied by LVm;
+%       -- or if the complement of c is not satisfied by DVm'.
 %   
 %  (5) Depending on the outcome of (2) and (4):
 %
-%       (a) LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
-%       (b) LT & !DT: Infer p to be true in Light World: LVm = LVm'
-%       (c) !LT & DT: Infer p to be true in Dark World: DVm = DVm'
-%       (d) !LT & !DT: The model is inconsistent, and needs to be discarded.
+%       -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
+%       -- LT & !DT: Infer p to be true in the Light World: LVm = LVm'
+%       -- !LT & DT: Infer p to be true in the Dark World: DVm = DVm'
+%       -- !LT & !DT: The model is inconsistent, and needs to be discarded.
 %
-%  (6) Repeat (1) for next p, until each p is a property in LVm or DVm.
+%  (6) Repeat (1) for next p. If each p is a property in either LVm or DVm,
+%      LVm is the final interpretation function.
 
 dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
