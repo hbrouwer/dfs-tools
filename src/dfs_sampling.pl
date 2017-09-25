@@ -74,7 +74,6 @@ constants_and_universe(Cs,Um) :-
 %  (2) LT = true iff for each constraint c:
 %       
 %       (a) c is satisfied by LVm';
-%
 %       (b) or if the complement of c is not satisfied by DVm.
 %
 %  (3) Add p to DVm, yielding DVm';
@@ -82,17 +81,13 @@ constants_and_universe(Cs,Um) :-
 %  (4) DT = true iff for each constraint c:
 %       
 %       (a) c is satisfied by LVm;
-%
 %       (b) or if the complement of c is not satisfied by DVm'.
 %   
 %  (5) Depending on the outcome of (2) and (4):
 %
 %       (a) LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
-% 
 %       (b) LT & !DT: Infer p to be true in Light World: LVm = LVm'
-% 
 %       (c) !LT & DT: Infer p to be true in Dark World: DVm = DVm'
-%
 %       (d) !LT & !DT: The model is inconsistent, and needs to be discarded.
 %
 %  (6) Repeat (1) for next p, until each p is a property in LVm or DVm.
