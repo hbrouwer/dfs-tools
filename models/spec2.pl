@@ -18,23 +18,23 @@ property(food(Food)) :-
 property(beverage(Drink)) :-
         drink(Drink).        
 
-% property(enter(Person,Place)) :-
-%         person(Person),
-%         place(Place).
-% property(ask_menu(Person)) :-
-%         person(Person).
-% property(order(Person,Order)) :-
-%         person(Person),
-%         food(Order).
-% property(order(Person,Order)) :-
-%         person(Person),
-%         drink(Order).
-% property(eat(Person,Food)) :-
-%         person(Person),
-%         food(Food).
-% property(drink(Person,Drink)) :-
-%         person(Person),
-%         drink(Drink).
+property(enter(Person,Place)) :-
+        person(Person),
+        place(Place).
+property(ask_menu(Person)) :-
+        person(Person).
+property(order(Person,Order)) :-
+        person(Person),
+        food(Order).
+property(order(Person,Order)) :-
+        person(Person),
+        drink(Order).
+property(eat(Person,Food)) :-
+        person(Person),
+        food(Food).
+property(drink(Person,Drink)) :-
+        person(Person),
+        drink(Drink).
 property(pay(Person)) :-
         person(Person).
 property(leave(Person)) :-
@@ -60,9 +60,9 @@ drink('water').
 drink('cola').
 drink('champagne').
 
-probability(pay(beth),_,0.0).
-probability(pay(dave),_,0.0).
-probability(pay(thom),_,0.0).
+%probability(pay(beth),_,0.5).
+%probability(pay(dave),_,0.5).
+%probability(pay(thom),_,0.5).
 probability(_,_,0.5).
 
 % constraint(person(thom)).
@@ -72,8 +72,8 @@ probability(_,_,0.5).
 %constraint(forall(x,forall(y,imp(drink(x,y),and(person(x),beverage(y)))))).
 
 constraint(forall(x,imp(person(x),leave(x)))).
+
 constraint(exists(x,and(person(x),pay(x)))).
-constraint(neg(person(thom))).
 
 % % If a person eats something, he must have ordered it.
 % constraint(forall(x,imp(person(x),forall(y,imp(and(food(y),eat(x,y)),order(x,y)))))).
@@ -104,7 +104,7 @@ constraint(neg(person(thom))).
 % %%%%%%%%%%
 
 % % A person can only drink a beverage.
-% constraint(forall(x,imp(person(x),forall(y,imp(drink(x,y),beverage(y)))))).
+%constraint(forall(x,imp(person(x),forall(y,imp(drink(x,y),beverage(y)))))).
 
 % % A person can only eat food.
-% constraint(forall(x,imp(person(x),forall(y,imp(eat(x,y),food(y)))))).
+%constraint(forall(x,imp(person(x),forall(y,imp(eat(x,y),food(y)))))).

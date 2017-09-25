@@ -53,7 +53,7 @@ enumerate_term_(T,N,NAcc,[ET|ETs]) :-
 
 um((Um,_),Um).
 
-% vm(+Model,-InterpretationFunction)
+% vm(+Model,-IFunc)
 
 vm((_,Vm),Vm).
 
