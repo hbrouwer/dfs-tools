@@ -70,16 +70,16 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         dfs_terms_to_entities(Args,CIs,Es),
         add_property(LVm0,Prop,Es,LVm1),
         add_property(DVm0,Prop,Es,DVm1),
-        ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LS = 1 ; LS = 0 ),     %% light world
-        ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DS = 1 ; DS = 0 ),     %% dark world
-        (  LS == 1, DS == 1             %% undecided
+        ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
+        ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
+        (  LT == 1, DT == 1             %% undecided
         -> probability(P,LVm0,Pr), !,
            (  maybe(Pr)
            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
            ;  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
-        ;  (  LS == 1, DS == 0          %% light world
+        ;  (  LT == 1, DT == 0          %% light world
            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-           ;  (  LS == 0, DS == 1       %% dark world
+           ;  (  LT == 0, DT == 1       %% dark world
               -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
               ;  false ) ) ).           %% inconsistent
 

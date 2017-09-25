@@ -68,43 +68,26 @@ probability(_,_,0.5).
 % constraint(person(thom)).
 % constraint(person(beth)).
 % constraint(person(dave)).
-
 %constraint(forall(x,forall(y,imp(drink(x,y),and(person(x),beverage(y)))))).
-
-constraint(forall(x,imp(person(x),leave(x)))).
-
-constraint(exists(x,and(person(x),pay(x)))).
-
-% % If a person eats something, he must have ordered it.
-% constraint(forall(x,imp(person(x),forall(y,imp(and(food(y),eat(x,y)),order(x,y)))))).
-
-% % If a person drinks something, he must have ordered it.
-% constraint(forall(x,imp(person(x),forall(y,imp(and(beverage(y),drink(x,y)),order(x,y)))))).
+%constraint(thom=thom).
+% constraint(forall(x,imp(person(x),leave(x)))).
+% constraint(exists(x,and(person(x),pay(x)))).
 
 % If a person eats or drinks something, he must have ordered it.
-% constraint(forall(x,imp(person(x),forall(y,imp(or(and(food(y),eat(x,y)),and(beverage(y),drink(x,y))),order(x,y)))))).
+constraint(forall(x,imp(person(x),forall(y,imp(or(and(food(y),eat(x,y)),and(beverage(y),drink(x,y))),order(x,y)))))).
 
 % % If has entered somewhere and pays, he must have ordered something.
-% constraint(forall(x,imp(and(person(x),pay(x)),forall(y,imp(and(place(y),enter(x,y)),exists(z,and(or(food(z),beverage(z)),order(x,z)))))))).
+constraint(forall(x,imp(and(person(x),pay(x)),forall(y,imp(and(place(y),enter(x,y)),exists(z,and(or(food(z),beverage(z)),order(x,z)))))))).
 
 % % If a person has seen the menu and pays, he must have ordered something.
-% constraint(forall(x,imp(and(person(x),and(ask_menu(x),pay(x))),exists(y,and(or(food(y),beverage(y)),order(x,y)))))).
+constraint(forall(x,imp(and(person(x),and(ask_menu(x),pay(x))),exists(y,and(or(food(y),beverage(y)),order(x,y)))))).
 
 % % If a person leaves and has ordered something, he must have paid.
-% constraint(forall(x,imp(and(person(x),leave(x)),forall(y,imp(and(or(food(y),beverage(y)),order(x,y)),pay(x)))))).
+constraint(forall(x,imp(and(person(x),leave(x)),forall(y,imp(and(or(food(y),beverage(y)),order(x,y)),pay(x)))))).
 
 % % A person can only enter a single place.
 % %constraint(forall(x,neg(exists(y,exists(z,and(neg(y=z),and(enter(x,y),enter(x,z)))))))).
-% constraint(forall(x,imp(person(x),forall(y,imp(and(place(y),enter(x,y)),forall(z,imp(and(place(z),enter(x,z)),z=y))))))).
+constraint(forall(x,imp(person(x),forall(y,imp(and(place(y),enter(x,y)),forall(z,imp(and(place(z),enter(x,z)),z=y))))))).
 
 % % A person can only order a single type of food.
-% constraint(forall(x,imp(person(x),forall(y,imp(food(y),forall(z,imp(and(food(z),and(order(x,y),order(x,z))),z=y))))))).
-
-% %%%%%%%%%%
-% %%%%%%%%%%
-
-% % A person can only drink a beverage.
-%constraint(forall(x,imp(person(x),forall(y,imp(drink(x,y),beverage(y)))))).
-
-% % A person can only eat food.
-%constraint(forall(x,imp(person(x),forall(y,imp(eat(x,y),food(y)))))).
+constraint(forall(x,imp(person(x),forall(y,imp(food(y),forall(z,imp(and(food(z),and(order(x,y),order(x,z))),z=y))))))).
