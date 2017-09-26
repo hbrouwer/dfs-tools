@@ -186,10 +186,10 @@ conjoin([P],P) :- !.
 conjoin([P|Ps],and(P,F)) :-
         conjoin(Ps,F).
 
-%% q_exists(+Var,+Pred,+Model,+G)
+%% q_exists(+Var,+Formula,+Model,+G)
 %
 %  True iff there is a single instantiation of Var in the set of entities Es
-%  for which Pred holds in the Model.
+%  for which Formula holds in the Model.
 
 q_exists(X,P,M,G) :-
         um(M,Um),
@@ -202,10 +202,10 @@ q_exists_(X,P,[E|Es],M,G) :-
         -> true
         ;  q_exists_(X,P,Es,M,G)).
 
-%% q_forall(+Var,+Pred,+Model,+G)
+%% q_forall(+Var,+Formula,+Model,+G)
 %
-%  True iff for all instantions of Var in the set of entities Es, Pred holds
-%  in the Model.
+%  True iff for all instantions of Var in the set of entities Es, Formula
+%  holds in the Model.
 
 q_forall(X,P,M,G) :-
         um(M,Um),
@@ -217,20 +217,20 @@ q_forall_(X,P,[E|Es],M,G) :-
         dfs_interpret(P,M,Gp),
         q_forall_(X,P,Es,M,G).
 
-%% eval(+Pred,+Entities,+Model)
+%% eval(+Property,+Entities,+Model)
 %
-%  Evaluate the truth value of Pred for Entities in the Model.
+%  Evaluate the truth value of Property for Entities in the Model.
 
-eval(Pred,[E],(_,Vm)) :-        %% unary predicates
-        !, eval_(Pred,[E],Vm).
-eval(Pred,Es,(_,Vm)) :-         %% n-ary predicates
-        eval_(Pred,[Es],Vm).
+eval(Prop,[E],(_,Vm)) :-        %% unary predicates
+        !, eval_(Prop,[E],Vm).
+eval(Prop,Es,(_,Vm)) :-         %% n-ary predicates
+        eval_(Prop,[Es],Vm).
 
 % eval_(_,_,[]) :- !, false. %% (note: uncommenting has same effect)
-eval_(Pred,Es,[R|Rs]) :-
-        R =.. [RPred|_],
-        Pred \= RPred, !,
-        eval_(Pred,Es,Rs).
-eval_(Pred,Es,[R|_]) :-
-        R =.. [Pred|[REs]],
+eval_(Prop,Es,[R|Rs]) :-
+        R =.. [RProp|_],
+        Prop \= RProp, !,
+        eval_(Prop,Es,Rs).
+eval_(Prop,Es,[R|_]) :-
+        R =.. [Prop|[REs]],
         intersection(Es,REs,Es).
