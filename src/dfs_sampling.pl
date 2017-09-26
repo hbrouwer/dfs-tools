@@ -96,6 +96,7 @@ constants_and_universe(Cs,Um) :-
 
 dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
+        %findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
         random_permutation(Ps,Ps1),
         dfs_constant_instantiations((_,VmCs),CIs),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm).
@@ -187,3 +188,133 @@ complement(forall(X,P0),exists(X,P1)) :-
         !, % ∀x P => ∃x P
         complement(P0,P1).
 complement(P,P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% forall optimization %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+optimize_q_forall(P,FIs) :-
+        q_forall_var_insts(P,VIs),
+        findall(FI,q_forall_inst(P,VIs,FI),FIs).
+
+q_forall_inst(neg(P0),VIs,neg(P1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1).
+q_forall_inst(and(P0,Q0),VIs,and(P1,Q1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1),
+        q_forall_inst(Q0,VIs,Q1).
+q_forall_inst(or(P0,Q0),VIs,or(P1,Q1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1),
+        q_forall_inst(Q0,VIs,Q1).
+q_forall_inst(xor(P0,Q0),VIs,xor(P1,Q1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1),
+        q_forall_inst(Q0,VIs,Q1).
+q_forall_inst(imp(P0,Q0),VIs,imp(P1,Q1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1),
+        q_forall_inst(Q0,VIs,Q1).
+q_forall_inst(iff(P0,Q0),VIs,iff(P1,Q1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1),
+        q_forall_inst(Q0,VIs,Q1).
+q_forall_inst(exists(X,P0),VIs,exists(X,P1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1).
+q_forall_inst(forall(X,imp(P0,Q0)),VIs,imp(P1,Q1)) :-
+        !,
+        select_var_inst(X,VIs,VIs0),
+        q_forall_inst(P0,VIs0,P1),
+        q_forall_inst(Q0,VIs0,Q1).
+q_forall_inst(forall(X,P0),VIs,forall(X,P1)) :-
+        !,
+        q_forall_inst(P0,VIs,P1).
+q_forall_inst(P,VIs,PI) :-
+        prop_inst(P,VIs,PI).
+
+select_var_inst(_,[],[]) :- !.
+select_var_inst(X,VIs,[X=E|VIs1]) :-
+        findall(X=E,member(X=E,VIs),VIs0),
+        findall(Y=E,(member(Y=E,VIs),Y\=X),VIs1),
+        select(X=E,VIs0,_).
+
+prop_inst(P,VIs,PI) :-
+        P =.. [Prop|As],
+        prop_inst_(As,VIs,IAs),
+        PI =.. [Prop|IAs].
+
+prop_inst_([],_,[]) :- !.
+prop_inst_([A|As],VIs,[X|IAs]) :-
+        memberchk(A=X,VIs), !,
+        prop_inst_(As,VIs,IAs).
+prop_inst_([A|As],VIs,[A|IAs]) :-
+        prop_inst_(As,VIs,IAs).
+
+q_forall_var_insts(P,VIs) :-
+        q_forall_var_insts_(P,[],VIs0),
+        list_to_ord_set(VIs0,VIs).
+
+q_forall_var_insts_(neg(P),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIs).
+q_forall_var_insts_(and(P,Q),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(or(P,Q),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(xor(P,Q),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(imp(P,Q),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(iff(P,Q),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(exists(_,P),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIs).
+q_forall_var_insts_(forall(X,imp(P,Q)),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,[X|Vs],VIsP),
+        q_forall_var_insts_(Q,Vs,VIsQ),
+        append(VIsP,VIsQ,VIs).
+q_forall_var_insts_(forall(_,P),Vs,VIs) :-
+        !,
+        q_forall_var_insts_(P,Vs,VIs).
+q_forall_var_insts_(P,Vs,VIs) :-
+        var_insts(P,Vs,VIs).
+
+var_insts(P,Vs,VIs) :-
+        var_insts_(P,Vs,[],VIs).
+
+var_insts_(_,[],VIs,VIs) :- !.
+var_insts_(P,[V|Vs],VIsAcc0,VIs) :-
+        P =.. [Prop|Args],
+        memberchk(V,Args), !,
+        scoped_prop(Args,V,SArgs,X),
+        SP =.. [Prop|SArgs],
+        findall(V=X,user:property(SP),VIsAcc1),
+        append(VIsAcc0,VIsAcc1,VIsAcc2),
+        var_insts_(P,Vs,VIsAcc2,VIs).
+var_insts_(P,[_|Vs],VIsAcc,VIs) :-
+        var_insts_(P,Vs,VIsAcc,VIs).
+
+scoped_prop([],_,[],_) :- !.
+scoped_prop([V|As],V,[X|SArgs],X) :-
+        !, scoped_prop(As,V,SArgs,X).
+scoped_prop([_|As],V,[_|SArgs],X) :-
+        scoped_prop(As,V,SArgs,X).

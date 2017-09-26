@@ -24,6 +24,7 @@
                 dfs_init_g/2,
                 dfs_assign/4,
                 dfs_terms_to_entities/3,
+                dfs_interpret/2,
                 dfs_interpret/3
         ]).
 
@@ -122,7 +123,16 @@ dfs_terms_to_entities([T|Ts],TIs,[E|Es]) :-
         memberchk((T,E),TIs),
         dfs_terms_to_entities(Ts,TIs,Es).
 
-%% dfs_interpret(+Formula,+Model,+G)
+%% dfs_interpret(+Formula|+FormulaSet,+Model)
+%
+%  Evaluates the truth value of Formula in Model, given an initial assignment
+%  function G.
+
+dfs_interpret(P,M) :-
+        dfs_init_g(M,G),
+        dfs_interpret(P,M,G).
+
+%% dfs_interpret(+Formula|+FormulaSet,+Model,+G)
 %
 %  Evaluates the truth value of Formula in Model, given the assignment
 %  function G.

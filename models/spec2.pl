@@ -67,7 +67,7 @@ drink('champagne').
 % drink('wine').
 % drink('beer').
 
-%probability(pay(beth),_,0.5).
+probability(pay(beth),_,0.5).
 %probability(pay(dave),_,0.5).
 %probability(pay(thom),_,0.5).
 probability(_,_,0.5).
