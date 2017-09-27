@@ -46,7 +46,7 @@ enumerate_term(T,N,ETs) :-
 
 enumerate_term_(_,N,N,[]) :- !.
 enumerate_term_(T,N,NAcc,[ET|ETs]) :-
-        atom_concat(T,NAcc,ET),
+        atomic_concat(T,NAcc,ET),
         NAcc0 is NAcc + 1,
         enumerate_term_(T,N,NAcc0,ETs).
 

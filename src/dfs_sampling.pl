@@ -40,7 +40,7 @@ dfs_sample_models_(N,I,[M|MS]) :-
 dfs_sample_model((Um,Vm)) :-
         constants_and_universe(Cs,Um),
         dfs_vector_space:ifunc_inst_constants(Cs,Um,VmCs),
-        findall(P,property(P),Ps),
+        findall(P,user:property(P),Ps),
         dfs_init_g((Um,_),G),
         dfs_sample_properties(Ps,Um,G,VmCs,Vm), !.
 dfs_sample_model((Um,Vm)) :-
@@ -98,6 +98,8 @@ dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
         %findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
         random_permutation(Ps,Ps1),
+        Ps1 = Ps,
+        write(VmCs), nl,
         dfs_constant_instantiations((_,VmCs),CIs),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm).
 
