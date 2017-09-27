@@ -98,8 +98,6 @@ dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
         findall(C,user:constraint(C),Cs),
         %findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
         random_permutation(Ps,Ps1),
-        Ps1 = Ps,
-        write(VmCs), nl,
         dfs_constant_instantiations((_,VmCs),CIs),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm).
 
@@ -289,7 +287,7 @@ q_forall_var_insts_(iff(P,Q),Vs,VIs) :-
 q_forall_var_insts_(exists(_,P),Vs,VIs) :-
         !,
         q_forall_var_insts_(P,Vs,VIs).
-q_forall_var_insts_(forall(X,imp(P,Q)),Vs,VIs) :-
+q_forall_var_insts_(forall(X,imp(P,Q)),Vs,VIs) :- % ∀x (P(x) -> Q) 
         !,
         q_forall_var_insts_(P,[X|Vs],VIsP),
         q_forall_var_insts_(Q,Vs,VIsQ),
