@@ -76,6 +76,20 @@ probability(_,_,0.5).
 % constraint(person(beth)).
 % constraint(person(dave)).
 
+
+constraints :-
+        findall((C,Os),(constraint(C),dfs_sampling:optimize_q_forall(C,Os)),Cs),
+        foreach(member((C,Os),Cs),
+                ( nl,
+                  write('C: '), write(C),
+                  nl,
+                  foreach(member(O,Os),
+                  (
+                        write('O: '), write(O), nl
+                  )
+                  ))),
+                nl.
+
 constraint(exists(x,person(x))).
 
 % If a person eats or drinks something, he must have ordered it.
@@ -83,7 +97,7 @@ constraint(forall(x,imp(person(x),forall(y,imp(or(and(food(y),eat(x,y)),and(beve
 %>> forall(x,imp(person(x),forall(y,imp(or(and(food(y),eat(x,y)),and(beverage(y),drink(x,y))),order(x,y))))).
 
 % % If has entered somewhere and pays, he must have ordered something.
-constraint(forall(x,imp(and(person(x),pay(x)),forall(y,imp(and(place(y),enter(x,y)),exists(z,and(or(food(z),beverage(z)),order(x,z)))))))).
+%constraint(forall(x,imp(and(person(x),pay(x)),forall(y,imp(and(place(y),enter(x,y)),exists(z,and(or(food(z),beverage(z)),order(x,z)))))))).
 %>> forall(x,imp(and(person(x),pay(x)),forall(y,imp(and(place(y),enter(x,y)),exists(z,and(or(food(z),beverage(z)),order(x,z))))))).
 
 % % If a person has seen the menu and pays, he must have ordered something.
@@ -91,7 +105,7 @@ constraint(forall(x,imp(and(person(x),and(ask_menu(x),pay(x))),exists(y,and(or(f
 %>> forall(x,imp(and(person(x),and(ask_menu(x),pay(x))),exists(y,and(or(food(y),beverage(y)),order(x,y))))).
 
 % % If a person leaves and has ordered something, he must have paid.
-constraint(forall(x,imp(and(person(x),leave(x)),forall(y,imp(and(or(food(y),beverage(y)),order(x,y)),pay(x)))))).
+%constraint(forall(x,imp(and(person(x),leave(x)),forall(y,imp(and(or(food(y),beverage(y)),order(x,y)),pay(x)))))).
 %>> forall(x,imp(and(person(x),leave(x)),forall(y,imp(and(or(food(y),beverage(y)),order(x,y)),pay(x))))).
 
 % % A person can only enter a single place.

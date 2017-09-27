@@ -38,13 +38,14 @@ dfs_sample_models_(N,I,[M|MS]) :-
 % dfs_sample_model(-Model)
 
 dfs_sample_model((Um,Vm)) :-
-        constants_and_universe(Cs,Um),
-        dfs_vector_space:ifunc_inst_constants(Cs,Um,VmCs),
-        findall(P,user:property(P),Ps),
+        constants_and_universe(Consts,Um),
         dfs_init_g((Um,_),G),
-        dfs_sample_properties(Ps,Um,G,VmCs,Vm), !.
-dfs_sample_model((Um,Vm)) :-
-        dfs_sample_model((Um,Vm)).
+        dfs_vector_space:ifunc_inst_constants(Consts,Um,VmCs),
+        dfs_constant_instantiations((_,VmCs),CIs),
+        findall(P,user:property(P),Ps),
+        %findall(C,user:constraint(C),Cs),
+        findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
+        dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
 
@@ -53,7 +54,8 @@ constants_and_universe(Cs,Um) :-
         length(Cs,N),
         dfs_entities(N,Um).
 
-%% dfs_sample_properties(+Properties,+Universe,+G,IFuncConstants,-IFunc)
+%% dfs_sample_properties(+Properties,+Universe,+G,+ConstantInstantiatons,
+%      +Constraints,+IFuncConstants,-IFunc)
 %
 %  Samples property instantiations using a non-deterministic, probabilistic
 %  and incremental inference-driven sampling algorithm. 
@@ -94,12 +96,12 @@ constants_and_universe(Cs,Um) :-
 %      and LVm satisfies all constraints, LVm is the final interpretation 
 %      function.
 
-dfs_sample_properties(Ps,Um,G,VmCs,Vm) :-
-        findall(C,user:constraint(C),Cs),
-        %findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
+dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
-        dfs_constant_instantiations((_,VmCs),CIs),
-        dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm).
+        dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
+dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
+        write('Retry..'), nl,
+        dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
         dfs_interpret(Cs,(Um,Vm),G), !.
@@ -111,7 +113,7 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
-        -> probability(P,LVm0,Pr), !,
+        -> probability(P,(Um,LVm0),Pr), !,
            (  maybe(Pr)
            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
            ;  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
@@ -194,127 +196,105 @@ complement(P,P).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 optimize_q_forall(P,FIs) :-
-        q_forall_var_insts(P,VIs),
-        findall(FI,q_forall_inst(P,VIs,FI),FIs).
+        vis(P,[],[],VIs),
+        findall(FI,fi(P,VIs,FI),FIs).
 
-q_forall_inst(neg(P0),VIs,neg(P1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1).
-q_forall_inst(and(P0,Q0),VIs,and(P1,Q1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1),
-        q_forall_inst(Q0,VIs,Q1).
-q_forall_inst(or(P0,Q0),VIs,or(P1,Q1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1),
-        q_forall_inst(Q0,VIs,Q1).
-q_forall_inst(xor(P0,Q0),VIs,xor(P1,Q1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1),
-        q_forall_inst(Q0,VIs,Q1).
-q_forall_inst(imp(P0,Q0),VIs,imp(P1,Q1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1),
-        q_forall_inst(Q0,VIs,Q1).
-q_forall_inst(iff(P0,Q0),VIs,iff(P1,Q1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1),
-        q_forall_inst(Q0,VIs,Q1).
-q_forall_inst(exists(X,P0),VIs,exists(X,P1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1).
-q_forall_inst(forall(X,imp(P0,Q0)),VIs,imp(P1,Q1)) :-
-        !,
-        select_var_inst(X,VIs,VIs0),
-        q_forall_inst(P0,VIs0,P1),
-        q_forall_inst(Q0,VIs0,Q1).
-q_forall_inst(forall(X,P0),VIs,forall(X,P1)) :-
-        !,
-        q_forall_inst(P0,VIs,P1).
-q_forall_inst(P,VIs,PI) :-
-        prop_inst(P,VIs,PI).
+fi(neg(P0),     VIs,neg(P1)     ) :- !, fi(P0,VIs,P1).
+fi(and(P0,Q0),  VIs,and(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(or(P0,Q0),   VIs,or(P1,Q1)   ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(xor(P0,Q0),  VIs,xor(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).
+fi(forall(X,P0),VIs,P1) :-
+        q_imp_chain(X,forall(X,P0)), !,
+        select_vi(X,VIs,VIs0),
+        fi(P0,VIs0,P1).
+fi(forall(X,P0),VIs,forall(X,P1)) :- !, fi(P0,VIs,P1).
+fi(P0,VIs,P1) :-
+        prop_instance(P0,VIs,P1).
+        %valid_instance(P1).
 
-select_var_inst(_,[],[]) :- !.
-select_var_inst(X,VIs,[X=E|VIs1]) :-
-        findall(X=E,member(X=E,VIs),VIs0),
-        findall(Y=E,(member(Y=E,VIs),Y\=X),VIs1),
-        select(X=E,VIs0,_).
+% %%%%%%%%%%%%%%%
+% %%%% debug %%%%
+% %%%%%%%%%%%%%%%
 
-prop_inst(P,VIs,PI) :-
+% valid_instance(P) :-
+%         P =.. [(=)|_], !.
+% valid_instance(P) :-
+%         P =.. [_|As],
+%         dfs_variables(Vs),
+%         valid_instance_(P,As,Vs).
+
+% valid_instance_(_,[],_) :- !.
+% valid_instance_(P,[A|As],Vs) :-
+%         memberchk(A,Vs), !,
+%         valid_instance_(P,As,Vs).
+% valid_instance_(P,[A|As],Vs) :-
+%         prop_template(P,A,Templ,A),
+%         user:property(Templ), !,
+%         valid_instance_(P,As,Vs).
+
+% %%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%
+
+select_vi(V,VIs,[V=X|VIs1]) :-
+        findall(V=X,member(V=X,VIs),VIs0),
+        findall(V1=Y,(member(V1=Y,VIs),V1\=V),VIs1),
+        select(V=X,VIs0,_).
+
+prop_instance(P,VIs,PI) :-
         P =.. [Prop|As],
-        prop_inst_(As,VIs,IAs),
-        PI =.. [Prop|IAs].
+        prop_instance_(As,VIs,AIs),
+        PI =.. [Prop|AIs].
 
-prop_inst_([],_,[]) :- !.
-prop_inst_([A|As],VIs,[X|IAs]) :-
-        memberchk(A=X,VIs), !,
-        prop_inst_(As,VIs,IAs).
-prop_inst_([A|As],VIs,[A|IAs]) :-
-        prop_inst_(As,VIs,IAs).
+prop_instance_([],_,[]) :- !.
+prop_instance_([A|As],VIs,[E|IAs]) :-
+        memberchk(A=E,VIs), !,
+        prop_instance_(As,VIs,IAs).
+prop_instance_([A|As],VIs,[A|IAs]) :-
+        prop_instance_(As,VIs,IAs).
 
-q_forall_var_insts(P,VIs) :-
-        q_forall_var_insts_(P,[],VIs0),
-        list_to_ord_set(VIs0,VIs).
+vis(neg(P),     Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
+vis(and(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(or(P,Q),    Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(xor(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
+vis(forall(X,P),Vs,VIs0,VIs2) :-
+        !,
+        (  q_imp_chain(X,forall(X,P))
+        -> vis(P,[X|Vs],VIs0,VIs1)
+        ;  vis(P,Vs,VIs0,VIs1) ),
+        vis(P,Vs,VIs1,VIs2).
+vis(P,Vs,VIs0,VIs1) :- 
+        vis_(P,Vs,VIs0,VIs1).
 
-q_forall_var_insts_(neg(P),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIs).
-q_forall_var_insts_(and(P,Q),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(or(P,Q),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(xor(P,Q),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(imp(P,Q),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(iff(P,Q),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(exists(_,P),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIs).
-q_forall_var_insts_(forall(X,imp(P,Q)),Vs,VIs) :- % ∀x (P(x) -> Q) 
-        !,
-        q_forall_var_insts_(P,[X|Vs],VIsP),
-        q_forall_var_insts_(Q,Vs,VIsQ),
-        append(VIsP,VIsQ,VIs).
-q_forall_var_insts_(forall(_,P),Vs,VIs) :-
-        !,
-        q_forall_var_insts_(P,Vs,VIs).
-q_forall_var_insts_(P,Vs,VIs) :-
-        var_insts(P,Vs,VIs).
+vis_(_,[],VIs,VIs) :- !.
+vis_(P,[V|Vs],VIs0,VIs4) :-
+        prop_template(P,V,Templ,X), !,
+        findall(V=X,user:property(Templ),VIs1),
+        list_to_ord_set(VIs1,VIs2),
+        union(VIs0,VIs2,VIs3),
+        vis_(P,Vs,VIs3,VIs4).
+vis_(P,[_|Vs],VIsAcc,VIs) :-
+        vis_(P,Vs,VIsAcc,VIs).
 
-var_insts(P,Vs,VIs) :-
-        var_insts_(P,Vs,[],VIs).
+q_imp_chain(X,forall(_,imp(P,_))) :- 
+        vis(P,[X],[],VIs),
+        memberchk(X=_,VIs).
+q_imp_chain(X,forall(_,P)) :-
+        q_imp_chain(X,P).
 
-var_insts_(_,[],VIs,VIs) :- !.
-var_insts_(P,[V|Vs],VIsAcc0,VIs) :-
-        P =.. [Prop|Args],
-        memberchk(V,Args), !,
-        scoped_prop(Args,V,SArgs,X),
-        SP =.. [Prop|SArgs],
-        findall(V=X,user:property(SP),VIsAcc1),
-        append(VIsAcc0,VIsAcc1,VIsAcc2),
-        var_insts_(P,Vs,VIsAcc2,VIs).
-var_insts_(P,[_|Vs],VIsAcc,VIs) :-
-        var_insts_(P,Vs,VIsAcc,VIs).
+prop_template(P,V,Templ,X) :-
+        P =.. [Prop|As],
+        memberchk(V,As),
+        prop_template_(As,V,TAs,X),
+        Templ =.. [Prop|TAs].
 
-scoped_prop([],_,[],_) :- !.
-scoped_prop([V|As],V,[X|SArgs],X) :-
-        !, scoped_prop(As,V,SArgs,X).
-scoped_prop([_|As],V,[_|SArgs],X) :-
-        scoped_prop(As,V,SArgs,X).
+prop_template_([],_,[],_) :- !.
+prop_template_([V|As],V,[X|TAs],X) :-
+        !, prop_template_(As,V,TAs,X).
+prop_template_([_|As],V,[_|TAs],X) :-
+        prop_template_(As,V,TAs,X).
