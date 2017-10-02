@@ -101,7 +101,7 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
-        write('Retry!\n'),
+        %write('Retry!\n'),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
