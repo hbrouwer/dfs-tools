@@ -44,7 +44,8 @@ dfs_sample_model((Um,Vm)) :-
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,user:property(P),Ps),
         %findall(C,user:constraint(C),Cs),
-        findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs),
+        findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs1),
+        flatten(Cs1,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
@@ -100,7 +101,7 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
-        write('Retry...\n'),
+        write('Retry!\n'),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
@@ -170,7 +171,7 @@ complement(or(P0,Q0),and(P1,Q1)) :-
         !, % P | Q => P & Q
         complement(P0,P1),
         complement(Q0,Q1).
-complement(xor(P0,Q0),or(and(P1,Q1),and(neg(P1,neg(Q1))))) :-
+complement(xor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
         !, % P (+) Q => (P & Q) | (!P & !Q)
         complement(P0,P1),
         complement(Q0,Q1). 
@@ -195,12 +196,17 @@ complement(P,P).
 %  Returns a probabilistically determined truth value for Formula, given
 %  a Model (thus far) and assignment function G.
 
-probabilistic_choice(P,M,G) :-
-        user:probability(P,C,Pr), !,
-        (  dfs_interpret(C,M,G)
-        -> maybe(Pr)
-        ;  false ).
+% probabilistic_choice(P,M,G) :-
+%         user:probability(P,C,Pr),
+%         (  dfs_interpret(C,M,G)
+%         -> maybe(Pr)
+%         ;  false ).
 
+probabilistic_choice(P,M,G) :-
+        user:probability(P,C,Pr),
+        dfs_interpret(C,M,G), 
+        maybe(Pr).
+        
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% forall optimization %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -327,3 +333,45 @@ dbg_constraints_([OC|OCs],opt) :-
         complement(OC,OCc),
         format('O: ~w ==> ~w\n',[OC,OCc]),
         dbg_constraints_(OCs,opt).
+
+% dbg_validate([],_,_) :- !.
+% dbg_validate([C|Cs],M,G) :-
+%         dfs_interpret(C,M,G), !,
+%         dbg_validate(Cs,M,G).
+% dbg_validate([C|_],_,_) :-
+%         nl, write(C), nl,
+%         complement(C,Cc),
+%         write(Cc), nl, nl,
+%         false.
+
+% dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :-
+%         dbg_validate(Cs,(Um,Vm),G), !.
+%         %dfs_interpret(Cs,(Um,Vm),G), !.
+% dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
+%         P =.. [Prop|Args],
+%         dfs_terms_to_entities(Args,CIs,Es),
+%         add_property(LVm0,Prop,Es,LVm1),
+%         ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
+%         add_property(DVm0,Prop,Es,DVm1),
+%         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
+%         format('Prop: ~w\t\t\t', P),
+%         %format('LVm1: ~w\n', (Um,LVm1)),
+%         %format('DVm0: ~w\n', (Um,DVm0)),
+%         format('LT  : ~d\t', LT),
+%         %format('LVm0: ~w\n', (Um,LVm0)),
+%         %format('DVm1: ~w\n', (Um,DVm1)),
+%         format('DT  : ~d\t', DT),
+%         (  LT == 1, DT == 1             %% undecided
+%         -> (  probabilistic_choice(P,(Um,LVm0),G)
+%            -> format('==> Flip to Light\n'),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+%            ;  format('==> Flip to Dark\n'),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
+%         ;  (  LT == 1, DT == 0          %% light world
+%            -> format('==> Infer to Light\n'),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+%            ;  (  LT == 0, DT == 1       %% dark world
+%               -> format('==> Infer to Dark\n'),
+%                  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
+%               ;  format('==> Restart ...\n\n\n'),
+%                  false ) ) ).           %% inconsistent

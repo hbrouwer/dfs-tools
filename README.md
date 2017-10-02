@@ -1,2 +1,3 @@
-# dfs
-Distributional Formal Semantics (DFS)
+# DFS Tools
+
+Distributional Formal Semantics (DFS) Tools.
