@@ -100,6 +100,7 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
+        write('Retry...\n'),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
@@ -288,7 +289,6 @@ prop_template_([V|As],V,[X|TAs],X) :-
 prop_template_([_|As],V,[_|TAs],X) :-
         prop_template_(As,V,TAs,X).
 
-
 % %%%%%%%%%%%%%%%
 % %%%% debug %%%%
 % %%%%%%%%%%%%%%%
@@ -311,3 +311,19 @@ prop_template_([_|As],V,[_|TAs],X) :-
 
 % %%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%
+
+dbg_constraints :-
+        findall(C,constraint(C),Cs),
+        dbg_constraints_(Cs,org).
+
+dbg_constraints_([],_) :- !.
+dbg_constraints_([C|Cs],org) :-
+        !, complement(C,Cc),
+        format('\nC: ~w => ~w\n',[C,Cc]),
+        optimize_q_forall(C,OCs),
+        dbg_constraints_(OCs,opt),
+        dbg_constraints_(Cs,org).
+dbg_constraints_([OC|OCs],opt) :-
+        complement(OC,OCc),
+        format('O: ~w ==> ~w\n',[OC,OCc]),
+        dbg_constraints_(OCs,opt).
