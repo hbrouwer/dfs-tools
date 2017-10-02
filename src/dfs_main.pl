@@ -50,7 +50,7 @@ dfs_pprint_model((Um,Vm)) :-
         pprint_vm(Vm),
         format('\n').
 
-pprint_vm([]) :- !.
+pprint_vm([]).
 pprint_vm([P|Ps]) :-
         P =.. [Pred|[Args]],
         Pred \= (=), !,
@@ -61,7 +61,7 @@ pprint_vm([P|Ps]) :-
 pprint_vm([_|Ps]) :-
         pprint_vm(Ps).
 
-pprint_atoms([]) :- !.
+pprint_atoms([]).
 pprint_atoms([A|As]) :-
         (  atom(A)
         -> format('~a',[A]),
@@ -80,7 +80,7 @@ dfs_pprint_model_matrix(MM) :-
         pprint_model_matrix_(TMM),
         format('\n').
 
-pprint_model_matrix_([]) :- !.
+pprint_model_matrix_([]).
 pprint_model_matrix_([DV|DVs]) :-
         memberchk((P,_),DV),
         format('%%%% '),
@@ -88,7 +88,7 @@ pprint_model_matrix_([DV|DVs]) :-
         format(' ~w\n',[P]),
         pprint_model_matrix_(DVs).
 
-pprint_dfs_vector([]) :- !.
+pprint_dfs_vector([]).
 pprint_dfs_vector([(_,S)|Ts]) :-
         format('~0f',[S]),
         ( Ts \= [] -> format('') ; true ),

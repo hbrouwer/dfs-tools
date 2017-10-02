@@ -43,7 +43,7 @@ dfs_sample_model((Um,Vm)) :-
         dfs_vector_space:ifunc_inst_constants(Consts,Um,VmCs),
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,user:property(P),Ps),
-        %findall(C,user:constraint(C),Cs),
+        %findall(C,user:constraint(C),Cs1),
         findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs1),
         flatten(Cs1,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
@@ -105,7 +105,7 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
-        dfs_interpret(Cs,(Um,Vm),G), !.
+        dfs_interpret(Cs,(Um,Vm),G).
 dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         P =.. [Prop|Args],
         dfs_terms_to_entities(Args,CIs,Es),
@@ -128,7 +128,6 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
 %  Adds a property for a set of entities to an interpretation function.
 
 add_property([],Prop,[E|Es],[P1]) :-
-        !,
         (  Es == []
         -> P1 =.. [Prop|[[E]]]          %% unary predicates
         ;  P1 =.. [Prop|[[[E|Es]]]] ).  %% n-ary predicates
@@ -147,7 +146,7 @@ add_property([P0|P0s],Prop,Es,[P0|P1s]) :-
 %  Returns true when each constraint is either satisfied in the light world,
 %  or when its complement is not satisfied in the dark world.
 
-satisfies_constraints([],_,_,_) :- !, true.
+satisfies_constraints([],_,_,_).
 satisfies_constraints([C|Cs],LM,DM,G) :-
         dfs_interpret(C,LM,G), !,
         satisfies_constraints(Cs,LM,DM,G).
@@ -196,12 +195,6 @@ complement(P,P).
 %  Returns a probabilistically determined truth value for Formula, given
 %  a Model (thus far) and assignment function G.
 
-% probabilistic_choice(P,M,G) :-
-%         user:probability(P,C,Pr),
-%         (  dfs_interpret(C,M,G)
-%         -> maybe(Pr)
-%         ;  false ).
-
 probabilistic_choice(P,M,G) :-
         user:probability(P,C,Pr),
         dfs_interpret(C,M,G), 
@@ -242,7 +235,7 @@ prop_instance(P,VIs,PI) :-
         prop_instance_(As,VIs,AIs),
         PI =.. [Prop|AIs].
 
-prop_instance_([],_,[]) :- !.
+prop_instance_([],_,[]).
 prop_instance_([A|As],VIs,[E|IAs]) :-
         memberchk(A=E,VIs), !,
         prop_instance_(As,VIs,IAs).
@@ -289,7 +282,7 @@ prop_template(P,V,Templ,X) :-
         prop_template_(As,V,TAs,X),
         Templ =.. [Prop|TAs].
 
-prop_template_([],_,[],_) :- !.
+prop_template_([],_,[],_).
 prop_template_([V|As],V,[X|TAs],X) :-
         !, prop_template_(As,V,TAs,X).
 prop_template_([_|As],V,[_|TAs],X) :-
@@ -322,7 +315,7 @@ dbg_constraints :-
         findall(C,constraint(C),Cs),
         dbg_constraints_(Cs,org).
 
-dbg_constraints_([],_) :- !.
+dbg_constraints_([],_).
 dbg_constraints_([C|Cs],org) :-
         !, complement(C,Cc),
         format('\nC: ~w => ~w\n',[C,Cc]),
@@ -334,7 +327,7 @@ dbg_constraints_([OC|OCs],opt) :-
         format('O: ~w ==> ~w\n',[OC,OCc]),
         dbg_constraints_(OCs,opt).
 
-% dbg_validate([],_,_) :- !.
+% dbg_validate([],_,_).
 % dbg_validate([C|Cs],M,G) :-
 %         dfs_interpret(C,M,G), !,
 %         dbg_validate(Cs,M,G).

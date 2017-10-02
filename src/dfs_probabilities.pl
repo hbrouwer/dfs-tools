@@ -111,7 +111,7 @@ dfs_entropy(P,Ms,H) :-
         dfs_entropy_(V,PrP,0,H).
 
 dfs_entropy_([],_,HAcc,H) :-
-        !, H is -HAcc.
+        H is -HAcc.
 dfs_entropy_([U|Us],PrP,HAcc,H) :-
         PrUQ is (1.0 * U) / PrP,
         (  PrUQ > 0.0

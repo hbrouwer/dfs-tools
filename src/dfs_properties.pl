@@ -58,7 +58,7 @@ dfs_satisfiability(P,MM) :-
 %  A formula P entails a formula Q (P |= Q) iff Q is true in every model that
 %  satisfies P
 
-dfs_entailment(_,_,[]) :- !, true.
+dfs_entailment(_,_,[]) :- !.
 dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
         !, dfs_init_g((Um,Vm),G),
         dfs_interpret(imp(P,Q),(Um,Vm),G),
@@ -72,7 +72,7 @@ dfs_entailment(P,MM) :-
 %  A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g for
 %  all models M and variable assignments g
 
-dfs_logical_equivalence(_,_,[]) :- !, true.
+dfs_logical_equivalence(_,_,[]) :- !.
 dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-
         !, dfs_init_g((Um,Vm),G),
         dfs_interpret(iff(P,Q),(Um,Vm),G),

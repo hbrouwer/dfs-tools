@@ -49,7 +49,7 @@ dfs_function_vector(F,MM,V) :-
         subset_model_matrix(MM,F,SMM),
         dfs_function_vector_(SMM,V).
 
-dfs_function_vector_([],[]) :- !.
+dfs_function_vector_([],[]).
 dfs_function_vector_([MV|MVs],[U|Us]) :-
         sum_model_vector(MV,S),
         length(MV,L),
@@ -58,14 +58,14 @@ dfs_function_vector_([MV|MVs],[U|Us]) :-
 
 % subset_model_matrix(+ModelMatrix,+Function,-SubsetMatrix)
 
-subset_model_matrix([],_,[]) :- !.
+subset_model_matrix([],_,[]).
 subset_model_matrix([MV|MVs],F,[SV|SVs]) :-
         subset_model_vector(MV,F,SV),
         subset_model_matrix(MVs,F,SVs).
 
 % subset_model_vector(+ModelVector,+Function,-SubsetMatrix)
 
-subset_model_vector([],_,[]) :- !.
+subset_model_vector([],_,[]).
 subset_model_vector([(AP,S)|Ts],F::e,[(AP,S)|STs]) :-   % <-- entities
         AP =.. [_|As],
         memberchk(F,As),

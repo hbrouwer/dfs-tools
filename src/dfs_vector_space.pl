@@ -29,10 +29,10 @@
 % atomic_propositions(+ModelSet,-AtomicProps)
 
 atomic_propositions(MS,APs) :-
-        !, atomic_propositions_(MS,[],APs).
+        atomic_propositions_(MS,[],APs).
 
 atomic_propositions_([],APsAcc,APs) :- 
-        !, list_to_ord_set(APsAcc,APs).
+        list_to_ord_set(APsAcc,APs).
 atomic_propositions_([(Um,Vm)|MS],APsAcc,APs) :-
         dfs_init_g((Um,Vm),G),
         dfs_term_instantiations((Um,Vm),G,TIs),
@@ -72,7 +72,7 @@ dfs_models_to_matrix(MS,MM) :-
         atomic_propositions(MS,APs),
         dfs_models_to_matrix_(MS,APs,MM).
 
-dfs_models_to_matrix_([],_,[]) :- !.
+dfs_models_to_matrix_([],_,[]).
 dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_init_g(M,G),
         dfs_model_to_vector_(M,APs,G,MV),
@@ -89,7 +89,7 @@ dfs_vector_to_model(MV,(Um,Vm)) :-
 
 % dfs_matrix_to_models(+ModelMatrix,-ModelSet)
 
-dfs_matrix_to_models([],[]) :- !.
+dfs_matrix_to_models([],[]).
 dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_vector_to_model(MV,M),
         dfs_matrix_to_models(MVs,MS).
@@ -103,7 +103,7 @@ constants_and_universe(MV,Cs,Um) :-
 
 % ifunc_inst_constants(+Constants,+Entities,-VmCs)
 
-ifunc_inst_constants([],[],[]) :- !.
+ifunc_inst_constants([],[],[]).
 ifunc_inst_constants([C|Cs],[E|Es],[C=E|VmCs]) :-
         ifunc_inst_constants(Cs,Es,VmCs).
 
@@ -113,7 +113,7 @@ ifunc_inst_properties(MV,CIs,VmPs) :-
         setof(P,AP^As^(member((AP,1),MV),AP =.. [P|As]),Ps),
         ifunc_inst_properties_(Ps,MV,CIs,VmPs).
 
-ifunc_inst_properties_([],_,_,[]) :- !.
+ifunc_inst_properties_([],_,_,[]).
 ifunc_inst_properties_([P|Ps],MV,CIs,[Prop|VM]) :-
         ifunc_inst_property(P,MV,CIs,PIs),
         Prop =.. [P|[PIs]],

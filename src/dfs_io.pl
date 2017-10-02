@@ -30,7 +30,7 @@ dfs_write_models(MS,File) :-
         dfs_write_models_(MS,Stream),
         close(Stream).
 
-dfs_write_models_([],_) :- !.
+dfs_write_models_([],_).
 dfs_write_models_([M|MS],Stream) :-
         format(Stream,'model((~w)).\n',M),
         dfs_write_models_(MS,Stream).
@@ -71,7 +71,7 @@ write_atomic_propositions([AP|APs],Stream) :-
 
 % write_model_matrix(+ModelMatrix,+Stream)
 
-write_model_matrix([],_) :- !.
+write_model_matrix([],_).
 write_model_matrix([MV|MVs],Stream) :-
         write_model_vector(MV,Stream),
         write_model_matrix(MVs,Stream).
@@ -124,6 +124,6 @@ read_model_matrix(Stream,APs,MVs) :-
 
 % vector_to_model_vector(+Vector,+AtomicProps,-ModelVector)
 
-vector_to_model_vector([],[],[]) :- !.
+vector_to_model_vector([],[],[]).
 vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
         vector_to_model_vector(Us,APs,Ts).

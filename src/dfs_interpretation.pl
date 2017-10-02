@@ -82,7 +82,7 @@ dfs_init_g((Um,_),G) :-
         dfs_variables(Vars),
         dfs_init_g_(Vars,Um,Um,G).
 
-dfs_init_g_([],_,_,[]) :- !.
+dfs_init_g_([],_,_,[]).
 dfs_init_g_([V|Vs],[],Um,G) :-
         !, dfs_init_g_([V|Vs],Um,Um,G).
 dfs_init_g_([V|Vs],[E|Es],Um,[(V,E)|G]) :-
@@ -98,7 +98,7 @@ dfs_assign(G,(Um,_),As,Gp) :-
         dfs_assign_(G,Um,AsRev,[],GpRev),
         reverse(GpRev,Gp).
 
-dfs_assign_([],_,_,Gp,Gp) :- !.
+dfs_assign_([],_,_,Gp,Gp).
 dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = E
         \+ memberchk(V/_,As), !,
         dfs_assign_(G,Um,As,[(V,E)|GpAcc],Gp).
@@ -118,7 +118,7 @@ dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = g(V)
 %
 %  Maps Terms into Entities (or vice versa), given their instantiations.
 
-dfs_terms_to_entities([],_,[]) :- !.
+dfs_terms_to_entities([],_,[]).
 dfs_terms_to_entities([T|Ts],TIs,[E|Es]) :-
         memberchk((T,E),TIs),
         dfs_terms_to_entities(Ts,TIs,Es).
@@ -187,7 +187,7 @@ dfs_interpret(P,M,G) :-
 
 %% conjoin(+FormulaSet,-Conjunction)
 
-conjoin([],[]) :- !.
+conjoin([],[]).
 conjoin([P],P) :- !.
 conjoin([P|Ps],and(P,F)) :-
         conjoin(Ps,F).
