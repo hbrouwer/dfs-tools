@@ -172,6 +172,12 @@ dfs_interpret(exists(X,P),M,G) :-
 dfs_interpret(forall(X,P),M,G) :-
         !, % ∀x P
         q_forall(X,P,M,G).
+dfs_interpret(top,_,_) :-
+        !, % ⊤
+        true.
+dfs_interpret(bottom,_,_) :-
+        !, % ⊥
+        false.
 dfs_interpret(P,M,G) :-
         % R(t1,...,tn)
         P =.. [Pred|Args],

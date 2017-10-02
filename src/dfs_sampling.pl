@@ -112,8 +112,7 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
-        -> probability(P,(Um,LVm0),Pr), !,
-           (  maybe(Pr)
+        -> (  probabilistic_choice(P,(Um,LVm0),G)
            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
            ;  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
         ;  (  LT == 1, DT == 0          %% light world
@@ -190,6 +189,17 @@ complement(forall(X,P0),exists(X,P1)) :-
         complement(P0,P1).
 complement(P,P).
 
+%% probabilistic_choice(?Formula,+Model,+G)
+%
+%  Returns a probabilistically determined truth value for Formula, given
+%  a Model (thus far) and assignment function G.
+
+probabilistic_choice(P,M,G) :-
+        user:probability(P,C,Pr), !,
+        (  dfs_interpret(C,M,G)
+        -> maybe(Pr)
+        ;  false ).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% forall optimization %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,32 +220,10 @@ fi(forall(X,P0),VIs,P1) :-
         select_vi(X,VIs,VIs0),
         fi(P0,VIs0,P1).
 fi(forall(X,P0),VIs,forall(X,P1)) :- !, fi(P0,VIs,P1).
+fi(top,_,top) :- !.
+fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
         prop_instance(P0,VIs,P1).
-        %valid_instance(P1).
-
-% %%%%%%%%%%%%%%%
-% %%%% debug %%%%
-% %%%%%%%%%%%%%%%
-
-% valid_instance(P) :-
-%         P =.. [(=)|_], !.
-% valid_instance(P) :-
-%         P =.. [_|As],
-%         dfs_variables(Vs),
-%         valid_instance_(P,As,Vs).
-
-% valid_instance_(_,[],_) :- !.
-% valid_instance_(P,[A|As],Vs) :-
-%         memberchk(A,Vs), !,
-%         valid_instance_(P,As,Vs).
-% valid_instance_(P,[A|As],Vs) :-
-%         prop_template(P,A,Templ,A),
-%         user:property(Templ), !,
-%         valid_instance_(P,As,Vs).
-
-% %%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%
 
 select_vi(V,VIs,[V=X|VIs1]) :-
         findall(V=X,member(V=X,VIs),VIs0),
@@ -267,6 +255,8 @@ vis(forall(X,P),Vs,VIs0,VIs2) :-
         -> vis(P,[X|Vs],VIs0,VIs1)
         ;  vis(P,Vs,VIs0,VIs1) ),
         vis(P,Vs,VIs1,VIs2).
+vis(top,_,VIs0,VIs0) :- !.
+vis(bottom,_,VIs0,VIs0) :- !.
 vis(P,Vs,VIs0,VIs1) :- 
         vis_(P,Vs,VIs0,VIs1).
 
@@ -297,3 +287,27 @@ prop_template_([V|As],V,[X|TAs],X) :-
         !, prop_template_(As,V,TAs,X).
 prop_template_([_|As],V,[_|TAs],X) :-
         prop_template_(As,V,TAs,X).
+
+
+% %%%%%%%%%%%%%%%
+% %%%% debug %%%%
+% %%%%%%%%%%%%%%%
+
+% valid_instance(P) :-
+%         P =.. [(=)|_], !.
+% valid_instance(P) :-
+%         P =.. [_|As],
+%         dfs_variables(Vs),
+%         valid_instance_(P,As,Vs).
+
+% valid_instance_(_,[],_) :- !.
+% valid_instance_(P,[A|As],Vs) :-
+%         memberchk(A,Vs), !,
+%         valid_instance_(P,As,Vs).
+% valid_instance_(P,[A|As],Vs) :-
+%         prop_template(P,A,Templ,A),
+%         user:property(Templ), !,
+%         valid_instance_(P,As,Vs).
+
+% %%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%
