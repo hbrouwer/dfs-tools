@@ -58,8 +58,8 @@ constraint(C) :-
 % Constraint(+Proposition,-Constraint,-Pr)
 
 probability(P,C,Pr) :- 
-        current_predicate((<-)/1),
-        Pr <- (P | C).
+        current_predicate((<-)/2),
+        Pr <- (P|C).
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
