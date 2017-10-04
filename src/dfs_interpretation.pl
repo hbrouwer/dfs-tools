@@ -155,7 +155,7 @@ dfs_interpret(and(P,Q),M,G) :-
 dfs_interpret(or(P,Q),M,G) :-
         !, % P | Q
         ( dfs_interpret(P,M,G), ! ; dfs_interpret(Q,M,G) ).
-dfs_interpret(xor(P,Q),M,G) :-
+dfs_interpret(exor(P,Q),M,G) :-
         !, % P (+) Q
         ( dfs_interpret(P,M,G), \+ dfs_interpret(Q,M,G), !
         ; \+ dfs_interpret(P,M,G), dfs_interpret(Q,M,G) ).
@@ -191,6 +191,13 @@ conjoin([],[]).
 conjoin([P],P) :- !.
 conjoin([P|Ps],and(P,F)) :-
         conjoin(Ps,F).
+
+%% disjoin(+FormulaSet,-Disjunction)
+
+disjoin([],[]).
+disjoin([P],P) :- !.
+disjoin([P|Ps],or(P,F)) :-
+        disjoin(Ps,F).
 
 %% q_exists(+Var,+Formula,+Model,+G)
 %

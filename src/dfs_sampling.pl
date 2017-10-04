@@ -85,7 +85,7 @@ dfs_sample_model((Um,Vm)) :-
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
         %findall(C,constraint(C),Cs0),
-        findall(C,(constraint(C0),restrict_q_forall_domain(C0,C)),Cs0),
+        findall(C,(constraint(C0),restrict_q_domains(C0,C)),Cs0),
         flatten(Cs0,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
@@ -142,7 +142,6 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
         dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
-        %write('Retry!\n'),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
@@ -211,7 +210,7 @@ complement(or(P0,Q0),and(P1,Q1)) :-
         !, % P | Q => P & Q
         complement(P0,P1),
         complement(Q0,Q1).
-complement(xor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
+complement(exor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
         !, % P (+) Q => (P & Q) | (!P & !Q)
         complement(P0,P1),
         complement(Q0,Q1). 
@@ -241,26 +240,34 @@ probabilistic_choice(P,M,G) :-
         dfs_interpret(C,M,G), 
         maybe(Pr).
         
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% forall optimization %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% quantifier optimization %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% restrict_q_forall_domain(+Formula,-OptimizedFormulaSet)
+%% restrict_q_domains(+Formula,-OptimizedFormulaSet)
 %
-%  Optimizes constraints that involve a chain of universal quantifiers ending
-%  in an implication, e.g., forall(x,forall(y,imp(p(x),q(x,y)))), by domain
-%  restriction.
-% 
-%  Given a formula such as orall(x,forall(y,imp(p(x),q(x,y)))), the
-%  model-theoretic interpreter implemented by dfs_interpret/3 will evaluate
-%  its truth by filling in each entity in the universe for x and y. Given the
-%  set of atomic propositions (properties), however, not all of the entities
-%  in the universe may be possible arguments for p/1 and q/2. Hence, as the
-%  implication conditions the truth value of the statement on p(x), we can
-%  optimize the constraint by rewriting it to set of implications for possible
-%  arguments for p(x) and q(x,y) only.
+%  Optimizes constraints that involve existential and universal quantifiers
+%  by domain restriction.
+%
+%  Existential quantification: given an existentially quantified formula,
+%  e.g., exists(x,p(x)), the model-theoretic interpreter implemented by
+%  dfs_interpret/3 will evaluate its truth by filling in each entity in the
+%  universe for x, until p(x) is true. However, given the set of atomic
+%  propositions (properties), not all of the entities in the universe may be
+%  possible arguments for p/1. Hence, we can optimize the constraint by
+%  disjoining p(x) for all possible instances of x.
+%
+%  Universal quantification: given a chain of universal quantifiers ending in
+%  an implication, e.g., forall(x,forall(y,imp(p(x),q(x,y)))), the
+%  model-theoretic interpreter will evaluate its truth by filling in each
+%  entity in the universe for x and y. Again, given the set of atomic
+%  propositions (properties), however, not all of the entities in the universe
+%  may be possible arguments for p/1 and q/2. Hence, as the implication
+%  conditions the truth value of the statement on p(x), we can optimize the
+%  constraint by rewriting it to set of implications for possible arguments
+%  for p(x) and q(x,y) only.
 
-restrict_q_forall_domain(P,FIs) :-
+restrict_q_domains(P,FIs) :-
         vis(P,[],[],VIs),
         findall(FI,fi(P,VIs,FI),FIs).
 
@@ -272,10 +279,17 @@ restrict_q_forall_domain(P,FIs) :-
 fi(neg(P0),     VIs,neg(P1)     ) :- !, fi(P0,VIs,P1).
 fi(and(P0,Q0),  VIs,and(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(or(P0,Q0),   VIs,or(P1,Q1)   ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
-fi(xor(P0,Q0),  VIs,xor(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
+fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
-fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).
+fi(exists(X,P0),VIs,P1) :-
+        memberchk(X=_,VIs), !,
+        findall(FI,
+                ( select_vi(X,VIs,VIs0),
+                  fi(P0,VIs0,FI)),
+                FIs ),
+        dfs_interpretation:disjoin(FIs,P1).
+%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).
 fi(forall(X,P0),VIs,P1) :-
         q_imp_chain(X,forall(X,P0)), !,
         select_vi(X,VIs,VIs0),
@@ -322,16 +336,17 @@ prop_instance_([A|As],VIs,[A|IAs]) :-
 vis(neg(P),     Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
 vis(and(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(or(P,Q),    Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
-vis(xor(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
+vis(exor(P,Q),  Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
-vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
-vis(forall(X,P),Vs,VIs0,VIs2) :-
+vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).
+%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
+vis(forall(X,P),Vs,VIs0,VIs1) :-
         !,
         (  q_imp_chain(X,forall(X,P))
         -> vis(P,[X|Vs],VIs0,VIs1)
-        ;  vis(P,Vs,VIs0,VIs1) ),
-        vis(P,Vs,VIs1,VIs2).
+        ;  vis(P,Vs,VIs0,VIs1) ).
+        %vis(P,Vs,VIs1,VIs2).
 vis(top,_,VIs0,VIs0) :- !.
 vis(bottom,_,VIs0,VIs0) :- !.
 vis(P,Vs,VIs0,VIs1) :- 
@@ -354,7 +369,7 @@ vis_(P,[_|Vs],VIsAcc,VIs) :-
 
 q_imp_chain(X,forall(_,imp(P,_))) :- 
         vis(P,[X],[],VIs),
-        memberchk(X=_,VIs).
+        memberchk(X=_,VIs), !.
 q_imp_chain(X,forall(_,P)) :-
         q_imp_chain(X,P).
 
