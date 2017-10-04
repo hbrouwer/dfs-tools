@@ -51,6 +51,10 @@ atomic_propositions_([(Um,Vm)|MS],APsAcc,APs) :-
         append(APs0,APsAcc,APsAcc0),
         atomic_propositions_(MS,APsAcc0,APs).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% models to vector space %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % dfs_model_to_vector(+Model,-ModelVector)
 
 dfs_model_to_vector(M,MV) :-
@@ -77,6 +81,10 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_init_g(M,G),
         dfs_model_to_vector_(M,APs,G,MV),
         dfs_models_to_matrix_(MS,APs,MVs).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% vector space to models %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dfs_vector_to_model(+ModelVector,-Model)
 

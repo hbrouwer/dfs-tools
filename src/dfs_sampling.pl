@@ -84,9 +84,9 @@ dfs_sample_model((Um,Vm)) :-
         dfs_vector_space:ifunc_inst_constants(Consts,Um,VmCs),
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
-        %findall(C,constraint(C),Cs1),
-        findall(C,(constraint(C0),optimize_q_forall(C0,C)),Cs1),
-        flatten(Cs1,Cs),
+        %findall(C,constraint(C),Cs0),
+        findall(C,(constraint(C0),restrict_q_forall_domain(C0,C)),Cs0),
+        flatten(Cs0,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
@@ -241,13 +241,33 @@ probabilistic_choice(P,M,G) :-
         dfs_interpret(C,M,G), 
         maybe(Pr).
         
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% forall optimization %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% forall optimization %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-optimize_q_forall(P,FIs) :-
+%% restrict_q_forall_domain(+Formula,-OptimizedFormulaSet)
+%
+%  Optimizes constraints that involve a chain of universal quantifiers ending
+%  in an implication, e.g., forall(x,forall(y,imp(p(x),q(x,y)))), by domain
+%  restriction.
+% 
+%  Given a formula such as orall(x,forall(y,imp(p(x),q(x,y)))), the
+%  model-theoretic interpreter implemented by dfs_interpret/3 will evaluate
+%  its truth by filling in each entity in the universe for x and y. Given the
+%  set of atomic propositions (properties), however, not all of the entities
+%  in the universe may be possible arguments for p/1 and q/2. Hence, as the
+%  implication conditions the truth value of the statement on p(x), we can
+%  optimize the constraint by rewriting it to set of implications for possible
+%  arguments for p(x) and q(x,y) only.
+
+restrict_q_forall_domain(P,FIs) :-
         vis(P,[],[],VIs),
         findall(FI,fi(P,VIs,FI),FIs).
+
+%% fi(+Formula,+VarInsts,-FormulaInstance)
+%
+%  Returns a domain-restricted instance of Formula, by filling in possible
+%  arguments for the quantified variables.
 
 fi(neg(P0),     VIs,neg(P1)     ) :- !, fi(P0,VIs,P1).
 fi(and(P0,Q0),  VIs,and(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
@@ -266,10 +286,21 @@ fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
         prop_instance(P0,VIs,P1).
 
+%% select_vi(+Var,+OldVarInsts,-NewVarInsts)
+%
+%  Selects a single variable instantiation of Var=X from OldVarInsts,
+%  yielding NewVarInsts in which Var=X is the only instantiation of Var.
+
 select_vi(V,VIs,[V=X|VIs1]) :-
         findall(V=X,member(V=X,VIs),VIs0),
         findall(V1=Y,(member(V1=Y,VIs),V1\=V),VIs1),
         select(V=X,VIs0,_).
+
+%% prop_instance(+Prop,+VarInsts,-PropInstance)
+%
+%  Returns an instance of a property. If Prop contains variables, these will
+%  be filled in using the instantiations in VarInsts. Otherwise, Prop remains
+%  unchanged.
 
 prop_instance(P,VIs,PI) :-
         P =.. [Prop|As],
@@ -282,6 +313,11 @@ prop_instance_([A|As],VIs,[E|IAs]) :-
         prop_instance_(As,VIs,IAs).
 prop_instance_([A|As],VIs,[A|IAs]) :-
         prop_instance_(As,VIs,IAs).
+
+%% vis(+Formula,+VarsAcc,+VarInstsAcc,-VarInsts)
+%
+%  Returns all possible instances of variables that occur in an antecedent
+%  of an implication that ends a chain of universal quantifiers.
 
 vis(neg(P),     Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
 vis(and(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
@@ -311,11 +347,23 @@ vis_(P,[V|Vs],VIs0,VIs4) :-
 vis_(P,[_|Vs],VIsAcc,VIs) :-
         vis_(P,Vs,VIsAcc,VIs).
 
+%% q_imp_chain(+Variable,+Formula)
+%
+%  True iff Formula is universal quantifier chain ending in an implication,
+%  in which Variable occurs in the antecedent.
+
 q_imp_chain(X,forall(_,imp(P,_))) :- 
         vis(P,[X],[],VIs),
         memberchk(X=_,VIs).
 q_imp_chain(X,forall(_,P)) :-
         q_imp_chain(X,P).
+
+%% prop_template(+Prop,+Variable,-Template,-BoundVar)
+%
+%  Constructs a template for Prop in which Variable is bound to BoundVar, and
+%  all other arguments are replaced by wildcards:
+%
+%  Prop = p(x,y,z), Variable = y ==> Template = p(_, BoundVar, _).
 
 prop_template(P,V,Templ,X) :-
         P =.. [Prop|As],
@@ -328,84 +376,3 @@ prop_template_([V|As],V,[X|TAs],X) :-
         !, prop_template_(As,V,TAs,X).
 prop_template_([_|As],V,[_|TAs],X) :-
         prop_template_(As,V,TAs,X).
-
-% %%%%%%%%%%%%%%%
-% %%%% debug %%%%
-% %%%%%%%%%%%%%%%
-
-% valid_instance(P) :-
-%         P =.. [(=)|_], !.
-% valid_instance(P) :-
-%         P =.. [_|As],
-%         dfs_variables(Vs),
-%         valid_instance_(P,As,Vs).
-
-% valid_instance_(_,[],_) :- !.
-% valid_instance_(P,[A|As],Vs) :-
-%         memberchk(A,Vs), !,
-%         valid_instance_(P,As,Vs).
-% valid_instance_(P,[A|As],Vs) :-
-%         prop_template(P,A,Templ,A),
-%         property(Templ), !,
-%         valid_instance_(P,As,Vs).
-
-% %%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%
-
-dbg_constraints :-
-        findall(C,constraint(C),Cs),
-        dbg_constraints_(Cs,org).
-
-dbg_constraints_([],_).
-dbg_constraints_([C|Cs],org) :-
-        !, complement(C,Cc),
-        format('\nC: ~w => ~w\n',[C,Cc]),
-        optimize_q_forall(C,OCs),
-        dbg_constraints_(OCs,opt),
-        dbg_constraints_(Cs,org).
-dbg_constraints_([OC|OCs],opt) :-
-        complement(OC,OCc),
-        format('O: ~w ==> ~w\n',[OC,OCc]),
-        dbg_constraints_(OCs,opt).
-
-% dbg_validate([],_,_).
-% dbg_validate([C|Cs],M,G) :-
-%         dfs_interpret(C,M,G), !,
-%         dbg_validate(Cs,M,G).
-% dbg_validate([C|_],_,_) :-
-%         nl, write(C), nl,
-%         complement(C,Cc),
-%         write(Cc), nl, nl,
-%         false.
-
-% dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :-
-%         dbg_validate(Cs,(Um,Vm),G), !.
-%         %dfs_interpret(Cs,(Um,Vm),G), !.
-% dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
-%         P =.. [Prop|Args],
-%         dfs_terms_to_entities(Args,CIs,Es),
-%         add_property(LVm0,Prop,Es,LVm1),
-%         ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
-%         add_property(DVm0,Prop,Es,DVm1),
-%         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
-%         format('Prop: ~w\t\t\t', P),
-%         %format('LVm1: ~w\n', (Um,LVm1)),
-%         %format('DVm0: ~w\n', (Um,DVm0)),
-%         format('LT  : ~d\t', LT),
-%         %format('LVm0: ~w\n', (Um,LVm0)),
-%         %format('DVm1: ~w\n', (Um,DVm1)),
-%         format('DT  : ~d\t', DT),
-%         (  LT == 1, DT == 1             %% undecided
-%         -> (  probabilistic_choice(P,(Um,LVm0),G)
-%            -> format('==> Flip to Light\n'),
-%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-%            ;  format('==> Flip to Dark\n'),
-%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
-%         ;  (  LT == 1, DT == 0          %% light world
-%            -> format('==> Infer to Light\n'),
-%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-%            ;  (  LT == 0, DT == 1       %% dark world
-%               -> format('==> Infer to Dark\n'),
-%                  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
-%               ;  format('==> Restart ...\n\n\n'),
-%                  false ) ) ).           %% inconsistent
