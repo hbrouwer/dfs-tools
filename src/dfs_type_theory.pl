@@ -17,10 +17,11 @@
 
 :- module(dfs_type_theory,
         [
+                op(900,xfx,::),
+
                 dfs_fapply/3,
                 dfs_fapply_deriv/3,
-                dfs_function_vector/3,
-                op(900,xfy,::)
+                dfs_function_vector/3
         ]).
 
 :- use_module(dfs_vector_space).

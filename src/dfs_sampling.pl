@@ -17,11 +17,44 @@
 
 :- module(dfs_sampling,
         [
+                op(900,fx, @+),         %% constant
+                op(900,fx, @*),         %% property
+                op(900,fx, @#),         %% constraint
+                op(900,xfy,<-),         %% probability
+
                 dfs_sample_models/2,
                 dfs_sample_model/1
         ]).
 
 :- use_module(dfs_interpretation).
+
+% constant(-Constant)
+
+constant(C) :- @+ C.
+constant(C) :-
+        current_predicate(user:constant/1),
+        user:constant(C).
+
+% property(-Property)
+
+property(P) :- @* P.
+property(P) :- 
+        current_predicate(user:property/1),
+        user:property(P).
+
+% Constraint(-Constraint)
+
+constraint(C) :- @# C.
+constraint(C) :- 
+        current_predicate(user:constraint/1),
+        user:constraint(C).
+
+% Constraint(+Proposition,-Constraint,-Pr)
+
+probability(P,C,Pr) :- Pr <- (P | C).
+probability(P,C,Pr) :-
+        current_predicate(user:probability/3),
+        user:probability(P,C,Pr).
 
 % dfs_sample_models(+NumModels,-ModelSet)
 
