@@ -30,28 +30,36 @@
 
 % constant(-Constant)
 
-constant(C) :- @+ C.
+constant(C) :-
+        current_predicate((@+)/1),
+        @+ C.
 constant(C) :-
         current_predicate(user:constant/1),
         user:constant(C).
 
 % property(-Property)
 
-property(P) :- @* P.
+property(P) :- 
+        current_predicate((@*)/1),
+        @* P.
 property(P) :- 
         current_predicate(user:property/1),
         user:property(P).
 
 % Constraint(-Constraint)
 
-constraint(C) :- @# C.
+constraint(C) :-
+        current_predicate((@#)/1),
+        @# C.
 constraint(C) :- 
         current_predicate(user:constraint/1),
         user:constraint(C).
 
 % Constraint(+Proposition,-Constraint,-Pr)
 
-probability(P,C,Pr) :- Pr <- (P | C).
+probability(P,C,Pr) :- 
+        current_predicate((<-)/1),
+        Pr <- (P | C).
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
@@ -75,16 +83,16 @@ dfs_sample_model((Um,Vm)) :-
         dfs_init_g((Um,_),G),
         dfs_vector_space:ifunc_inst_constants(Consts,Um,VmCs),
         dfs_constant_instantiations((_,VmCs),CIs),
-        findall(P,user:property(P),Ps),
-        %findall(C,user:constraint(C),Cs1),
-        findall(C,(user:constraint(C0),optimize_q_forall(C0,C)),Cs1),
+        findall(P,property(P),Ps),
+        %findall(C,constraint(C),Cs1),
+        findall(C,(constraint(C0),optimize_q_forall(C0,C)),Cs1),
         flatten(Cs1,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
 
 constants_and_universe(Cs,Um) :-
-        findall(C,user:constant(C),Cs),
+        findall(C,constant(C),Cs),
         length(Cs,N),
         dfs_entities(N,Um).
 
@@ -229,7 +237,7 @@ complement(P,P).
 %  a Model (thus far) and assignment function G.
 
 probabilistic_choice(P,M,G) :-
-        user:probability(P,C,Pr),
+        probability(P,C,Pr),
         dfs_interpret(C,M,G), 
         maybe(Pr).
         
@@ -296,7 +304,7 @@ vis(P,Vs,VIs0,VIs1) :-
 vis_(_,[],VIs,VIs) :- !.
 vis_(P,[V|Vs],VIs0,VIs4) :-
         prop_template(P,V,Templ,X), !,
-        findall(V=X,user:property(Templ),VIs1),
+        findall(V=X,property(Templ),VIs1),
         list_to_ord_set(VIs1,VIs2),
         union(VIs0,VIs2,VIs3),
         vis_(P,Vs,VIs3,VIs4).
@@ -338,7 +346,7 @@ prop_template_([_|As],V,[_|TAs],X) :-
 %         valid_instance_(P,As,Vs).
 % valid_instance_(P,[A|As],Vs) :-
 %         prop_template(P,A,Templ,A),
-%         user:property(Templ), !,
+%         property(Templ), !,
 %         valid_instance_(P,As,Vs).
 
 % %%%%%%%%%%%%%%%
