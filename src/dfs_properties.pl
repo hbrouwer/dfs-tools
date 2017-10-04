@@ -63,9 +63,9 @@ dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
         !, dfs_init_g((Um,Vm),G),
         dfs_interpret(imp(P,Q),(Um,Vm),G),
         dfs_entailment(P,Q,MS).
-dfs_entailment(P,MM) :-
+dfs_entailment(P,Q,MM) :-
         dfs_matrix_to_models(MM,MS),
-        dfs_entailment(P,MS).
+        dfs_entailment(P,Q,MS).
 
 %% dfs_logical_equivalence(+Formula,+ModelSet|+ModelMatrix)
 %
@@ -77,6 +77,6 @@ dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-
         !, dfs_init_g((Um,Vm),G),
         dfs_interpret(iff(P,Q),(Um,Vm),G),
         dfs_logical_equivalence(P,Q,MS).
-dfs_logical_equivalence(P,MM) :-
+dfs_logical_equivalence(P,Q,MM) :-
         dfs_matrix_to_models(MM,MS),
-        dfs_logical_equivalence(P,MS).
+        dfs_logical_equivalence(P,Q,MS).

@@ -22,11 +22,15 @@
                 dfs_write_matrix/2,
                 dfs_read_matrix/2,
                 dfs_pprint_model/1,
-                dfs_pprint_model_matrix/1,
+                dfs_pprint_matrix/1,
                 dfs_pprint_fapply_deriv/1
         ]).
 
 :- use_module(library(clpfd),[transpose/2]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% reading/writing files %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dfs_write_models(+ModelSet,+File)
 
@@ -133,6 +137,10 @@ vector_to_model_vector([],[],[]).
 vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
         vector_to_model_vector(Us,APs,Ts).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% pretty printing %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % dfs_pprint_model(+Model)
 
 dfs_pprint_model((Um,Vm)) :-
@@ -167,21 +175,21 @@ pprint_atoms([A|As]) :-
            ( As \= [] -> format(', ') ; true ) ),
         pprint_atoms(As).
 
-% dfs_pprint_model_matrix(+ModelMatrix)
+% dfs_pprint_matrix(+ModelMatrix)
 
-dfs_pprint_model_matrix(MM) :-
+dfs_pprint_matrix(MM) :-
         transpose(MM,TMM),
         format('\n'),
-        pprint_model_matrix_(TMM),
+        pprint_matrix_(TMM),
         format('\n').
 
-pprint_model_matrix_([]).
-pprint_model_matrix_([DV|DVs]) :-
+pprint_matrix_([]).
+pprint_matrix_([DV|DVs]) :-
         memberchk((P,_),DV),
         format('%%%% '),
         pprint_dfs_vector(DV),
         format(' ~w\n',[P]),
-        pprint_model_matrix_(DVs).
+        pprint_matrix_(DVs).
 
 pprint_dfs_vector([]).
 pprint_dfs_vector([(_,S)|Ts]) :-

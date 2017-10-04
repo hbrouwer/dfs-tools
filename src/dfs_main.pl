@@ -17,6 +17,7 @@
 
 :- module(dfs,
         [
+                dfs_main/0,
                 dfs_models/1
         ]).
 
@@ -28,7 +29,12 @@
 :- reexport(dfs_sampling).
 :- reexport(dfs_vector_space).
 
-% models(-ModelSet)
+:- initialization(dfs_main).
+
+dfs_main :-
+        format('%%%% DFS Tools ~d.~d.~d | http://hbrouwer.github.io/dfs/\n\n',[0,0,1]).
+
+% dfs_models(-ModelSet)
 
 dfs_models(MS) :-
         findall(M,user:model(M),MS).
