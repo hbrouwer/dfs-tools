@@ -86,7 +86,7 @@ dfs_sample_model((Um,Vm)) :-
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
         %findall(C,constraint(C),Cs0),
-        findall(C,(constraint(C0),restrict_q_domains(C0,C)),Cs0),
+        findall(C,(constraint(C0),optmize_constraint(C0,C)),Cs0),
         flatten(Cs0,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
@@ -205,10 +205,22 @@ probabilistic_choice(P,M,G) :-
         probability(P,C,Pr),
         dfs_interpret(C,M,G), 
         maybe(Pr).
-        
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% quantifier optimization %%%%
+%%%% constraint optimization %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+optimize_constraint(and(P0,P1),Ps) :-
+        !,
+        restrict_q_domains(P0,P2),
+        restrict_q_domains(P1,P3),
+        append(P2,P3,Ps).
+optimize_constraint(P,Ps) :-
+        restrict_q_domains(P,Ps).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% quantifier domain restriction %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% restrict_q_domains(+Formula,-OptimizedFormulaSet)
 %
@@ -312,10 +324,10 @@ vis(forall(X,P),Vs,VIs0,VIs1) :-
         (  q_imp_chain(X,forall(X,P))
         -> vis(P,[X|Vs],VIs0,VIs1)
         ;  vis(P,Vs,VIs0,VIs1) ).
-        %vis(P,Vs,VIs1,VIs2).
+        %vis(P,Vs,VIs1,VIs2). %% ???
 vis(top,_,VIs0,VIs0) :- !.
 vis(bottom,_,VIs0,VIs0) :- !.
-vis(P,Vs,VIs0,VIs1) :- 
+vis(P,Vs,VIs0,VIs1) :-
         vis_(P,Vs,VIs0,VIs1).
 
 vis_(_,[],VIs,VIs) :- !.

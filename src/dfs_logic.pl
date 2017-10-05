@@ -70,37 +70,3 @@ complement(forall(X,P0),exists(X,P1)) :-
         !, % ∀x P => ∃x P
         complement(P0,P1).
 complement(P,P).
-
-%%%%%%%%%%%%%%%%%%%%%%
-%%%% experimental %%%%
-%%%%%%%%%%%%%%%%%%%%%%
-
-%% exists_unique(+Var,+Formula,-RewrittenFormula)
-%
-%  ∃!x P(x) => ∃x (P(x) & !∃y(p(y) & !(y=x)))
-
-exists_unique(X,P0,P1) :-
-        exists_unique(X,P0,x1,P1).
-
-exists_unique(X,P0,Y,P2) :-
-        rvar(P0,X,Y,P1),
-        P2 = exists(X,and(P0,neg(exists(Y,and(P1,neg(X=Y)))))).
-
-rvar(neg(P0),     X,Y,neg(P1)     ) :- !, rvar(P0,X,Y,P1).
-rvar(and(P0,Q0),  X,Y,and(P1,Q1)  ) :- !, rvar(P0,X,Y,P1), rvar(Q0,X,Y,Q1).
-rvar(or(P0,Q0),   X,Y,or(P1,Q1)   ) :- !, rvar(P0,X,Y,P1), rvar(Q0,X,Y,Q1).
-rvar(exor(P0,Q0), X,Y,exor(P1,Q1) ) :- !, rvar(P0,X,Y,P1), rvar(Q0,X,Y,Q1).
-rvar(imp(P0,Q0),  X,Y,imp(P1,Q1)  ) :- !, rvar(P0,X,Y,P1), rvar(Q0,X,Y,Q1).
-rvar(iff(P0,Q0),  X,Y,iff(P1,Q1)  ) :- !, rvar(P0,X,Y,P1), rvar(Q0,X,Y,Q1).
-rvar(exists(Z,P0),X,Y,exists(Z,P1)) :- !, rvar(P0,X,Y,P1).
-rvar(forall(Z,P0),X,Y,forall(Z,P1)) :- !, rvar(P0,X,Y,P1).
-rvar(P0,X,Y,P1) :-
-        P0 =.. [Prop|As0],
-        rvar_(As0,X,Y,As1),
-        P1 =.. [Prop|As1].
-
-rvar_([],_,_,[]).
-rvar_([X|As0],X,Y,[Y|As1]) :-
-        !, rvar_(As0,X,Y,As1).
-rvar_([A|As0],X,Y,[A|As1]) :-
-        rvar_(As0,X,Y,As1).
