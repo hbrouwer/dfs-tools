@@ -86,7 +86,7 @@ dfs_sample_model((Um,Vm)) :-
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
         %findall(C,constraint(C),Cs0),
-        findall(C,(constraint(C0),optmize_constraint(C0,C)),Cs0),
+        findall(C,(constraint(C0),optimize_constraint(C0,C)),Cs0),
         flatten(Cs0,Cs),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
