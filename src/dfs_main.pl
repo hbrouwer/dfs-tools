@@ -23,6 +23,7 @@
 
 :- reexport(dfs_interpretation).
 :- reexport(dfs_io).
+:- reexport(dfs_logic).
 :- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
 :- reexport(dfs_type_theory).

@@ -27,6 +27,7 @@
         ]).
 
 :- use_module(dfs_interpretation).
+:- use_module(dfs_logic).
 
 % constant(-Constant)
 
@@ -195,41 +196,6 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
         \+ dfs_interpret(Cc,DM,G),
         satisfies_constraints(Cs,LM,DM,G).
 
-%% complement(?Formula,?ComplementFormula)
-%
-%  Complement of truth/falsehood conditions.
-
-complement(neg(P0),neg(P1)) :-
-        !, % !P => !P
-        complement(P0,P1).
-complement(and(P0,Q0),or(P1,Q1)) :-
-        !, % P & Q => P | Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(or(P0,Q0),and(P1,Q1)) :-
-        !, % P | Q => P & Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(exor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
-        !, % P (+) Q => (P & Q) | (!P & !Q)
-        complement(P0,P1),
-        complement(Q0,Q1). 
-complement(imp(P0,Q0),and(neg(P1),Q1)) :-
-        !, % P -> Q => !P & Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neq(Q1)))) :-
-        !, % P <-> Q => (!P & Q) | (P & !Q)
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(exists(X,P0),forall(X,P1)) :-
-        !, % ∃x P => ∀x P
-        complement(P0,P1).
-complement(forall(X,P0),exists(X,P1)) :-
-        !, % ∀x P => ∃x P
-        complement(P0,P1).
-complement(P,P).
-
 %% probabilistic_choice(?Formula,+Model,+G)
 %
 %  Returns a probabilistically determined truth value for Formula, given
@@ -264,7 +230,7 @@ probabilistic_choice(P,M,G) :-
 %  propositions (properties), however, not all of the entities in the universe
 %  may be possible arguments for p/1 and q/2. Hence, as the implication
 %  conditions the truth value of the statement on p(x), we can optimize the
-%  constraint by rewriting it to set of implications for possible arguments
+%  constraint by rewriting it as a set of implications for possible arguments
 %  for p(x) and q(x,y) only.
 
 restrict_q_domains(P,FIs) :-

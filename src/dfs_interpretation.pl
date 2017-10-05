@@ -28,6 +28,8 @@
                 dfs_interpret/3
         ]).
 
+:- use_module(dfs_logic,[conjoin/2]).
+
 % dfs_variables(-Vars)
 
 dfs_variables([x,y,z|Vars]) :- 
@@ -184,20 +186,6 @@ dfs_interpret(P,M,G) :-
         dfs_term_instantiations(M,G,TIs),
         dfs_terms_to_entities(Args,TIs,Es),
         eval(Pred,Es,M).
-
-%% conjoin(+FormulaSet,-Conjunction)
-
-conjoin([],[]).
-conjoin([P],P) :- !.
-conjoin([P|Ps],and(P,F)) :-
-        conjoin(Ps,F).
-
-%% disjoin(+FormulaSet,-Disjunction)
-
-disjoin([],[]).
-disjoin([P],P) :- !.
-disjoin([P|Ps],or(P,F)) :-
-        disjoin(Ps,F).
 
 %% q_exists(+Var,+Formula,+Model,+G)
 %
