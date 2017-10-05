@@ -324,7 +324,6 @@ vis(forall(X,P),Vs,VIs0,VIs1) :-
         (  q_imp_chain(X,forall(X,P))
         -> vis(P,[X|Vs],VIs0,VIs1)
         ;  vis(P,Vs,VIs0,VIs1) ).
-        %vis(P,Vs,VIs1,VIs2). %% ???
 vis(top,_,VIs0,VIs0) :- !.
 vis(bottom,_,VIs0,VIs0) :- !.
 vis(P,Vs,VIs0,VIs1) :-
