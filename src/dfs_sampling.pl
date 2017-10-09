@@ -85,10 +85,10 @@ dfs_sample_model((Um,Vm)) :-
         dfs_vector_space:ifunc_inst_constants(Consts,Um,VmCs),
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
-        %findall(C,constraint(C),Cs0),
-        findall(C,(constraint(C0),optimize_constraint(C0,C)),Cs0),
-        flatten(Cs0,Cs),
-        dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
+        findall(C,constraint(C),Cs),
+        optimize_constraints(Cs,OCs),
+        write(OCs), nl,
+        dfs_sample_properties(Ps,Um,G,CIs,OCs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
 
@@ -210,13 +210,63 @@ probabilistic_choice(P,M,G) :-
 %%%% constraint optimization %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-optimize_constraint(and(P0,P1),Ps) :-
-        !,
-        restrict_q_domains(P0,P2),
-        restrict_q_domains(P1,P3),
-        append(P2,P3,Ps).
+% optimize_constraints(+Constraints,-OptimizedConstraints)
+
+optimize_constraints(Cs,OCs) :-
+        optimize_constraints_(Cs,[],OCs0),
+        reverse(OCs0,OCs).
+
+optimize_constraints_([],OCs,OCs).
+optimize_constraints_([C|Cs],OCsAcc,OCs) :-
+        optimize_constraint(C,OC),
+        append(OC,OCsAcc,OCsAcc0),
+        optimize_constraints_(Cs,OCsAcc0,OCs).
+
+%% optimize_constraint(+Formula,-FormulaSet)
+%
+%  TODO: Document this.
+
+optimize_constraint(neg(neg(P)),Ps) :-
+        !, % !!P => P
+        optimize_constraint(P,Ps).
+optimize_constraint(or(and(P,Q),and(P,Z)),Ps) :-
+        !, % (P & Q) | (P & Z) => P & (Q | Z)
+        optimize_constraint(and(P,or(Q,Z)),Ps).
+optimize_constraint(neg(or(P,Q)),Ps) :-
+        !, % !(P | Q) => !Q & !P 
+        optimize_constraint(and(neg(P),neg(Q)),Ps).
+optimize_constraint(neg(forall(X,P)),Ps) :-
+        !, % !∀x P => ∃x !P
+        optimize_constraint(exists(X,neg(P)),Ps).
+optimize_constraint(exists(X,and(P,Q)),Ps) :-
+        !, % ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
+           % ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
+        vis(P,[],[],VIs),
+        (  memberchk(X=_,VIs)   %% assume x is free in P or Q
+        -> optimize_constraint(and(P,exists(X,Q)),Ps)
+        ;  optimize_constraint(and(Q,exists(X,P)),Ps) ).
+optimize_constraint(forall(X,and(P,Q)),Ps) :-
+        !, % ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
+           % ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
+        vis(P,[],[],VIs),
+        (  memberchk(X=_,VIs)   %% assume x is free in P or Q
+        -> optimize_constraint(and(P,forall(X,Q)),Ps)
+        ;  optimize_constraint(and(Q,forall(X,P)),Ps) ).
+optimize_constraint(and(P,Q),Ps) :-
+        !, % P & Q => {P,Q}
+        optimize_constraint(P,P0),
+        optimize_constraint(Q,Q0),
+        append(P0,Q0,Ps).
 optimize_constraint(P,Ps) :-
         restrict_q_domains(P,Ps).
+
+% optimize_constraint(and(P0,P1),Ps) :-
+%         !,
+%         restrict_q_domains(P0,P2),
+%         restrict_q_domains(P1,P3),
+%         append(P2,P3,Ps).
+% optimize_constraint(P,Ps) :-
+%         restrict_q_domains(P,Ps).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% quantifier domain restriction %%%%
