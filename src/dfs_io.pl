@@ -150,7 +150,10 @@ dfs_pprint_formula(P) :-
         format_formula(P,F),
         format('\n~w\n\n',[F]).
 
-% format_formula(+Formula,-FormattedFormula)
+%% format_formula(+Formula,-FormattedFormula)
+%
+%  TODO: format(atom(A),_,_) only works with SWI prolog. Need to adapt to
+%  ISO prolog some day.
 
 format_formula(T1=T2,A) :-
         !, % t1 = t2
@@ -317,7 +320,6 @@ dfs_pprint_constraints_([C|Cs],orig) :-
         format('%%%% ~a\n',[F]),
         dfs_sampling:optimize_constraint(C,Cs0),
         format('%%%%\n'),
-        format('%%%%\n'),
         dfs_pprint_constraints_(Cs0,optm),
         ( Cs \= [] -> format('%%%%\n') ; true ),
         dfs_pprint_constraints_(Cs,orig).
@@ -327,5 +329,5 @@ dfs_pprint_constraints_([C|Cs],optm) :-
         format_formula(Cc,Fc),
         format('%%%% \t ~a\n',[F]),
         format('%%%% \t\t => ~a\n',[Fc]),
-        format('%%%%\n'),
+        ( Cs \= [] -> format('%%%%\n') ; true ),
         dfs_pprint_constraints_(Cs,optm).
