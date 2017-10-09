@@ -243,14 +243,14 @@ optimize_constraint(exists(X,and(P,Q)),Ps) :-
         !, % ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
            % ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
         vis(P,[],[],VIs),
-        (  memberchk(X=_,VIs)   %% assume x is free in P or Q
+        (  memberchk(X=_,VIs)   %% assume x is free in either P or Q
         -> optimize_constraint(and(P,exists(X,Q)),Ps)
         ;  optimize_constraint(and(Q,exists(X,P)),Ps) ).
 optimize_constraint(forall(X,and(P,Q)),Ps) :-
         !, % ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
            % ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
         vis(P,[],[],VIs),
-        (  memberchk(X=_,VIs)   %% assume x is free in P or Q
+        (  memberchk(X=_,VIs)   %% assume x is free in either P or Q
         -> optimize_constraint(and(P,forall(X,Q)),Ps)
         ;  optimize_constraint(and(Q,forall(X,P)),Ps) ).
 optimize_constraint(and(P,Q),Ps) :-
