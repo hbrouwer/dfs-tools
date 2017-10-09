@@ -117,16 +117,18 @@ constants_and_universe(Cs,Um) :-
 %
 %  (2) LT = true iff for each constraint c:
 %       
-%       -- c is satisfied by LVm';
-%       -- or if the complement of c is not satisfied by DVm.
+%       -- c is satisfied by LVm' (-> c is true);
+%       -- or if the complement of c is not satisfied by DVm
+%          (-> c is not untrue).
 %
 %  (3) Add p to DVm, yielding DVm';
 % 
 %  (4) DT = true iff for each constraint c:
 %       
-%       -- c is satisfied by LVm;
+%       -- c is satisfied by LVm (-> c is true);
 %       -- or if the complement of c is not satisfied by DVm'.
-%   
+%          (-> c is not untrue).
+%
 %  (5) Depending on the outcome of (2) and (4):
 %
 %       -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
