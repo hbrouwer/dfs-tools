@@ -21,10 +21,12 @@
                 dfs_read_models/2,
                 dfs_write_matrix/2,
                 dfs_read_matrix/2,
+                dfs_pprint_formula/1,
                 dfs_pprint_model/1,
                 dfs_pprint_propositions/1,
                 dfs_pprint_matrix/1,
-                dfs_pprint_fapply_deriv/1
+                dfs_pprint_fapply_deriv/1,
+                dfs_pprint_constraints/0
         ]).
 
 :- use_module(library(clpfd),[transpose/2]).
@@ -142,6 +144,63 @@ vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
 %%%% pretty printing %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
+% dfs_pprint_formula(+Formula)
+
+dfs_pprint_formula(P) :-
+        format_formula(P,F),
+        format('\n~w\n\n',[F]).
+
+% format_formula(+Formula,-FormattedFormula)
+
+format_formula(T1=T2,A) :-
+        !, % t1 = t2
+        format(atom(A),'(~w=~w)',[T1,T2]).
+format_formula(neg(P),A1) :-
+        !, % !P,
+        format_formula(P,A0),
+        format(atom(A1),'!~a',[A0]).
+format_formula(and(P,Q),A2) :-
+        !, % P & Q,
+        format_formula(P,A0),
+        format_formula(Q,A1),
+        format(atom(A2),'(~a & ~a)',[A0,A1]).
+format_formula(or(P,Q),A2) :-
+        !, % P | Q,
+        format_formula(P,A0),
+        format_formula(Q,A1),
+        format(atom(A2),'(~a | ~a)',[A0,A1]).
+format_formula(exor(P,Q),A2) :-
+        !, % P (+) Q,
+        format_formula(P,A0),
+        format_formula(Q,A1),
+        format(atom(A2),'(~a (+) ~a)',[A0,A1]).
+format_formula(imp(P,Q),A2) :-
+        !, % P -> Q,
+        format_formula(P,A0),
+        format_formula(Q,A1),
+        format(atom(A2),'(~a -> ~a)',[A0,A1]).
+format_formula(iff(P,Q),A2) :-
+        !, % P <-> Q,
+        format_formula(P,A0),
+        format_formula(Q,A1),
+        format(atom(A2),'(~a <-> ~a)',[A0,A1]).
+format_formula(exists(X,P),A1) :-
+        !, % ∃x P
+        format_formula(P,A0),
+        format(atom(A1),'∃~w (~a)',[X,A0]).
+format_formula(forall(X,P),A1) :-
+        !, % ∀x P
+        format_formula(P,A0),
+        format(atom(A1),'∀~w (~a)',[X,A0]).
+format_formula(top,A) :-
+        !, % ⊤
+        format(atom(A),'⊤').
+format_formula(bottom,A) :-
+        !, % ⊥
+        format(atom(A),'⊥').
+format_formula(P,A) :-
+        format(atom(A),'~w',P).
+
 % dfs_pprint_model(+Model)
 
 dfs_pprint_model((Um,Vm)) :-
@@ -243,3 +302,30 @@ dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
         foreach(member(U,V),format('~2f ',[U])),
         format('~w\n',[F]),
         dfs_pprint_fapply_deriv_(Ts).
+
+% dfs_pprint_constraints/0
+
+dfs_pprint_constraints :-
+        findall(C,dfs_sampling:constraint(C),Cs),
+        format('\n'),
+        dfs_pprint_constraints_(Cs,orig),
+        format('\n').
+
+dfs_pprint_constraints_([],_).
+dfs_pprint_constraints_([C|Cs],orig) :-
+        !, format_formula(C,F),
+        format('%%%% ~a\n',[F]),
+        dfs_sampling:optimize_constraint(C,Cs0),
+        format('%%%%\n'),
+        format('%%%%\n'),
+        dfs_pprint_constraints_(Cs0,optm),
+        ( Cs \= [] -> format('%%%%\n') ; true ),
+        dfs_pprint_constraints_(Cs,orig).
+dfs_pprint_constraints_([C|Cs],optm) :-
+        complement(C,Cc),
+        format_formula(C,F),
+        format_formula(Cc,Fc),
+        format('%%%% \t ~a\n',[F]),
+        format('%%%% \t\t => ~a\n',[Fc]),
+        format('%%%%\n'),
+        dfs_pprint_constraints_(Cs,optm).
