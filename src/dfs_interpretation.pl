@@ -71,9 +71,9 @@ dfs_constant_instantiations((_,Vm),Cs) :-
 %
 %  Returns all constants and variable instantiations.
 
-dfs_term_instantiations(M,G,Ts) :-
+dfs_term_instantiations(M,G,TIs) :-
         dfs_constant_instantiations(M,Cs),
-        append(Cs,G,Ts).
+        append(Cs,G,TIs).
 
 %% dfs_init_g(+Model,-G)
 %

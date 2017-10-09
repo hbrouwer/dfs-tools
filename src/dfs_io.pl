@@ -22,6 +22,7 @@
                 dfs_write_matrix/2,
                 dfs_read_matrix/2,
                 dfs_pprint_model/1,
+                dfs_pprint_propositions/1,
                 dfs_pprint_matrix/1,
                 dfs_pprint_fapply_deriv/1
         ]).
@@ -174,6 +175,38 @@ pprint_atoms([A|As]) :-
            format(' >'),
            ( As \= [] -> format(', ') ; true ) ),
         pprint_atoms(As).
+
+% dfs_pprint_propositions(+Model)
+
+dfs_pprint_propositions((Um,Vm)) :-
+        dfs_init_g((Um,Vm),G),
+        dfs_term_instantiations((Um,Vm),G,TIs),
+        format('\n'),
+        dfs_pprint_propositions_(Vm,TIs),
+        format('\n').
+
+dfs_pprint_propositions_([],_).
+dfs_pprint_propositions_([P|Ps],TIs) :-
+        P =.. [Pred|[Args]],
+        Pred \= (=), !,
+        format('%%%% ~a: { ',[Pred]),
+        pprint_terms(Args,TIs),
+        format(' }\n'),
+        dfs_pprint_propositions_(Ps,TIs).
+dfs_pprint_propositions_([_|Ps],TIs) :-
+        dfs_pprint_propositions_(Ps,TIs).
+
+pprint_terms([],_).
+pprint_terms([A|As],TIs) :-
+        (  atom(A)
+        -> dfs_terms_to_entities([T],TIs,[A]),
+           format('~a',[T]),
+           ( As \= [] -> format(', ') ; true )
+        ;  format('< '),
+           pprint_terms(A,TIs),
+           format(' >'),
+           ( As \= [] -> format(', ') ; true ) ),
+        pprint_terms(As,TIs).
 
 % dfs_pprint_matrix(+ModelMatrix)
 
