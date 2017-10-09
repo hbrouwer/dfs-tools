@@ -87,7 +87,6 @@ dfs_sample_model((Um,Vm)) :-
         findall(P,property(P),Ps),
         findall(C,constraint(C),Cs),
         optimize_constraints(Cs,OCs),
-        write(OCs), nl,
         dfs_sample_properties(Ps,Um,G,CIs,OCs,VmCs,Vm).
 
 % constants_and_universe(-Constants,-Entities)
