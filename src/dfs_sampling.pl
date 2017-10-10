@@ -146,25 +146,6 @@ dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
 
-% dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
-%         dfs_interpret(Cs,(Um,Vm),G).
-% dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
-%         P =.. [Prop|Args],
-%         dfs_terms_to_entities(Args,CIs,Es),
-%         add_property(LVm0,Prop,Es,LVm1),
-%         ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
-%         add_property(DVm0,Prop,Es,DVm1),
-%         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
-%         (  LT == 1, DT == 1             %% undecided
-%         -> (  probabilistic_choice(P,(Um,LVm0),G)
-%            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-%            ;  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
-%         ;  (  LT == 1, DT == 0          %% light world
-%            -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-%            ;  (  LT == 0, DT == 1       %% dark world
-%               -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
-%               ;  false ) ) ).           %% inconsistent
-
 dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
         dfs_interpret(Cs,(Um,Vm),G).
 dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
@@ -176,22 +157,45 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
         -> (  probabilistic_choice(P,(Um,LVm0),G)
-           -> format('%%%% (flip to light ): ~w\n',[P]),
-              dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-           ;  format('%%%% (flip to dark  ): ~w\n',[P]),
-              dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
+           -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+           ;  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
         ;  (  LT == 1, DT == 0          %% light world
-           -> format('%%%% [infer to light]: ~w\n',[P]),
-              dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+           -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
            ;  (  LT == 0, DT == 1       %% dark world
-              -> format('%%%% [infer to dark ]: ~w\n',[P]),
-                 dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
-              ;  format('%%%% {inconsistency }: ~w\n',[P]),
-                 format('\n%%%% LVm1:\n'),
-                 dfs_pprint_propositions((Um,LVm1)),
-                 format('%%%% DVm1:\n'),
-                 dfs_pprint_propositions((Um,DVm1)),
-                 false ) ) ).           %% inconsistent
+              -> dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
+              ;  false ) ) ).           %% inconsistent
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%% for debugging %%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+% dfs_sample_properties_([],Um,G,_,Cs,Vm,_,Vm) :- 
+%         dfs_interpret(Cs,(Um,Vm),G).
+% dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
+%         P =.. [Prop|Args],
+%         dfs_terms_to_entities(Args,CIs,Es),
+%         add_property(LVm0,Prop,Es,LVm1),
+%         ( satisfies_constraints(Cs,(Um,LVm1),(Um,DVm0),G) -> LT = 1 ; LT = 0 ),     %% light world
+%         add_property(DVm0,Prop,Es,DVm1),
+%         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
+%         (  LT == 1, DT == 1             %% undecided
+%         -> (  probabilistic_choice(P,(Um,LVm0),G)
+%            -> format('%%%% (flip to light ): ~w\n',[P]),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+%            ;  format('%%%% (flip to dark  ): ~w\n',[P]),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
+%         ;  (  LT == 1, DT == 0          %% light world
+%            -> format('%%%% [infer to light]: ~w\n',[P]),
+%               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+%            ;  (  LT == 0, DT == 1       %% dark world
+%               -> format('%%%% [infer to dark ]: ~w\n',[P]),
+%                  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
+%               ;  format('%%%% {inconsistency }: ~w\n',[P]),
+%                  format('\n%%%% LVm1:\n'),
+%                  dfs_pprint_propositions((Um,LVm1)),
+%                  format('%%%% DVm1:\n'),
+%                  dfs_pprint_propositions((Um,DVm1)),
+%                  false ) ) ).           %% inconsistent
 
 %% add_property(+IFunc,+Property,+Entities,-IFunc)
 %
