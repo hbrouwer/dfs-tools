@@ -321,7 +321,7 @@ dfs_pprint_constraints_([C|Cs],orig) :-
         dfs_sampling:optimize_constraint(C,Cs0),
         format('%%%%\n'),
         dfs_pprint_constraints_(Cs0,optm),
-        ( Cs \= [] -> format('%%%%\n') ; true ),
+        ( Cs \= [] -> format('%%%%\n%%%%\n') ; true ),
         dfs_pprint_constraints_(Cs,orig).
 dfs_pprint_constraints_([C|Cs],optm) :-
         complement(C,Cc),

@@ -253,20 +253,43 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 
 %% optimize_constraint(+Formula,-FormulaSet)
 %
-%  TODO: Document this.
+%  Optimizes a Formula for incremental, inference-driven sampling, yielding a
+%  set of optimized formulas. A number of different optimizations stragegies
+%  are employed: 
+%
+%  1) Simplification:
+%  -- double negation elimination: !!P => P
+%
+%  2) Quantifier transformation:
+%  -- negated univerals quantification: !∀x P => ∃x !P
+%
+%  3) Conjunct isolation:
+%  -- using & and | distributivity: (P & Q) | (P & Z) => P & (Q | Z)
+%  -- using de Morgan's laws: % !(P | Q) => !Q & !P 
+%  -- using existential quantifier scoping:
+%       ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
+%       ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
+%  -- using universal quantifier scoping:
+%       ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
+%       ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
+%
+%  3) Conjunct splitting:
+%  -- transform P & Q into a set {P,Q}
+%
+%  4) Quantifier domain restrictions (see below).
 
 optimize_constraint(neg(neg(P)),Ps) :-
         !, % !!P => P
         optimize_constraint(P,Ps).
+optimize_constraint(neg(forall(X,P)),Ps) :-
+        !, % !∀x P => ∃x !P
+        optimize_constraint(exists(X,neg(P)),Ps).
 optimize_constraint(or(and(P,Q),and(P,Z)),Ps) :-
         !, % (P & Q) | (P & Z) => P & (Q | Z)
         optimize_constraint(and(P,or(Q,Z)),Ps).
 optimize_constraint(neg(or(P,Q)),Ps) :-
         !, % !(P | Q) => !Q & !P 
         optimize_constraint(and(neg(P),neg(Q)),Ps).
-optimize_constraint(neg(forall(X,P)),Ps) :-
-        !, % !∀x P => ∃x !P
-        optimize_constraint(exists(X,neg(P)),Ps).
 optimize_constraint(exists(X,and(P,Q)),Ps) :-
         !, % ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
            % ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
@@ -339,14 +362,11 @@ fi(or(P0,Q0),   VIs,or(P1,Q1)   ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
-fi(exists(X,P0),VIs,P1) :-
-        memberchk(X=_,VIs), !,
-        findall(FI,
-                ( select_vi(X,VIs,VIs0),
-                  fi(P0,VIs0,FI)),
-                FIs ),
+fi(exists(X,P0),VIs,P1) :-                                      %% +optimization
+        %memberchk(X=_,VIs), !,
+        !, findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
         dfs_interpretation:disjoin(FIs,P1).
-%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).
+%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         %% -optimization
 fi(forall(X,P0),VIs,P1) :-
         q_imp_chain(X,forall(X,P0)), !,
         select_vi(X,VIs,VIs0),
@@ -396,8 +416,8 @@ vis(or(P,Q),    Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(exor(P,Q),  Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
-vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).
-%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
+vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).    %% +optimization
+%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).       %% -optimization
 vis(forall(X,P),Vs,VIs0,VIs1) :-
         !,
         (  q_imp_chain(X,forall(X,P))
