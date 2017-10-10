@@ -254,7 +254,7 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 %% optimize_constraint(+Formula,-FormulaSet)
 %
 %  Optimizes a Formula for incremental, inference-driven sampling, yielding a
-%  set of optimized formulas. A number of different optimizations stragegies
+%  set of optimized formulas. A number of different optimization stragegies
 %  are employed: 
 %
 %  1) Simplification:
