@@ -261,11 +261,11 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 %  -- double negation elimination: !!P => P
 %
 %  2) Quantifier transformation:
-%  -- negated univerals quantification: !∀x P => ∃x !P
+%  -- negated univeral quantification: !∀x P => ∃x !P
 %
 %  3) Conjunct isolation:
 %  -- using & and | distributivity: (P & Q) | (P & Z) => P & (Q | Z)
-%  -- using de Morgan's laws: % !(P | Q) => !Q & !P 
+%  -- using de Morgan's laws: !(P | Q) => !Q & !P 
 %  -- using existential quantifier scoping:
 %       ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
 %       ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
@@ -276,7 +276,7 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 %  3) Conjunct splitting:
 %  -- transform P & Q into a set {P,Q}
 %
-%  4) Quantifier domain restrictions (see below).
+%  4) Quantifier domain restriction (see below).
 
 optimize_constraint(neg(neg(P)),Ps) :-
         !, % !!P => P
