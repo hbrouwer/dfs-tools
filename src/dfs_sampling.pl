@@ -26,10 +26,7 @@
                 dfs_sample_model/1
         ]).
 
-:- use_module(library(debug)).
-
-:- use_module(dfs_interpretation).
-:- use_module(dfs_logic).
+:- use_module(library(debug)). % [dfs_sampling]
 
 % constant(-Constant)
 

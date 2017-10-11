@@ -23,9 +23,6 @@
                 dfs_logical_equivalence/3
         ]).
 
-:- use_module(dfs_interpretation).
-:- use_module(dfs_vector_space).
-
 %% dfs_validity(+Formula,+ModelSet|+ModelMatrix)
 %
 %  A formula P is valid (|= P) iff P is true (not false) in all models

@@ -26,8 +26,6 @@
                 dfs_entropy/3
         ]).
 
-:- use_module(dfs_vector_space).
-
 %% dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
 %
 %  Pr(P) = |{i|v_i(P) = 1}| / |M|

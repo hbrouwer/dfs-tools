@@ -24,8 +24,6 @@
                 dfs_vector/3
         ]).
 
-:- use_module(dfs_interpretation).
-
 % atomic_propositions(+ModelSet,-AtomicProps)
 
 atomic_propositions(MS,APs) :-

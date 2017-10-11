@@ -24,8 +24,6 @@
                 dfs_function_vector/3
         ]).
 
-:- use_module(dfs_vector_space).
-
 % dfs_fapply(+Function,+Argument,-Function)
 
 dfs_fapply(F0::(T1,T2),F1::T1,F2::T2) :-

@@ -28,8 +28,6 @@
                 dfs_interpret/3
         ]).
 
-:- use_module(dfs_logic,[conjoin/2]).
-
 % dfs_variables(-Vars)
 
 dfs_variables([x,y,z|Vars]) :- 
