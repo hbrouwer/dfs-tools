@@ -22,6 +22,8 @@
                 op(900,fx, @#),         %% constraint
                 op(900,xfy,<-),         %% probability
 
+                op(900,xfy,::=>),         %% probability
+
                 dfs_sample_models/2,
                 dfs_sample_model/1
         ]).
@@ -226,7 +228,8 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
 
 probabilistic_choice(P,M,G) :-
         probability(P,C,Pr),
-        dfs_interpret(C,M,G), 
+        dfs_interpret(C,M,G),
+        !,
         maybe(Pr).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
