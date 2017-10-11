@@ -21,8 +21,7 @@
                 op(900,fx, @*),         %% property
                 op(900,fx, @#),         %% constraint
                 op(900,xfy,<-),         %% probability
-
-                op(900,xfy,::=>),         %% probability
+                op(900,fx, @~),         %% sentence
 
                 dfs_sample_models/2,
                 dfs_sample_model/1
@@ -48,7 +47,7 @@ property(P) :-
         current_predicate(user:property/1),
         user:property(P).
 
-% Constraint(-Constraint)
+% constraint(-Constraint)
 
 constraint(C) :-
         current_predicate((@#)/1),
@@ -57,7 +56,7 @@ constraint(C) :-
         current_predicate(user:constraint/1),
         user:constraint(C).
 
-% Constraint(+Proposition,-Constraint,-Pr)
+% probability(+Proposition,-Constraint,-Pr)
 
 probability(P,C,Pr) :- 
         current_predicate((<-)/2),
@@ -65,6 +64,17 @@ probability(P,C,Pr) :-
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
+
+%% sentence(-Semantics,?Sentence,?Rest)
+%
+%  Note: Assumes @~/3 and sentence/3 to be top-level DCG rules.
+
+sentence(P,S,R) :-
+        current_predicate((@~)/3),
+        @~(P,S,R).
+sentence(P,S,R) :-
+        current_predicate(user:sentence/3),
+        user:sentence(P,S,R).
 
 % dfs_sample_models(+NumModels,-ModelSet)
 
