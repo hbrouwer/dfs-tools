@@ -319,14 +319,6 @@ optimize_constraint(and(P,Q),Ps) :-
 optimize_constraint(P,Ps) :-
         restrict_q_domains(P,Ps).
 
-% optimize_constraint(and(P0,P1),Ps) :-
-%         !,
-%         restrict_q_domains(P0,P2),
-%         restrict_q_domains(P1,P3),
-%         append(P2,P3,Ps).
-% optimize_constraint(P,Ps) :-
-%         restrict_q_domains(P,Ps).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% quantifier domain restriction %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
