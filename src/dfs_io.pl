@@ -31,9 +31,9 @@
 
 :- use_module(library(clpfd),[transpose/2]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% reading/writing files %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% reading/writing models %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dfs_write_models(+ModelSet,+File)
 
@@ -63,6 +63,10 @@ dfs_read_models_(Stream,MS) :-
            Term =.. [model|[M]],
            MS = [M|MSAcc]
         ;  MS = [] ).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% reading/writing matrices %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dfs_write_matrix(+ModelMatrix,+File)
 
