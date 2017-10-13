@@ -18,12 +18,17 @@
 :- module(dfs,
         [
                 dfs_main/0,
-                dfs_models/1
+                dfs_models/1,
+
+                dfs_version_major/1,
+                dfs_version_minor/1,
+                dfs_version_patch/1
         ]).
 
 :- reexport(dfs_interpretation).
 :- reexport(dfs_io).
 :- reexport(dfs_logic).
+:- reexport(dfs_models).
 :- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
 :- reexport(dfs_type_theory).
@@ -33,10 +38,12 @@
 
 :- initialization(dfs_main).
 
+dfs_version_major(0).
+dfs_version_minor(0).
+dfs_version_patch(1).
+
 dfs_main :-
-        format('%%%% DFS Tools ~d.~d.~d | http://hbrouwer.github.io/dfs/\n\n',[0,0,1]).
-
-% dfs_models(-ModelSet)
-
-dfs_models(MS) :-
-        findall(M,user:model(M),MS).
+        dfs_version_major(Vmaj),
+        dfs_version_minor(Vmin),
+        dfs_version_patch(Vpat),
+        format('%%%% DFS Tools ~d.~d.~d | http://hbrouwer.github.io/dfs/\n\n',[Vmaj,Vmin,Vpat]).
