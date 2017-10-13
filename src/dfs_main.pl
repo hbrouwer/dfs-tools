@@ -28,6 +28,7 @@
 :- reexport(dfs_probabilities).
 :- reexport(dfs_type_theory).
 :- reexport(dfs_sampling).
+:- reexport(dfs_sentences).
 :- reexport(dfs_vector_space).
 
 :- initialization(dfs_main).

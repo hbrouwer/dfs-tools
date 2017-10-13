@@ -21,7 +21,6 @@
                 op(900,fx, @*),         %% property
                 op(900,fx, @#),         %% constraint
                 op(900,xfy,<-),         %% probability
-                op(900,fx, @~),         %% sentence
 
                 dfs_sample_models/2,
                 dfs_sample_model/1
@@ -64,17 +63,6 @@ probability(P,C,Pr) :-
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
-
-%% sentence(-Semantics,?Sentence,?Rest)
-%
-%  Note: Assumes @~/3 and sentence/3 to be top-level DCG rules.
-
-sentence(P,S,R) :-
-        current_predicate((@~)/3),
-        @~(P,S,R).
-sentence(P,S,R) :-
-        current_predicate(user:sentence/3),
-        user:sentence(P,S,R).
 
 % dfs_sample_models(+NumModels,-ModelSet)
 
@@ -362,7 +350,6 @@ fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exists(X,P0),VIs,P1) :-                                      %% +optimization
-        %memberchk(X=_,VIs), !,
         !, findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
         dfs_interpretation:disjoin(FIs,P1).
 %fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         %% -optimization
