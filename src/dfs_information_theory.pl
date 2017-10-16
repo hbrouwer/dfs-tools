@@ -94,9 +94,9 @@ dfs_delta_entropy(P,Q,Ms,DH) :-
         dfs_entropy(Q,Ms,HQ),
         DH is HQ - HP.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% experimental stuff %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
+%%%% sentences %%%%
+%%%%%%%%%%%%%%%%%%%
 
 % dfs_syntactic_surprisal(+Word,+Prefix,-Surprisal)
 
@@ -161,7 +161,7 @@ dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
 %%%% type theory %%%%
 %%%%%%%%%%%%%%%%%%%%%
 
-% dfs_fapply_surprisal(+Formula0,+Formula1,+ModelSet|+ModelMatrix,-Surprisal)
+% dfs_fapply_surprisal(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Surprisal)
 
 dfs_fapply_surprisal(P,Q,[(Um,Vm)|MS],S) :-
         !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
@@ -181,7 +181,7 @@ dfs_fapply_entropy(P,MM,H) :-
         dfs_function_vector(P,MM,VP),
         dfs_entropy(VP,H).
 
-% dfs_fapply_delta_entropy(+Formula0,+Formula1,+ModelSet|+ModelMatrix,-DeltaEntropy)
+% dfs_fapply_delta_entropy(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-DeltaEntropy)
 
 dfs_fapply_delta_entropy(P,Q,[(Um,Vm)|MS],DH) :-
         !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
