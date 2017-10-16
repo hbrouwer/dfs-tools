@@ -30,7 +30,7 @@
                 dfs_semantic_entropy/3,
                 dfs_semantic_delta_entropy/4,
                 dfs_fapply_surprisal/4,
-                dfs_fapply_entropy/3
+                dfs_fapply_entropy/3,
                 dfs_fapply_delta_entropy/4
         ]).
 
