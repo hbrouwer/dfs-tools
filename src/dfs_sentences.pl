@@ -22,7 +22,10 @@
                 dfs_sentences/1,
                 dfs_words/1,
                 dfs_word_vectors/2,
-                dfs_map_words_onto_semantics/4
+                dfs_map_words_onto_semantics/4,
+                dfs_prefix_continuations/2,
+                dfs_prefix_frequency/2,
+                dfs_sentence_frequency/2
         ]).
 
 %% sentence(?Semantics,?Sentence,?Rest)
@@ -89,3 +92,17 @@ dfs_map_words_onto_semantics_([],_,_,[]).
 dfs_map_words_onto_semantics_([W|Ws],WVs,PV,[(W,WV,PV)|WPMs]) :-
         memberchk((W,WV),WVs),
         dfs_map_words_onto_semantics_(Ws,WVs,PV,WPMs).
+
+% dfs_prefix_continuations(+Prefix,-[(Sem,Sen)])
+
+dfs_prefix_continuations(Prefix,Cs) :-
+        append(Prefix,_,Templ),
+        findall((Templ,P),sentence(P,Templ,[]),Cs).
+
+dfs_prefix_frequency(Prefix,F) :-
+        dfs_prefix_continuations(Prefix,Cs),
+        length(Cs,F).
+
+dfs_sentence_frequency(Prefix,F) :-
+        findall(Prefix,sentence(_,Prefix,[]),Sens),
+        length(Sens,F).

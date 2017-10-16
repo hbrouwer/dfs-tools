@@ -17,102 +17,93 @@
 
 :- module(dfs_probabilities,
         [
+                dfs_prior_probability/2,
                 dfs_prior_probability/3,
+                dfs_conj_probability/3,
                 dfs_conj_probability/4,
+                dfs_cond_probability/3,
                 dfs_cond_probability/4,
-                dfs_inference_score/4,
-                dfs_surprisal/4,
-                dfs_delta_entropy/4,
-                dfs_entropy/3
+                dfs_inference_score/3,
+                dfs_inference_score/4
         ]).
 
-%% dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
+%% dfs_prior_probability(+Vector,-PriorPr)
+%  dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
 %
 %  Pr(P) = |{i|v_i(P) = 1}| / |M|
 
-dfs_prior_probability(P,Ms,Pr) :-
-        dfs_vector(P,Ms,V),
+dfs_prior_probability(V,Pr) :-
         sum_list(V,S),
         length(V,L),
         Pr is S / L.
 
-%% dfs_prior_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-ConjPr)
+dfs_prior_probability(P,Ms,Pr) :-
+        dfs_vector(P,Ms,V),
+        dfs_prior_probability(V,Pr).
+
+%% dfs_conj_probability(+Vector1,Vector2,-ConjPr)
+%  dfs_conj_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-ConjPr)
 %
 %            | Pr(P)    iff P = Q
 %  Pr(P&Q) = |
 %            | Pr(P&Q)  otherwise
+
+dfs_conj_probability(V,V,Pr) :-         %% V0 = V1
+        !, dfs_prior_probability(V,Pr).
+dfs_conj_probability(V0,V1,Pr) :-       %% V0 != V!
+        dfs_conj_probability_(V0,V1,V2),
+        dfs_prior_probability(V2,Pr).
 
 dfs_conj_probability(P,P,Ms,Pr) :-      %% P = Q
         !, dfs_prior_probability(P,Ms,Pr).
 dfs_conj_probability(P,Q,Ms,Pr) :-      %% P != Q
         dfs_prior_probability(and(P,Q),Ms,Pr).
 
-%% dfs_prior_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-CondPr)
+dfs_conj_probability_([],[],[]).
+dfs_conj_probability_([U0|U0s],[U1|U1s],[U2|U2s]) :-
+        U2 is U0 * U1,
+        dfs_conj_probability_(U0s,U1s,U2s).
+
+%% dfs_cond_probability(+Vector1,Vector2,-ConjPr)
+%  dfs_cond_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-CondPr)
 %
 %  Pr(P|Q) = Pr(P&Q) / Pr(P)
+
+dfs_cond_probability(V0,V1,Pr) :-
+        dfs_conj_probability(V0,V1,PrV0V1),
+        dfs_prior_probability(V1,PrV0),
+        dfs_cond_probability_(PrV0V1,PrV0,Pr).
 
 dfs_cond_probability(P,Q,Ms,Pr) :-
         dfs_conj_probability(P,Q,Ms,PrPQ),
         dfs_prior_probability(Q,Ms,PrP),
+        dfs_cond_probability_(PrPQ,PrP,Pr).
+
+dfs_cond_probability_(PrPQ,PrP,Pr) :-
         (  PrP > 0
         -> Pr is PrPQ / PrP
         ;  Pr is nan ).
 
-%% dfs_inference_score(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Score)
+%% dfs_inference_score(+Vector1,+Vector2,-Score)
+%  dfs_inference_score(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Score)
 %
 %                   | (Pr(P&Q) - P(Q)) / (1 - Pr(Q))    iff Pr(P&Q) > Pr(Q)  
 %  inference(P,Q) = |
 %                   | (Pr(P&Q) - P(Q)) / Pr(Q)          otherwise
 
+dfs_inference_score(V0,V1,IS) :-
+        dfs_cond_probability(V0,V1,PrV0V1),
+        dfs_prior_probability(V1,PrV1),      
+        dfs_inference_score_(PrV0V1,PrV1,IS).
+
 dfs_inference_score(P,Q,Ms,IS) :-
         dfs_cond_probability(P,Q,Ms,PrPQ),
         dfs_prior_probability(P,Ms,PrQ),
+        dfs_inference_score_(PrPQ,PrQ,IS).
+
+dfs_inference_score_(PrPQ,PrQ,IS) :-
         (  PrQ > 0
         -> (  PrPQ > PrQ
            -> IS is (PrPQ - PrQ) / (1 - PrQ)
            ;  IS is (PrPQ - PrQ) / PrQ )
         ;  IS is nan ).
-
-%% dfs_surprisal(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Surprisal)
-%
-%  surprisal(P,Q) = -log(P|Q)
-
-dfs_surprisal(P,Q,Ms,S) :-
-        dfs_cond_probability(P,Q,Ms,PrPQ),
-        (  PrPQ > 0.0
-        -> S is -log(PrPQ)
-        ;  S is inf ).
-
-%% dfs_delta_entropy(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-EntropyDelta)
-%
-%  DH(P,Q) = H(Q) - H(P)
-
-dfs_delta_entropy(P,Q,Ms,DH) :-
-        dfs_entropy(P,Ms,Hnew),
-        dfs_entropy(Q,Ms,Hold),
-        DH is Hold - Hnew.
-
-%% dfs_entropy(+Formula,+ModelSet|+ModelMatrix,-Entropy)
-%
-%  H(P) = -sum_{s in S} P(s|P) * log(s|P)
-%
-%  where the set S conststs of all possible points in the DFS space that are
-%  fully specified with respsect to the atomic propositions; that is, eachq
-%  point s in S constitutes a unique logical combination of all atomic
-%  propostions.
-
-dfs_entropy(P,Ms,H) :-
-        dfs_vector(P,Ms,V),
-        sum_list(V,S),
-        length(V,L),
-        PrP is S / L,
-        dfs_entropy_(V,PrP,0,H).
-
-dfs_entropy_([],_,HAcc,H) :-
-        H is -HAcc.
-dfs_entropy_([U|Us],PrP,HAcc,H) :-
-        PrUQ is (1.0 * U) / PrP,
-        (  PrUQ > 0.0
-        -> HAcc0 is HAcc + PrUQ * log(PrUQ)
-        ;  HAcc0 is HAcc ),
-        dfs_entropy_(Us,PrP,HAcc0,H).

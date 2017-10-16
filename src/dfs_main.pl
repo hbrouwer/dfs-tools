@@ -25,6 +25,7 @@
                 dfs_version_patch/1
         ]).
 
+:- reexport(dfs_information_theory).
 :- reexport(dfs_interpretation).
 :- reexport(dfs_io).
 :- reexport(dfs_logic).
