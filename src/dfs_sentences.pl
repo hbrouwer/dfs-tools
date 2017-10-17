@@ -99,9 +99,13 @@ dfs_prefix_continuations(Prefix,Cs) :-
         append(Prefix,_,Templ),
         findall((Templ,P),sentence(P,Templ,[]),Cs).
 
+% dfs_prefix_frequency(+Prefix,-Frequency)
+
 dfs_prefix_frequency(Prefix,F) :-
         dfs_prefix_continuations(Prefix,Cs),
         length(Cs,F).
+
+% dfs_sentence_frequency(+Prefix,-Frequency)
 
 dfs_sentence_frequency(Prefix,F) :-
         findall(Prefix,sentence(_,Prefix,[]),Sens),

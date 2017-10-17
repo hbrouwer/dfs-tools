@@ -37,25 +37,25 @@
 %% dfs_surprisal(+Vector1,+Vector2,-Surprisal)
 %  dfs_surprisal(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Surprisal)
 %
-%  surprisal(P,Q) = -log(P|Q)
+%  surprisal(P,Q) = -log Pr(P|Q)
 
 dfs_surprisal(VP,VQ,S) :-
-        dfs_cond_probability(VP,VQ,PrPQ),
-        dfs_surprisal_(PrPQ,S).
+        dfs_cond_probability(VP,VQ,PrPgQ),
+        dfs_surprisal_(PrPgQ,S).
 
 dfs_surprisal(P,Q,Ms,S) :-
-        dfs_cond_probability(P,Q,Ms,PrPQ),
-        dfs_surprisal_(PrPQ,S).
+        dfs_cond_probability(P,Q,Ms,PrPgQ),
+        dfs_surprisal_(PrPgQ,S).
 
-dfs_surprisal_(PrPQ,S) :-
-        (  PrPQ > 0.0
-        -> S is -log(PrPQ)
+dfs_surprisal_(PrPgQ,S) :-
+        (  PrPgQ > 0.0
+        -> S is -log(PrPgQ)
         ;  S is inf ).     
 
 %% dfs_entropy(+Vector,-Entropy) 
 %  dfs_entropy(+Formula,+ModelSet|+ModelMatrix,-Entropy)
 %
-%  H(P) = -sum_{s in S} P(s|P) * log(s|P)
+%  H(P) = - sum_{s in S} Pr(s|P) * log Pr(s|P)
 %
 %  where the set S consists of all possible points in the DFS space that are
 %  fully specified with respsect to the atomic propositions; that is, each
@@ -73,9 +73,9 @@ dfs_entropy(P,Ms,H) :-
 dfs_entropy_([],_,HAcc,H) :-
         H is -HAcc.
 dfs_entropy_([U|Us],S,HAcc,H) :-
-        PrUQ is (1.0 * U) / S,
-        (  PrUQ > 0.0
-        -> HAcc0 is HAcc + PrUQ * log(PrUQ)
+        PrUgP is (1.0 * U) / S,
+        (  PrUgP > 0.0
+        -> HAcc0 is HAcc + PrUgP * log(PrUgP)
         ;  HAcc0 is HAcc ),
         dfs_entropy_(Us,S,HAcc0,H).
 
@@ -98,7 +98,11 @@ dfs_delta_entropy(P,Q,Ms,DH) :-
 %%%% sentences %%%%
 %%%%%%%%%%%%%%%%%%%
 
-% dfs_syntactic_surprisal(+Word,+Prefix,-Surprisal)
+%% dfs_syntactic_surprisal(+Word,+Prefix,-Surprisal)
+%
+%  S(w_i+1) = -log(P(w_i+1|w_1...i))
+%           = log(P(w_1...i)) - log(P(w_1...i+1))
+%           = log(freq(w_1...i)) - log(freq(w_1...i+1))
 
 dfs_syntactic_surprisal(W,Prefix,S) :-
         append(Prefix,[W],PrefixW),
@@ -106,7 +110,11 @@ dfs_syntactic_surprisal(W,Prefix,S) :-
         dfs_prefix_frequency(PrefixW,FW),
         S is log(F) - log(FW).
 
-% dfs_syntactic_entropy(+Prefix,-Entropy).
+%% dfs_syntactic_entropy(+Prefix,-Entropy).
+%
+%  H(w_i) = - sum_(w_1...i,w_i+1...n)
+%               Pr(w_1...i,w_i+1...n|w_1...i)
+%               * log(Pr(w_1...i,w_i+1...n|w_1...i))
 
 dfs_syntactic_entropy(Prefix,H) :-
         dfs_prefix_continuations(Prefix,Cs),
@@ -117,11 +125,13 @@ dfs_syntactic_entropy(Prefix,H) :-
 dfs_syntactic_entropy_([],_,H,H).
 dfs_syntactic_entropy_([(C,_)|Cs],TF,HAcc,H) :-
         dfs_sentence_frequency(C,F),
-        P is F / TF,
-        HAcc0 is HAcc - P * log(P),
+        Pr is F / TF,
+        HAcc0 is HAcc - Pr * log(Pr),
         dfs_syntactic_entropy_(Cs,TF,HAcc0,H).
 
-% dfs_syntactic_delta_entropy(+Word,+Prefix,-DeltaEntropy).
+%% dfs_syntactic_delta_entropy(+Word,+Prefix,-DeltaEntropy).
+%
+%  DH(w_i+1) = H(w_i) - H(w_i+1)
 
 dfs_syntactic_delta_entropy(W,Prefix,DH) :-
         append(Prefix,[W],PrefixW),
@@ -129,19 +139,29 @@ dfs_syntactic_delta_entropy(W,Prefix,DH) :-
         dfs_syntactic_entropy(PrefixW,HW),
         DH is H - HW.
 
-% dfs_semantic_surprisal(+Word,+Prefix,+ModelSet,-Surprisal)
+%% dfs_semantic_surprisal(+Word,+Prefix,+ModelSet,-Surprisal)
+%
+%  S(w_i+1) = -log(Pr(v(w_1...i+1)|w_1...i))
+%
+%  where v(w_1...i) is the disjunction of all semantics consistent with the
+%  prefix w_1...w_i
 
 dfs_semantic_surprisal(W,Prefix,MS,S) :-
         append(Prefix,[W],PrefixW),
-        dfs_prefix_continuations(Prefix,Cs),
+        dfs_prefix_continuations(Prefix, Cs),
         dfs_prefix_continuations(PrefixW,CsW),
-        findall(P, member((_,P),Cs),  Ps),
+        findall(P, member((_,P), Cs), Ps),
         findall(PW,member((_,PW),CsW),PsW),
         disjoin(Ps, Disj),
         disjoin(PsW,DisjW),
         dfs_surprisal(DisjW,Disj,MS,S).
 
-% dfs_semantic_entropy(+Prefix,+ModelSet,-Entropy)
+%% dfs_semantic_entropy(+Prefix,+ModelSet,-Entropy)
+%
+%  H(w_i) - sum_(foreach s in S) Pr(s|v(w_1...i)) * log(Pr(s|v(w_1...i))) 
+%
+%  where v(w_1...i) is the disjunction of all semantics consistent with the
+%  prefix w_1...w_i
 
 dfs_semantic_entropy(Prefix,MS,H) :-
         dfs_prefix_continuations(Prefix,Cs),
@@ -149,7 +169,9 @@ dfs_semantic_entropy(Prefix,MS,H) :-
         disjoin(Ps,Disj),
         dfs_entropy(Disj,MS,H).
 
-% dfs_semantic_delta_entropy(+Word,+Prefix,+ModelSet,-DeltaEntropy)
+%% dfs_semantic_delta_entropy(+Word,+Prefix,+ModelSet,-DeltaEntropy)
+%
+%  DH(w_i+1) = H(w_i) - H(w_i+1)
 
 dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
         append(Prefix,[W],PrefixW),
@@ -161,18 +183,18 @@ dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
 %%%% type theory %%%%
 %%%%%%%%%%%%%%%%%%%%%
 
-% dfs_fapply_surprisal(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Surprisal)
+% dfs_fapply_surprisal(+Argument,+Function,+ModelSet|+ModelMatrix,-Surprisal)
 
 dfs_fapply_surprisal(P,Q,[(Um,Vm)|MS],S) :-
         !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
         dfs_fapply_surprisal(P,Q,MM,S).
 dfs_fapply_surprisal(P,Q,MM,S) :-
         dfs_function_vector(Q,MM,VQ),
-        dfs_fapply(Q,P,PQ),
-        dfs_function_vector(PQ,MM,VPQ),
-        dfs_surprisal(VPQ,VQ,S).
+        dfs_fapply(Q,P,QP),
+        dfs_function_vector(QP,MM,VQP),
+        dfs_surprisal(VQP,VQ,S).
 
-% dfs_fapply_surprisal(+Formula,+ModelSet|+ModelMatrix,-Surprisal)
+% dfs_fapply_entropy(+Formula,+ModelSet|+ModelMatrix,-Entropy)
 
 dfs_fapply_entropy(P,[(Um,Vm)|MS],H) :-
         !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
@@ -181,13 +203,13 @@ dfs_fapply_entropy(P,MM,H) :-
         dfs_function_vector(P,MM,VP),
         dfs_entropy(VP,H).
 
-% dfs_fapply_delta_entropy(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-DeltaEntropy)
+% dfs_fapply_delta_entropy(+Argument,+Function,+ModelSet|+ModelMatrix,-DeltaEntropy)
 
 dfs_fapply_delta_entropy(P,Q,[(Um,Vm)|MS],DH) :-
         !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
         dfs_fapply_delta_entropy(P,Q,MM,DH).
 dfs_fapply_delta_entropy(P,Q,MM,DH) :-
         dfs_function_vector(Q,MM,VQ),
-        dfs_fapply(Q,P,PQ),
-        dfs_function_vector(PQ,MM,VPQ),
-        dfs_delta_entropy(VPQ,VQ,DH).
+        dfs_fapply(Q,P,QP),
+        dfs_function_vector(QP,MM,VQP),
+        dfs_delta_entropy(VQP,VQ,DH).

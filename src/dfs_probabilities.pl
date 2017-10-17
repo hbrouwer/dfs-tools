@@ -30,18 +30,18 @@
 %% dfs_prior_probability(+Vector,-PriorPr)
 %  dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
 %
-%  Pr(P) = |{i|v_i(P) = 1}| / |M|
+%  Pr(P) = sum_i(v_i(P)) / |M|
 
 dfs_prior_probability(VP,Pr) :-
         sum_list(VP,S),
-        length(VP,L),
-        Pr is S / L.
+        length(VP,M),
+        Pr is S / M.
 
 dfs_prior_probability(P,Ms,Pr) :-
-        dfs_vector(P,Ms,V),
-        dfs_prior_probability(V,Pr).
+        dfs_vector(P,Ms,VP),
+        dfs_prior_probability(VP,Pr).
 
-%% dfs_conj_probability(+Vector1,Vector2,-ConjPr)
+%% dfs_conj_probability(+Vector1,+Vector2,-ConjPr)
 %  dfs_conj_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-ConjPr)
 %
 %            | Pr(P)    iff P = Q
@@ -51,18 +51,13 @@ dfs_prior_probability(P,Ms,Pr) :-
 dfs_conj_probability(VP,VP,Pr) :-       %% VP = VQ
         !, dfs_prior_probability(VP,Pr).
 dfs_conj_probability(VP,VQ,Pr) :-       %% VP != VQ
-        dfs_conj_probability_(VP,VQ,VPQ),
-        dfs_prior_probability(VPQ,Pr).
+        conj_vector(VP,VQ,VPaQ),
+        dfs_prior_probability(VPaQ,Pr).
 
 dfs_conj_probability(P,P,Ms,Pr) :-      %% P = Q
         !, dfs_prior_probability(P,Ms,Pr).
 dfs_conj_probability(P,Q,Ms,Pr) :-      %% P != Q
         dfs_prior_probability(and(P,Q),Ms,Pr).
-
-dfs_conj_probability_([],[],[]).
-dfs_conj_probability_([U0|U0s],[U1|U1s],[U2|U2s]) :-
-        U2 is U0 * U1,
-        dfs_conj_probability_(U0s,U1s,U2s).
 
 %% dfs_cond_probability(+Vector1,Vector2,-ConjPr)
 %  dfs_cond_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-CondPr)
@@ -70,40 +65,40 @@ dfs_conj_probability_([U0|U0s],[U1|U1s],[U2|U2s]) :-
 %  Pr(P|Q) = Pr(P&Q) / Pr(Q)
 
 dfs_cond_probability(VP,VQ,Pr) :-
-        dfs_conj_probability(VP,VQ,PrPQ),
+        dfs_conj_probability(VP,VQ,PrPaQ),
         dfs_prior_probability(VQ,PrQ),
-        dfs_cond_probability_(PrPQ,PrQ,Pr).
+        dfs_cond_probability_(PrPaQ,PrQ,Pr).
 
 dfs_cond_probability(P,Q,Ms,Pr) :-
-        dfs_conj_probability(P,Q,Ms,PrPQ),
+        dfs_conj_probability(P,Q,Ms,PrPaQ),
         dfs_prior_probability(Q,Ms,PrQ),
-        dfs_cond_probability_(PrPQ,PrQ,Pr).
+        dfs_cond_probability_(PrPaQ,PrQ,Pr).
 
-dfs_cond_probability_(PrPQ,PrQ,Pr) :-
+dfs_cond_probability_(PrPaQ,PrQ,Pr) :-
         (  PrQ > 0
-        -> Pr is PrPQ / PrQ
+        -> Pr is PrPaQ / PrQ
         ;  Pr is nan ).
 
 %% dfs_inference_score(+Vector1,+Vector2,-Score)
 %  dfs_inference_score(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Score)
 %
-%                   | (Pr(P&Q) - P(P)) / (1 - Pr(P))    iff Pr(P&Q) > Pr(P)  
+%                   | (Pr(P|Q) - Pr(P)) / (1 - Pr(P))    iff Pr(P|Q) > Pr(P)
 %  inference(P,Q) = |
-%                   | (Pr(P&Q) - P(P)) / Pr(P)          otherwise
+%                   | (Pr(P|Q) - Pr(P)) / Pr(P)          otherwise
 
 dfs_inference_score(VP,VQ,IS) :-
-        dfs_cond_probability(VP,VQ,PrPQ),
+        dfs_cond_probability(VP,VQ,PrPgQ),
         dfs_prior_probability(VP,PrP),      
-        dfs_inference_score_(PrPQ,PrP,IS).
+        dfs_inference_score_(PrPgQ,PrP,IS).
 
 dfs_inference_score(P,Q,Ms,IS) :-
-        dfs_cond_probability(P,Q,Ms,PrPQ),
+        dfs_cond_probability(P,Q,Ms,PrPgQ),
         dfs_prior_probability(P,Ms,PrP),
-        dfs_inference_score_(PrPQ,PrP,IS).
+        dfs_inference_score_(PrPgQ,PrP,IS).
 
-dfs_inference_score_(PrPQ,PrP,IS) :-
+dfs_inference_score_(PrPgQ,PrP,IS) :-
         (  PrP > 0
-        -> (  PrPQ > PrP
-           -> IS is (PrPQ - PrP) / (1.0 - PrP)
-           ;  IS is (PrPQ - PrP) / PrP )
+        -> (  PrPgQ > PrP
+           -> IS is (PrPgQ - PrP) / (1.0 - PrP)
+           ;  IS is (PrPgQ - PrP) / PrP )
         ;  IS is nan ).

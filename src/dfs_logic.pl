@@ -19,7 +19,8 @@
         [
                 conjoin/2,
                 disjoin/2,
-                complement/2
+                complement/2,
+                conj_vector/3
         ]).
 
 %% conjoin(+FormulaSet,-Conjunction)
@@ -70,3 +71,10 @@ complement(forall(X,P0),exists(X,P1)) :-
         !, % ∀x P => ∃x P
         complement(P0,P1).
 complement(P,P).
+
+% conj_vector(+Vector1,+Vector2,+ConjVector)
+
+conj_vector([],[],[]).
+conj_vector([U0|U0s],[U1|U1s],[U2|U2s]) :-
+        U2 is U0 * U1,
+        conj_vector(U0s,U1s,U2s).
