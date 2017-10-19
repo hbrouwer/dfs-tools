@@ -17,12 +17,18 @@
 
 :- module(dfs_vector_space,
         [
+                op(900,xfy,@>#), (@>#)/2,
+                op(900,xfy,#>@), (#>@)/2,
+                
                 dfs_model_to_vector/2,
                 dfs_models_to_matrix/2,
                 dfs_vector_to_model/2,
                 dfs_matrix_to_models/2,
                 dfs_vector/3
         ]).
+
+MS @># MM :- dfs_models_to_matrix(MS,MM).
+MM #>@ MS :- dfs_matrix_to_models(MM,MS).
 
 % atomic_propositions(+ModelSet,-AtomicProps)
 
