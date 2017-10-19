@@ -21,7 +21,8 @@
                 dfs_assert_model/1,
                 dfs_assert_models/1,
                 dfs_retract_models/0,
-                dfs_induce_model/2
+                dfs_induce_model/2,
+                dfs_induce_models/2
         ]).
 
 :- dynamic(user:model/1).
@@ -52,19 +53,19 @@ dfs_retract_models :-
 %%%% induction %%%%
 %%%%%%%%%%%%%%%%%%%
 
-% dfs_induce_model(+TrueAtomicPropositions,-Model)
+% dfs_induce_model(+Observation,-Model)
 
-dfs_induce_model(TAPs,M) :-
-        dfs_induce_model_(TAPs,TAPsV),
-        dfs_vector_to_model(TAPsV,M).
+dfs_induce_model(O,M) :-
+        dfs_induce_model_(O,OV),
+        dfs_vector_to_model(OV,M).
 
 dfs_induce_model_([],[]).
 dfs_induce_model_([AP|APs],[(AP,1)|APV]) :-
         dfs_induce_model_(APs,APV).
 
-% dfs_induce_models([+AtomicPropositions],-ModelSet)
+% dfs_induce_models(+Obervations,-ModelSet)
 
-% dfs_induce_models([],[]).
-% dfs_induce_models([MD|MDs],[M|Ms]) :-
-%         dfs_induce_model(MD,M),
-%         dfs_induce_models(MDs,Ms).
+dfs_induce_models([],[]).
+dfs_induce_models([O|Os],[M|Ms]) :-
+        dfs_induce_model(O,M),
+        dfs_induce_models(Os,Ms).
