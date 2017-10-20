@@ -22,7 +22,9 @@
                 dfs_assert_models/1,
                 dfs_retract_models/0,
                 dfs_induce_model/2,
-                dfs_induce_models/2
+                dfs_induce_models/2,
+                dfs_deduce_observation/2,
+                dfs_deduce_observations/2
         ]).
 
 :- dynamic(user:model/1).
@@ -49,9 +51,9 @@ dfs_assert_models([M|Ms]) :-
 dfs_retract_models :-
         retractall(user:model(_)).
 
-%%%%%%%%%%%%%%%%%%%
-%%%% induction %%%%
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% induction/deduction %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dfs_induce_model(+Observation,-Model)
 
@@ -69,3 +71,22 @@ dfs_induce_models([],[]).
 dfs_induce_models([O|Os],[M|Ms]) :-
         dfs_induce_model(O,M),
         dfs_induce_models(Os,Ms).
+
+% dfs_deduce_observation(+Model,-Observation)
+
+dfs_deduce_observation(M,OV) :-
+        dfs_model_to_vector(M,V),
+        dfs_deduce_observation_(V,OV).
+
+dfs_deduce_observation_([],[]).
+dfs_deduce_observation_([(AP,1)|APV],[AP|APs]) :-
+        !, dfs_deduce_observation_(APV,APs).
+dfs_deduce_observation_([(_,0)|APV],APs) :-
+        dfs_deduce_observation_(APV,APs).
+
+% dfs_deduce_observation(+ModelSet,-Observations)
+
+dfs_deduce_observations([],[]).
+dfs_deduce_observations([M|Ms],[O|Os]) :-
+        dfs_deduce_observation(M,O),
+        dfs_deduce_observations(Ms,Os).
