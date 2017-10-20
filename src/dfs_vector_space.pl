@@ -114,7 +114,8 @@ MM #>@ MS :- dfs_matrix_to_models(MM,MS).
 % constants_and_universe(+ModelVector,-Constants,-Entities)
 
 constants_and_universe(MV,Cs,Um) :-
-        setof(C,AP^P^As^S^(member((AP,S),MV),AP =.. [P|As],member(C,As)),Cs),
+        %setof(C,AP^P^As^S^(member((AP,S),MV),AP =.. [P|As],member(C,As)),Cs),
+        setof(C,AP^P^As^(member((AP,1),MV),AP =.. [P|As],member(C,As)),Cs),
         length(Cs,N),
         dfs_entities(N,Um).
 
