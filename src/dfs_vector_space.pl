@@ -17,8 +17,8 @@
 
 :- module(dfs_vector_space,
         [
-                op(900,xfy,@>#), (@>#)/2,
-                op(900,xfy,#>@), (#>@)/2,
+                op(900,xfy,@>#), (@>#)/2,       %% models to vector space
+                op(900,xfy,#>@), (#>@)/2,       %% vector space to models
                 
                 dfs_model_to_vector/2,
                 dfs_models_to_matrix/2,
@@ -26,9 +26,6 @@
                 dfs_matrix_to_models/2,
                 dfs_vector/3
         ]).
-
-MS @># MM :- dfs_models_to_matrix(MS,MM).
-MM #>@ MS :- dfs_matrix_to_models(MM,MS).
 
 % atomic_propositions(+ModelSet,-AtomicProps)
 
@@ -86,6 +83,10 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_model_to_vector_(M,APs,G,MV),
         dfs_models_to_matrix_(MS,APs,MVs).
 
+% +ModelSet @># -Matrix
+
+MS @># MM :- dfs_models_to_matrix(MS,MM).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% vector space to models %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,6 +106,10 @@ dfs_matrix_to_models([],[]).
 dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_vector_to_model(MV,M),
         dfs_matrix_to_models(MVs,MS).
+
+% +Matrix #>@ -ModelSet
+
+MM #>@ MS :- dfs_matrix_to_models(MM,MS).
 
 % constants_and_universe(+ModelVector,-Constants,-Entities)
 
