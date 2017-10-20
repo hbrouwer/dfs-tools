@@ -17,7 +17,7 @@
 
 :- module(dfs_type_theory,
         [
-                op(900,xfx,::),
+                op(900,xfx,::),         %% type definition
 
                 dfs_fapply/3,
                 dfs_fapply_deriv/3,

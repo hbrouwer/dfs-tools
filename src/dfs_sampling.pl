@@ -20,7 +20,7 @@
                 op(900,fx, @+),         %% constant
                 op(900,fx, @*),         %% property
                 op(900,fx, @#),         %% constraint
-                op(900,xfy,<-),         %% probability
+                op(900,xfx,<-),         %% probability
 
                 dfs_sample_models/2,
                 dfs_sample_model/1

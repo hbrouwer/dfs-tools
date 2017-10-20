@@ -17,8 +17,8 @@
 
 :- module(dfs_vector_space,
         [
-                op(900,xfy,@>#), (@>#)/2,       %% models to vector space
-                op(900,xfy,#>@), (#>@)/2,       %% vector space to models
+                op(900,xfx,@>#), (@>#)/2,       %% models to vector space
+                op(900,xfx,#>@), (#>@)/2,       %% vector space to models
                 
                 dfs_model_to_vector/2,
                 dfs_models_to_matrix/2,
