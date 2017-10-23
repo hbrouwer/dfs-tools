@@ -27,9 +27,9 @@
                 dfs_version_patch/1
         ]).
 
-/** <module> Distributed Formal Semantics
+/** <module> Distributional Formal Semantics
 
-A library for Distributed Formal Semantics (DFS). 
+A library for Distributional Formal Semantics (DFS). 
 
 @tbd Elaborate on DFS.
 */

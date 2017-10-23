@@ -25,9 +25,15 @@
                 dfs_logical_equivalence/3
         ]).
 
-%% dfs_validity(+Formula,+ModelSet|+ModelMatrix)
+/** <module> First-order logic properties
+
+Various first-order logic properties over sets of models.
+*/
+
+%!      dfs_validity(+Formula,+ModelSet) is det.
+%!      dfs_validity(+Formula,+ModelMatrix) is det.
 %
-%  A formula P is valid (|= P) iff P is true (not false) in all models
+%       A formula P is valid (|= P) iff P is true (not false) in all models.
 
 dfs_validity(_,[]) :- !.
 dfs_validity(P,[(Um,Vm)|MS]) :-
@@ -38,9 +44,10 @@ dfs_validity(P,MM) :-
         dfs_matrix_to_models(MM,MS),
         dfs_validity(P,MS).
 
-%% dfs_satisfiability(+Formula,+ModelSet|+ModelMatrix)
+%!      dfs_satisfiability(+Formula,+ModelSet) is det.
+%!      dfs_satisfiability(+Formula,+ModelMatrix) is det.
 %
-%  A formula P is satisfiable iff P is true in at least one model M
+%       A formula P is satisfiable iff P is true in at least one model M.
 
 dfs_satisfiability(_,[]) :- !, false.
 dfs_satisfiability(P,[(Um,Vm)|MS]) :-
@@ -52,10 +59,11 @@ dfs_satisfiability(P,MM) :-
         dfs_matrix_to_models(MM,MS),
         dfs_satisfiability(P,MS).
 
-%% dfs_entailment(+Formula,+ModelSet|+ModelMatrix)
+%!      dfs_entailment(+Formula,+ModelSet) is det.
+%!      dfs_entailment(+Formula,+ModelMatrix) is det.
 % 
-%  A formula P entails a formula Q (P |= Q) iff Q is true in every model that
-%  satisfies P
+%       A formula P entails a formula Q (P |= Q) iff Q is true in every model
+%       that satisfies P.
 
 dfs_entailment(_,_,[]) :- !.
 dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
@@ -66,10 +74,11 @@ dfs_entailment(P,Q,MM) :-
         dfs_matrix_to_models(MM,MS),
         dfs_entailment(P,Q,MS).
 
-%% dfs_logical_equivalence(+Formula,+ModelSet|+ModelMatrix)
+%!      dfs_logical_equivalence(+Formula,+ModelSet) is det.
+%!      dfs_logical_equivalence(+Formula,+ModelMatrix) is det.
 %
-%  A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g for
-%  all models M and variable assignments g
+%       A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g
+%       for all models M and variable assignments g
 
 dfs_logical_equivalence(_,_,[]) :- !.
 dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-

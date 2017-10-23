@@ -25,23 +25,35 @@
                 conj_vector/3
         ]).
 
-%% conjoin(+FormulaSet,-Conjunction)
+/** <module> First-order Logic
+
+This module implements basic first-order logic operations on formulas and
+vectors.
+*/
+
+%!      conjoin(+FormulaSet,-Conjunction) is det.
+%
+%       True if Conjunction is a logical conjunction of the formulas in
+%       FormulaSet.
 
 conjoin([],[]).
 conjoin([P],P) :- !.
 conjoin([P|Ps],and(P,F)) :-
         conjoin(Ps,F).
 
-%% disjoin(+FormulaSet,-Disjunction)
+%!      disjoin(+FormulaSet,-Disjunction) is det.
+%
+%       True if Disjunction is a logical disjunction of the formulas in
+%       FormulaSet.
 
 disjoin([],[]).
 disjoin([P],P) :- !.
 disjoin([P|Ps],or(P,F)) :-
         disjoin(Ps,F).
 
-%% complement(?Formula,?ComplementFormula)
+%!      complement(+Formula,+ComplementFormula)
 %
-%  Complement of truth/falsehood conditions.
+%       ComplementFormula is specifies the falsehood conditions of Formula.
 
 complement(neg(P0),neg(P1)) :-
         !, % !P => !P
@@ -74,7 +86,10 @@ complement(forall(X,P0),exists(X,P1)) :-
         complement(P0,P1).
 complement(P,P).
 
-% conj_vector(+Vector1,+Vector2,+ConjVector)
+%!      conj_vector(+Vector1,+Vector2,-ConjVector) is det.
+%
+%       ConjVector is the conjunction (component-wise product) of Vector1
+%       and Vector2.
 
 conj_vector([],[],[]).
 conj_vector([U0|U0s],[U1|U1s],[U2|U2s]) :-

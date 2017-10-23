@@ -26,13 +26,22 @@
                 dfs_function_vector/3
         ]).
 
-% dfs_fapply(+Function,+Argument,-Function)
+/** <module> Type theory
+
+Function application in vector space.
+*/
+
+%!      dfs_fapply(+Function,+Argument,-NewFunction) is det.
+%
+%       NewFunction is the result of applyting Function to Argument.
 
 dfs_fapply(F0::(T1,T2),F1::T1,F2::T2) :-
         F0 =.. [P|As],
         F2 =.. [P|[F1|As]].
 
-% dfs_fapply_deriv(+FunctionList,+ModelMatrix,-Derivation)
+%!      dfs_fapply_deriv(+FunctionList,+ModelMatrix,-Derivation) is det.
+%
+%       
 
 dfs_fapply_deriv([F|Fs],MM,[(F,V)|Ts]) :-
         dfs_function_vector(F,MM,V),
@@ -44,7 +53,9 @@ dfs_fapply_deriv_(F0,[F1|Fs],MM,[(F2,V)|Ts]) :-
         dfs_function_vector(F2,MM,V),
         dfs_fapply_deriv_(F2,Fs,MM,Ts).
 
-% dfs_function_vector(+Function,+ModelMatrix,-FunctionVector)
+%!      dfs_function_vector(+Function,+ModelMatrix,-FunctionVector) is det.
+%
+%       
 
 dfs_function_vector(F,MM,V) :-
         subset_model_matrix(MM,F,SMM),
@@ -81,7 +92,9 @@ subset_model_vector([(AP,S)|Ts],F::_,[(AP,S)|STs]) :-   % <-- functions
 subset_model_vector([_|Ts],F,STs) :-
         subset_model_vector(Ts,F,STs).
 
-% sum_model_vector(+ModelVector,-Sum)
+%!      sum_model_vector(+ModelVector,-Sum) is det.
+%
+%       Sum is the sum of all units of ModelVector.
 
 sum_model_vector(MV,Sum) :-
         sum_model_vector_(MV,0,Sum).

@@ -33,11 +33,18 @@
 
 :- use_module(library(clpfd),[transpose/2]).
 
+/** <module> IO
+
+Basic IO and pretty printing facilities.
+*/
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% reading/writing models %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_write_models(+ModelSet,+File)
+%!      dfs_write_models(+ModelSet,+File) is det.
+%
+%       Writes ModelSet to File.
 
 dfs_write_models(MS,File) :-
         open(File,write,Stream),
@@ -49,7 +56,9 @@ dfs_write_models_([M|MS],Stream) :-
         format(Stream,'model((~w)).\n',M),
         dfs_write_models_(MS,Stream).
 
-% dfs_read_models(+File,-ModelSet)
+%!      dfs_read_models(+File,-ModelSet) is det.
+%
+%       Reads ModelSet from File.
 
 dfs_read_models(File,MS) :-
         open(File,read,Stream),
@@ -70,7 +79,9 @@ dfs_read_models_(Stream,MS) :-
 %%%% reading/writing matrices %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_write_matrix(+ModelMatrix,+File)
+%!      dfs_write_matrix(+ModelMatrix,+File) is det.
+%
+%       Write ModelMatrix to File.
 
 dfs_write_matrix([MV|MVs],File) :-
         open(File,write,Stream),
@@ -79,7 +90,7 @@ dfs_write_matrix([MV|MVs],File) :-
         write_model_matrix([MV|MVs],Stream),
         close(Stream).
 
-% write_atomic_propositions(+AtomicProps,+Stream)
+%!      write_atomic_propositions(+AtomicProps,+Stream) is det.
 
 write_atomic_propositions([AP],Stream) :-
         !, format(Stream,'~w\n',AP).
@@ -87,14 +98,14 @@ write_atomic_propositions([AP|APs],Stream) :-
         format(Stream,'~w ',AP),
         write_atomic_propositions(APs,Stream).
 
-% write_model_matrix(+ModelMatrix,+Stream)
+%!      write_model_matrix(+ModelMatrix,+Stream) is det.
 
 write_model_matrix([],_).
 write_model_matrix([MV|MVs],Stream) :-
         write_model_vector(MV,Stream),
         write_model_matrix(MVs,Stream).
 
-% write_model_vector(+ModelVector,+Stream)
+%!      write_model_vector(+ModelVector,+Stream) is det.
 
 write_model_vector([(_,U)],Stream) :-
         !, format(Stream,'~d\n',U).
@@ -102,7 +113,9 @@ write_model_vector([(_,U)|Us],Stream) :-
         format(Stream,'~d ',U),
         write_model_vector(Us,Stream).
 
-% dfs_read_matrix(+File,-ModelMatrix)
+%!      dfs_read_matrix(+File,-ModelMatrix) is det.
+%
+%       Read ModelMatrix from File.
 
 dfs_read_matrix(File,MM) :-
         open(File,read,Stream),
@@ -110,7 +123,7 @@ dfs_read_matrix(File,MM) :-
         read_model_matrix(Stream,APs,MM),
         close(Stream).
 
-% read_atomic_propositions(+Stream,-AtomicProps)
+%!      read_atomic_propositions(+Stream,-AtomicProps) is det.
 
 read_atomic_propositions(Stream,APs) :-
         read_line_to_codes(Stream,Line),
@@ -118,7 +131,10 @@ read_atomic_propositions(Stream,APs) :-
         atomic_list_concat(Atoms,' ',Atom),
         findall(AP,(member(AP0,Atoms),read_term_from_atom(AP0,AP,[])),APs).
 
-% read_model_matrix(+Stream,+AtomicProps,-ModelMatrix)
+%!      read_model_matrix(+Stream,+AtomicProps,-ModelMatrix) is det.
+%
+%       Read ModelMatrix from File. Real valued units are converted into
+%       binary units.
 
 read_model_matrix(Stream,APs,MVs) :-
         read_line_to_codes(Stream,Line),
@@ -127,7 +143,6 @@ read_model_matrix(Stream,APs,MVs) :-
            atom_codes(Atom,Line),
            atomic_list_concat(Atoms,' ',Atom),
            % findall(U,(member(U0,Atoms),read_term_from_atom(U0,U,[])),Us),
-           %%%% read as binary vectors
            findall(U,
                 ( member(U0,Atoms),
                   read_term_from_atom(U0,U1,[]),
@@ -135,12 +150,11 @@ read_model_matrix(Stream,APs,MVs) :-
                   -> U = 1
                   ;  U = 0 ) ),
                 Us ),
-           %%%% 
            vector_to_model_vector(Us,APs,MV),
            MVs = [MV|MVsAcc]
         ;  MVs = [] ).
 
-% vector_to_model_vector(+Vector,+AtomicProps,-ModelVector)
+%!      vector_to_model_vector(+Vector,+AtomicProps,-ModelVector) is det.
 
 vector_to_model_vector([],[],[]).
 vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
@@ -150,16 +164,21 @@ vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
 %%%% pretty printing %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_pprint_formula(+Formula)
+%!      dfs_pprint_formula(+Formula) is det.
+%
+%       Pretty print a first-order logic formula.
 
 dfs_pprint_formula(P) :-
         format_formula(P,F),
         format('\n~w\n\n',[F]).
 
-%% format_formula(+Formula,-FormattedFormula)
+%!      format_formula(+Formula,-FormattedFormula)
 %
-%  TODO: format(atom(A),_,_) only works with SWI prolog. Need to adapt to
-%  ISO prolog some day.
+%       FormattedFormula is ASCII formatted version of a first-order logic 
+%       Formula.
+%
+%       @tbd: format(atom(A),_,_) only works with SWI prolog. Need to adapt
+%       to ISO prolog some day.
 
 format_formula(T1=T2,A) :-
         !, % t1 = t2
@@ -210,7 +229,9 @@ format_formula(bottom,A) :-
 format_formula(P,A) :-
         format(atom(A),'~w',P).
 
-% dfs_pprint_model(+Model)
+%!      dfs_pprint_model(+Model) is det.
+%
+%       Pretty print a model.
 
 dfs_pprint_model((Um,Vm)) :-
         format('\n%%%% Um = { '),
@@ -244,7 +265,9 @@ pprint_atoms([A|As]) :-
            ( As \= [] -> format(', ') ; true ) ),
         pprint_atoms(As).
 
-% dfs_pprint_propositions(+Model)
+%!      dfs_pprint_propositions(+Model) is det.
+%
+%       Pretty print the propositions of Model.
 
 dfs_pprint_propositions((Um,Vm)) :-
         dfs_init_g((Um,Vm),G),
@@ -276,7 +299,9 @@ pprint_terms([A|As],TIs) :-
            ( As \= [] -> format(', ') ; true ) ),
         pprint_terms(As,TIs).
 
-% dfs_pprint_matrix(+ModelMatrix)
+%!      dfs_pprint_matrix(+ModelMatrix) is det.
+%
+%       Pretty print ModelMatrix.
 
 dfs_pprint_matrix(MM) :-
         transpose(MM,TMM),
@@ -298,7 +323,10 @@ pprint_dfs_vector([(_,S)|Ts]) :-
         ( Ts \= [] -> format('') ; true ),
         pprint_dfs_vector(Ts).
 
-% dfs_pprint_fapply(Tuples)
+%!      dfs_pprint_fapply_deriv(Tuples) is det.
+%
+%       Pretty print a function application derivation, as represented
+%       by Tuples of formulas and vectors.
 
 dfs_pprint_fapply_deriv(Ts) :-
         format('\n'),
@@ -312,7 +340,9 @@ dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
         format('~w\n',[F]),
         dfs_pprint_fapply_deriv_(Ts).
 
-% dfs_pprint_constraints/0
+%!      dfs_pprint_constraints/0 is det.
+%
+%       Pretty print model constraints.
 
 dfs_pprint_constraints :-
         findall(C,dfs_sampling:constraint(C),Cs),

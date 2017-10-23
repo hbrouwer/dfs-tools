@@ -28,9 +28,16 @@
                 dfs_sample_model/1
         ]).
 
-:- use_module(library(debug)). % [dfs_sampling]
+:- use_module(library(debug)). % topic: dfs_sampling
 
-% constant(-Constant)
+/** <module> Model sampling
+
+Sample models from a world specification.
+
+@tbd Elaborate on world specifications.
+*/
+
+%!      constant(-Constant) is nondet.
 
 constant(C) :-
         current_predicate((@+)/1),
@@ -39,7 +46,7 @@ constant(C) :-
         current_predicate(user:constant/1),
         user:constant(C).
 
-% property(-Property)
+%!      property(-Property) is nondet.
 
 property(P) :- 
         current_predicate((@*)/1),
@@ -48,7 +55,7 @@ property(P) :-
         current_predicate(user:property/1),
         user:property(P).
 
-% constraint(-Constraint)
+%!      constraint(-Constraint) is nondet.
 
 constraint(C) :-
         current_predicate((@#)/1),
@@ -57,7 +64,7 @@ constraint(C) :-
         current_predicate(user:constraint/1),
         user:constraint(C).
 
-% probability(+Proposition,-Constraint,-Pr)
+%!      probability(+Proposition,-Constraint,-Pr) is nondet.
 
 probability(P,C,Pr) :- 
         current_predicate((<-)/2),
@@ -66,7 +73,11 @@ probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
 
-% dfs_sample_models(+NumModels,-ModelSet)
+%!      dfs_sample_models(+NumModels,-ModelSet) is det.
+%
+%       ModelSet is a set of NumModels sampled models.
+%
+%       @see dfs_sample_model.
 
 dfs_sample_models(N,MS) :-
         dfs_sample_models_(N,0,MS).
@@ -78,7 +89,9 @@ dfs_sample_models_(N,I,[M|MS]) :-
         dfs_pprint_model(M),
         dfs_sample_models_(N,I0,MS).
 
-% dfs_sample_model(-Model)
+%!      dfs_sample_model(-Model) is det.
+%
+%       Sample a model from the world specificiations.
 
 dfs_sample_model((Um,Vm)) :-
         constants_and_universe(Consts,Um),
@@ -90,56 +103,57 @@ dfs_sample_model((Um,Vm)) :-
         optimize_constraints(Cs,OCs),
         dfs_sample_properties(Ps,Um,G,CIs,OCs,VmCs,Vm).
 
-% constants_and_universe(-Constants,-Entities)
+%!      constants_and_universe(-Constants,-Entities) is det.
 
 constants_and_universe(Cs,Um) :-
         findall(C,constant(C),Cs),
         length(Cs,N),
         dfs_entities(N,Um).
 
-%% dfs_sample_properties(+Properties,+Universe,+G,+ConstantInstantiatons,
-%      +Constraints,+IFuncConstants,-IFunc)
+%!      dfs_sample_properties(+Properties,+Universe,+G,+ConstantInstantiatons,
+%               +Constraints,+IFuncConstants,-IFunc) is det.
 %
-%  Samples property instantiations using a non-deterministic, probabilistic
-%  and incremental inference-driven sampling algorithm. 
+%       Samples property instantiations using a non-deterministic,
+%       probabilistic and incremental inference-driven sampling algorithm.
 %
-%  The aim is to arrive at an interpretation function that satisfies a set 
-%  of imposed probabilistic and hard constraints. To this end, we start out
-%  with with an empty interpretation function, to which we will incrementally
-%  add properties. We call this interpretation function the Light World (LVm),
-%  and this function will contain all properties that are true in the model.
-%  In parallel to the Light World, we will also construct a Dark World (DVm)
-%  function that will contain all properties that are false in the model. 
+%       The aim is to arrive at an interpretation function that satisfies a
+%       set of imposed probabilistic and hard constraints. To this end, we 
+%       start out with with an empty interpretation function, to which we will
+%       incrementally add properties. We call this interpretation function the
+%       Light World (LVm), and this function will contain all properties that
+%       are true in the model. In parallel to the Light World, we will also
+%       construct a Dark World (DVm) function that will contain all properties
+%       that are false in the model. 
 %
-%  Given LVm and DVm, a set of randomly ordered properties P, and a set of 
-%  constraints C, we then do the following for each property p:
+%       Given LVm and DVm, a set of randomly ordered properties P, and a set
+%       of constraints C, we then do the following for each property p:
 %
-%  (1) Add p to LVm, yielding LVm';
+%       (1) Add p to LVm, yielding LVm';
 %
-%  (2) LT = true iff for each constraint c:
+%       (2) LT = true iff for each constraint c:
 %       
-%       -- c is satisfied by LVm' (-> c is true);
-%       -- or if the complement of c is not satisfied by DVm
-%          (-> c is not untrue).
+%           -- c is satisfied by LVm' (-> c is true);
+%           -- or if the complement of c is not satisfied by DVm
+%              (-> c is not untrue).
 %
-%  (3) Add p to DVm, yielding DVm';
+%       (3) Add p to DVm, yielding DVm';
 % 
-%  (4) DT = true iff for each constraint c:
+%       (4) DT = true iff for each constraint c:
 %       
-%       -- c is satisfied by LVm (-> c is true);
-%       -- or if the complement of c is not satisfied by DVm'.
-%          (-> c is not untrue).
+%           -- c is satisfied by LVm (-> c is true);
+%           -- or if the complement of c is not satisfied by DVm'.
+%              (-> c is not untrue).
 %
-%  (5) Depending on the outcome of (2) and (4):
+%       (5) Depending on the outcome of (2) and (4):
 %
-%       -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
-%       -- LT & !DT: Infer p to be true in the Light World: LVm = LVm'
-%       -- !LT & DT: Infer p to be true in the Dark World: DVm = DVm'
-%       -- !LT & !DT: The model is inconsistent, and needs to be discarded.
+%           -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
+%           -- LT & !DT: Infer p to be true in the Light World: LVm = LVm'
+%           -- !LT & DT: Infer p to be true in the Dark World: DVm = DVm'
+%           -- !LT & !DT: The model is inconsistent, and will be discarded.
 %
-%  (6) Repeat (1) for next p. If each p is a property in either LVm or DVm,
-%      and LVm satisfies all constraints, LVm is the final interpretation 
-%      function.
+%       (6) Repeat (1) for next p. If each p is a property in either LVm or
+%           DVm, and LVm satisfies all constraints, LVm is the final 
+%           interpretation function.
 
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
@@ -176,9 +190,9 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
                  debug(dfs_sampling,'Dark world : ~a',[DW]),
                  false ) ) ).           %% inconsistent
 
-%% validate_sample_model(+Constraints,+LightModel,+G)
+%!      validate_sample_model(+Constraints,+LightModel,+G) is semidet.
 %
-%  True iff LightModel satisfies all constraints.
+%       True iff LightModel satisfies all constraints.
 
 validate_sample_model([],_,_).
 validate_sample_model([C|Cs],M,G) :-
@@ -189,9 +203,9 @@ validate_sample_model([C|_],_,_) :-
         debug(dfs_sampling,'Failed to satisfy: ~a',[F]),
         false.
 
-%% add_property(+IFunc,+Property,+Entities,-IFunc)
+%!      add_property(+IFunc,+Property,+Entities,-IFunc) is det.
 %
-%  Adds a property for a set of entities to an interpretation function.
+%       Adds a property for a set of entities to an interpretation function.
 
 add_property([],Prop,[E|Es],[P1]) :-
         (  Es == []
@@ -207,10 +221,10 @@ add_property([P0|P0s],Prop,[E|Es],[P1|P0s]) :-
 add_property([P0|P0s],Prop,Es,[P0|P1s]) :-
         add_property(P0s,Prop,Es,P1s).
 
-%% satisfies_constraints(+Constraints,+LightModel,+DarkModel,+G)
+%!      satisfies_constraints(+Constraints,+LightMdl,+DarkMdl,+G) is semidet.
 %
-%  Returns true when each constraint is either satisfied in the light world,
-%  or when its complement is not satisfied in the dark world.
+%       True when each constraint is either satisfied in the light world, or
+%       when its complement is not satisfied in the dark world.
 
 satisfies_constraints([],_,_,_).
 satisfies_constraints([C|Cs],LM,DM,G) :-
@@ -221,10 +235,11 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
         \+ dfs_interpret(Cc,DM,G),
         satisfies_constraints(Cs,LM,DM,G).
 
-%% probabilistic_choice(?Formula,+Model,+G)
+%!      probabilistic_choice(+Formula,+Model,+G) is semidet.
 %
-%  Returns a probabilistically determined truth value for Formula, given
-%  a Model (thus far) and assignment function G.
+%       Probabilistically determines a truth value for Formula, given a Model
+%       (thus far) and assignment function G. Succeeds upon true, and fails
+%       upon falls.
 
 probabilistic_choice(P,M,G) :-
         probability(P,C,Pr),
@@ -236,7 +251,9 @@ probabilistic_choice(P,M,G) :-
 %%%% constraint optimization %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% optimize_constraints(+Constraints,-OptimizedConstraints)
+%!      optimize_constraints(+Constraints,-OptimizedConstraints) is det.
+%
+%       @see optimize_constraint/2.
 
 optimize_constraints(Cs,OCs) :-
         optimize_constraints_(Cs,[],OCs0),
@@ -248,32 +265,32 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
         append(OC,OCsAcc,OCsAcc0),
         optimize_constraints_(Cs,OCsAcc0,OCs).
 
-%% optimize_constraint(+Formula,-FormulaSet)
+%!      optimize_constraint(+Formula,-FormulaSet) is det.
 %
-%  Optimizes a Formula for incremental, inference-driven sampling, yielding a
-%  set of optimized formulas. A number of different optimization stragegies
-%  are employed: 
+%       Optimizes a Formula for incremental, inference-driven sampling,
+%       yielding a set of optimized formulas. A number of different
+%       optimization stragegies are employed: 
 %
-%  1) Simplification:
-%  -- double negation elimination: !!P => P
+%       1) Simplification:
+%       -- double negation elimination: !!P => P
 %
-%  2) Quantifier transformation:
-%  -- negated univeral quantification: !∀x P => ∃x !P
+%       2) Quantifier transformation:
+%       -- negated univeral quantification: !∀x P => ∃x !P
 %
-%  3) Conjunct isolation:
-%  -- using & and | distributivity: (P & Q) | (P & Z) => P & (Q | Z)
-%  -- using de Morgan's laws: !(P | Q) => !Q & !P 
-%  -- using existential quantifier scoping:
-%       ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
-%       ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
-%  -- using universal quantifier scoping:
-%       ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
-%       ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
+%       3) Conjunct isolation:
+%       -- using & and | distributivity: (P & Q) | (P & Z) => P & (Q | Z)
+%       -- using de Morgan's laws: !(P | Q) => !Q & !P 
+%       -- using existential quantifier scoping:
+%               ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
+%               ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
+%       -- using universal quantifier scoping:
+%               ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
+%               ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
 %
-%  3) Conjunct splitting:
-%  -- transform P & Q into a set {P,Q}
+%       3) Conjunct splitting:
+%       -- transform P & Q into a set {P,Q}
 %
-%  4) Quantifier domain restriction (see below).
+%       4) Quantifier domain restriction (see below).
 
 optimize_constraint(neg(neg(P)),Ps) :-
         !, % !!P => P
@@ -313,37 +330,37 @@ optimize_constraint(P,Ps) :-
 %%%% quantifier domain restriction %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% restrict_q_domains(+Formula,-OptimizedFormulaSet)
+%!      restrict_q_domains(+Formula,-OptimizedFormulaSet) is det.
 %
-%  Optimizes constraints that involve existential and universal quantifiers
-%  by domain restriction.
+%       Optimizes constraints that involve existential and universal
+%       quantifiers by domain restriction.
 %
-%  Existential quantification: given an existentially quantified formula,
-%  e.g., exists(x,p(x)), the model-theoretic interpreter implemented by
-%  dfs_interpret/3 will evaluate its truth by filling in each entity in the
-%  universe for x, until p(x) is true. However, given the set of atomic
-%  propositions (properties), not all of the entities in the universe may be
-%  possible arguments for p/1. Hence, we can optimize the constraint by
-%  disjoining p(x) for all possible instances of x.
+%       Existential quantification: given an existentially quantified formula,
+%       e.g., exists(x,p(x)), the model-theoretic interpreter implemented by
+%       dfs_interpret/3 will evaluate its truth by filling in each entity in
+%       the universe for x, until p(x) is true. However, given the set of 
+%       atomic propositions (properties), not all of the entities in the 
+%       universe may be possible arguments for p/1. Hence, we can optimize the
+%       constraint by disjoining p(x) for all possible instances of x.
 %
-%  Universal quantification: given a chain of universal quantifiers ending in
-%  an implication, e.g., forall(x,forall(y,imp(p(x),q(x,y)))), the
-%  model-theoretic interpreter will evaluate its truth by filling in each
-%  entity in the universe for x and y. Again, given the set of atomic
-%  propositions (properties), however, not all of the entities in the universe
-%  may be possible arguments for p/1 and q/2. Hence, as the implication
-%  conditions the truth value of the statement on p(x), we can optimize the
-%  constraint by rewriting it as a set of implications for possible arguments
-%  for p(x) and q(x,y) only.
+%       Universal quantification: given a chain of universal quantifiers
+%       ending in an implication, e.g., forall(x,forall(y,imp(p(x),q(x,y)))),
+%       the model-theoretic interpreter will evaluate its truth by filling in
+%       each entity in the universe for x and y. Again, given the set of 
+%       atomic propositions (properties), however, not all of the entities in
+%       the universe may be possible arguments for p/1 and q/2. Hence, as the
+%       implication conditions the truth value of the statement on p(x), we
+%       can optimize the constraint by rewriting it as a set of implications
+%       for possible arguments for p(x) and q(x,y) only.
 
 restrict_q_domains(P,FIs) :-
         vis(P,[],[],VIs),
         findall(FI,fi(P,VIs,FI),FIs).
 
-%% fi(+Formula,+VarInsts,-FormulaInstance)
+%!      fi(+Formula,+VarInsts,-FormulaInstance) is nondet.
 %
-%  Returns a domain-restricted instance of Formula, by filling in possible
-%  arguments for the quantified variables.
+%       Returns a domain-restricted instance of Formula, by filling in 
+%       possible arguments for the quantified variables.
 
 fi(neg(P0),     VIs,neg(P1)     ) :- !, fi(P0,VIs,P1).
 fi(and(P0,Q0),  VIs,and(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
@@ -365,21 +382,21 @@ fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
         prop_instance(P0,VIs,P1).
 
-%% select_vi(+Var,+OldVarInsts,-NewVarInsts)
+%!      select_vi(+Var,+OldVarInsts,-NewVarInsts) is nondet.
 %
-%  Selects a single variable instantiation of Var=X from OldVarInsts,
-%  yielding NewVarInsts in which Var=X is the only instantiation of Var.
+%       Selects a single variable instantiation of Var=X from OldVarInsts,
+%       yielding NewVarInsts in which Var=X is the only instantiation of Var.
 
 select_vi(V,VIs,[V=X|VIs1]) :-
         findall(V=X,member(V=X,VIs),VIs0),
         findall(V1=Y,(member(V1=Y,VIs),V1\=V),VIs1),
         select(V=X,VIs0,_).
 
-%% prop_instance(+Prop,+VarInsts,-PropInstance)
+%!      prop_instance(+Prop,+VarInsts,-PropInstance) is nondet.
 %
-%  Returns an instance of a property. If Prop contains variables, these will
-%  be filled in using the instantiations in VarInsts. Otherwise, Prop remains
-%  unchanged.
+%       Returns an instance of a property. If Prop contains variables, these
+%       will be filled in using the instantiations in VarInsts. Otherwise,
+%       Prop remains unchanged.
 
 prop_instance(P,VIs,PI) :-
         P =.. [Prop|As],
@@ -393,10 +410,11 @@ prop_instance_([A|As],VIs,[E|IAs]) :-
 prop_instance_([A|As],VIs,[A|IAs]) :-
         prop_instance_(As,VIs,IAs).
 
-%% vis(+Formula,+VarsAcc,+VarInstsAcc,-VarInsts)
+%!      vis(+Formula,+VarsAcc,+VarInstsAcc,-VarInsts) is det.
 %
-%  Returns all possible instances of variables that occur in an antecedent
-%  of an implication that ends a chain of universal quantifiers.
+%       Returns all possible instances of variables that occur in an
+%       antecedent of an implication that ends a chain of universal
+%       quantifiers.
 
 vis(neg(P),     Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
 vis(and(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
@@ -426,10 +444,10 @@ vis_(P,[V|Vs],VIs0,VIs4) :-
 vis_(P,[_|Vs],VIsAcc,VIs) :-
         vis_(P,Vs,VIsAcc,VIs).
 
-%% q_imp_chain(+Variable,+Formula)
+%!      q_imp_chain(+Variable,+Formula) is semidet.
 %
-%  True iff Formula is universal quantifier chain ending in an implication,
-%  in which Variable occurs in the antecedent.
+%       True iff Formula is universal quantifier chain ending in an
+%       implication, in which Variable occurs in the antecedent.
 
 q_imp_chain(X,forall(_,imp(P,_))) :- 
         vis(P,[X],[],VIs),
@@ -437,12 +455,14 @@ q_imp_chain(X,forall(_,imp(P,_))) :-
 q_imp_chain(X,forall(_,P)) :-
         q_imp_chain(X,P).
 
-%% prop_template(+Prop,+Variable,-Template,-BoundVar)
+%!      prop_template(+Prop,+Variable,-Template,-BoundVar) is det.
 %
-%  Constructs a template for Prop in which Variable is bound to BoundVar, and
-%  all other arguments are replaced by wildcards:
+%       Constructs a template for Prop in which Variable is bound to BoundVar,
+%       and all other arguments are replaced by wildcards:
 %
-%  Prop = p(x,y,z), Variable = y ==> Template = p(_, BoundVar, _).
+%       ==
+%       Prop = p(x,y,z), Variable = y ==> Template = p(_, BoundVar, _).
+%       ==
 
 prop_template(P,V,Templ,X) :-
         P =.. [Prop|As],

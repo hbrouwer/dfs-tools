@@ -29,7 +29,14 @@
                 dfs_vector/3
         ]).
 
-% atomic_propositions(+ModelSet,-AtomicProps)
+/** <module> Vector space
+
+Conversion between sets of models and vector space.
+*/
+
+%!      atomic_propositions(+ModelSet,-AtomicProps) is det.
+%
+%       AtomicProps is the list of all atomic propositions in ModelSet.
 
 atomic_propositions(MS,APs) :-
         atomic_propositions_(MS,[],APs).
@@ -58,7 +65,10 @@ atomic_propositions_([(Um,Vm)|MS],APsAcc,APs) :-
 %%%% models to vector space %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_model_to_vector(+Model,-ModelVector)
+%!      dfs_model_to_vector(+Model,-ModelVector) is det.
+%
+%       ModelVector is a set of tuples (AtomicProp,State) representing
+%       the State of each atomic proposition AtomicProp in Model.
 
 dfs_model_to_vector(M,MV) :-
         dfs_init_g(M,G),
@@ -73,7 +83,11 @@ dfs_model_to_vector_(M,[AP|APs],G,[(AP,1)|Ts]) :-
 dfs_model_to_vector_(M,[AP|APs],G,[(AP,0)|Ts]) :-
         dfs_model_to_vector_(M,APs,G,Ts).
 
-% dfs_models_to_matrix(+ModelSet,-ModelMatrix)
+%!      dfs_models_to_matrix(+ModelSet,-ModelMatrix) is det.
+%
+%       Convert a set of models into a vector space.
+%
+%       @see dfs_model_to_vector/2.
 
 dfs_models_to_matrix(MS,MM) :-
         atomic_propositions(MS,APs),
@@ -85,7 +99,9 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_model_to_vector_(M,APs,G,MV),
         dfs_models_to_matrix_(MS,APs,MVs).
 
-% +ModelSet @># -Matrix
+%!      +ModelSet @># -Matrix is det.
+%
+%       @see dfs_models_to_matrix/2.
 
 MS @># MM :- dfs_models_to_matrix(MS,MM).
 
@@ -93,7 +109,10 @@ MS @># MM :- dfs_models_to_matrix(MS,MM).
 %%%% vector space to models %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_vector_to_model(+ModelVector,-Model)
+%!      dfs_vector_to_model(+ModelVector,-Model)
+%
+%       Converts ModelVector, a set of tuples (AtomicProp,State) representing
+%       the State of each atomic proposition AtomicProp, into a Model.
 
 dfs_vector_to_model(MV,(Um,Vm)) :-
         constants_and_universe(MV,Cs,Um),
@@ -102,18 +121,24 @@ dfs_vector_to_model(MV,(Um,Vm)) :-
         ifunc_inst_properties(MV,CIs,VmPs),
         append(VmCs,VmPs,Vm).
 
-% dfs_matrix_to_models(+ModelMatrix,-ModelSet)
+%!      dfs_matrix_to_models(+ModelMatrix,-ModelSet) is det.
+%
+%       Convert a vector space into a set of models.
+%
+%       @see dfs_vector_to_model/2.
 
 dfs_matrix_to_models([],[]).
 dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_vector_to_model(MV,M),
         dfs_matrix_to_models(MVs,MS).
 
-% +Matrix #>@ -ModelSet
+%!      +Matrix #>@ -ModelSet is det.
+%
+%       @see dfs_matrix_to_models/2.
 
 MM #>@ MS :- dfs_matrix_to_models(MM,MS).
 
-% constants_and_universe(+ModelVector,-Constants,-Entities)
+%!      constants_and_universe(+ModelVector,-Constants,-Entities) is det.
 
 constants_and_universe(MV,Cs,Um) :-
         %setof(C,AP^P^As^S^(member((AP,S),MV),AP =.. [P|As],member(C,As)),Cs),
@@ -121,13 +146,20 @@ constants_and_universe(MV,Cs,Um) :-
         length(Cs,N),
         dfs_entities(N,Um).
 
-% ifunc_inst_constants(+Constants,+Entities,-VmCs)
+%!      ifunc_inst_constants(+Constants,+Entities,-VmCs) is det.
+%
+%       Instantiate Constant=Entity declarations in an interpretation
+%       function VmCs.
 
 ifunc_inst_constants([],[],[]).
 ifunc_inst_constants([C|Cs],[E|Es],[C=E|VmCs]) :-
         ifunc_inst_constants(Cs,Es,VmCs).
 
-% ifunc_inst_properties(+ModelVector,+ConstantInstations,-VmPs)
+%!      ifunc_inst_properties(+ModelVector,+ConstInstantiations,-VmPs) is det.
+%
+%       Derive properties from the atomic propositions in ModelVector, and
+%       instantiate them in an interpretation function VmPs, given the
+%       constant instantiations in ConstInstantiations.
 
 ifunc_inst_properties(MV,CIs,VmPs) :-
         setof(P,AP^As^(member((AP,1),MV),AP =.. [P|As]),Ps),
@@ -149,10 +181,11 @@ ifunc_inst_property(P,[(AP,1)|Ts],CIs,[Es|PIs]) :-
 ifunc_inst_property(P,[_|Ts],CIs,PIs) :-
         ifunc_inst_property(P,Ts,CIs,PIs).
 
-%% dfs_vector(+Formula,+ModelSet|+ModelMatrix,-Vector)
+%!      dfs_vector(+Formula,+ModelSet,-Vector) is det.
+%!      dfs_vector(+Formula,+ModelMatrix,-Vector) is det.
 %
-%  A formula P is true in a model M iff [P]^M,g = 1 given an arbitrary
-%  variable assignment g
+%       A formula P is true in a model M iff [P]^M,g = 1 given an arbitrary
+%       variable assignment g
 
 dfs_vector(_,[],[]) :- !.
 dfs_vector(P,[(Um,Vm)|MS],[U|Us]) :-

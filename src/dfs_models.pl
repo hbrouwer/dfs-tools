@@ -31,24 +31,29 @@
 
 :- dynamic(user:model/1).
 
-% dfs_models(-ModelSet)
+/** <module> Models
+
+Model assertion and retraction, as well as model induction and deduction.
+*/
+
+%!      dfs_models(-ModelSet) is det
 
 dfs_models(MS) :-
         findall(M,user:model(M),MS).
 
-% dfs_assert_model(+Model)
+%!      dfs_assert_model(+Model) is det.
 
 dfs_assert_model(M) :-
         assert(user:model(M)).
 
-% dfs_assert_models(+ModelSet)
+%!      dfs_assert_models(+ModelSet) is det.
 
 dfs_assert_models([]).
 dfs_assert_models([M|Ms]) :-
         dfs_assert_model(M),
         dfs_assert_models(Ms).
 
-% dfs_retract_models/0
+%!      dfs_retract_models/0 is det.
 
 dfs_retract_models :-
         retractall(user:model(_)).
@@ -57,7 +62,10 @@ dfs_retract_models :-
 %%%% induction/deduction %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% dfs_induce_model(+Observation,-Model)
+%!      dfs_induce_model(+Observation,-Model) is det.
+%
+%       Instantiates a Model from a list of co-occuring atomic propositions
+%       denoting an Observation.
 
 dfs_induce_model(O,M) :-
         dfs_induce_model_(O,OV),
@@ -67,14 +75,19 @@ dfs_induce_model_([],[]).
 dfs_induce_model_([AP|APs],[(AP,1)|APV]) :-
         dfs_induce_model_(APs,APV).
 
-% dfs_induce_models(+Obervations,-ModelSet)
+%!      dfs_induce_models(+Obervations,-ModelSet) is det.
+%
+%       @see dfs_induce_model/2.
 
 dfs_induce_models([],[]).
 dfs_induce_models([O|Os],[M|Ms]) :-
         dfs_induce_model(O,M),
         dfs_induce_models(Os,Ms).
 
-% dfs_deduce_observation(+Model,-Observation)
+%!      dfs_deduce_observation(+Model,-Observation) is det.
+%
+%       Maps a Model into a list of co-occuring atomic propositions denoting
+%       an Observation.
 
 dfs_deduce_observation(M,OV) :-
         dfs_model_to_vector(M,V),
@@ -86,7 +99,9 @@ dfs_deduce_observation_([(AP,1)|APV],[AP|APs]) :-
 dfs_deduce_observation_([(_,0)|APV],APs) :-
         dfs_deduce_observation_(APV,APs).
 
-% dfs_deduce_observation(+ModelSet,-Observations)
+%!      dfs_deduce_observation(+ModelSet,-Observations) is det.
+%
+%       @see dfs_deduce_observations/2.
 
 dfs_deduce_observations([],[]).
 dfs_deduce_observations([M|Ms],[O|Os]) :-
