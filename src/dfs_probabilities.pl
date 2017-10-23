@@ -29,10 +29,16 @@
                 dfs_inference_score/4
         ]).
 
-%% dfs_prior_probability(+Vector,-PriorPr)
-%  dfs_prior_probability(+Formula,+ModelSet|+ModelMatrix,-PriorPr)
+/** <module> Probabilities
+
+Probabilities of formulas given a set of models.
+*/
+
+%!      dfs_prior_probability(+Vector,-PriorPr) is det.
+%!      dfs_prior_probability(+Formula,+ModelSet,-PriorPr) is det.
+%!      dfs_prior_probability(+Formula,+ModelMatrix,-PriorPr) is det.
 %
-%  Pr(P) = sum_i(v_i(P)) / |M|
+%       Pr(P) = sum_i(v_i(P)) / |M|
 
 dfs_prior_probability(VP,Pr) :-
         sum_list(VP,S),
@@ -43,12 +49,13 @@ dfs_prior_probability(P,Ms,Pr) :-
         dfs_vector(P,Ms,VP),
         dfs_prior_probability(VP,Pr).
 
-%% dfs_conj_probability(+Vector1,+Vector2,-ConjPr)
-%  dfs_conj_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-ConjPr)
+%!      dfs_conj_probability(+Vector1,+Vector2,-ConjPr) is det.
+%!      dfs_conj_probability(+Formula1,+Formula2,+ModelSet,-ConjPr) is det.
+%!      dfs_conj_probability(+Formula1,+Formula2,+ModelMatrix,-ConjPr) is det.
 %
-%            | Pr(P)    iff P = Q
-%  Pr(P&Q) = |
-%            | Pr(P&Q)  otherwise
+%                 | Pr(P)    iff P = Q
+%       Pr(P&Q) = |
+%                 | Pr(P&Q)  otherwise
 
 dfs_conj_probability(VP,VP,Pr) :-       %% VP = VQ
         !, dfs_prior_probability(VP,Pr).
@@ -61,10 +68,11 @@ dfs_conj_probability(P,P,Ms,Pr) :-      %% P = Q
 dfs_conj_probability(P,Q,Ms,Pr) :-      %% P != Q
         dfs_prior_probability(and(P,Q),Ms,Pr).
 
-%% dfs_cond_probability(+Vector1,Vector2,-ConjPr)
-%  dfs_cond_probability(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-CondPr)
+%!      dfs_cond_probability(+Vector1,Vector2,-ConjPr) is det.
+%!      dfs_cond_probability(+Formula1,+Formula2,+ModelSet,-CondPr) is det.
+%!      dfs_cond_probability(+Formula1,+Formula2,+ModelMatrix,-CondPr) is det.
 %
-%  Pr(P|Q) = Pr(P&Q) / Pr(Q)
+%       Pr(P|Q) = Pr(P&Q) / Pr(Q)
 
 dfs_cond_probability(VP,VQ,Pr) :-
         dfs_conj_probability(VP,VQ,PrPaQ),
@@ -81,12 +89,13 @@ dfs_cond_probability_(PrPaQ,PrQ,Pr) :-
         -> Pr is PrPaQ / PrQ
         ;  Pr is nan ).
 
-%% dfs_inference_score(+Vector1,+Vector2,-Score)
-%  dfs_inference_score(+Formula1,+Formula2,+ModelSet|+ModelMatrix,-Score)
+%!      dfs_inference_score(+Vector1,+Vector2,-Score) is det.
+%!      dfs_inference_score(+Formula1,+Formula2,+ModelSet,-Score) is det.
+%!      dfs_inference_score(+Formula1,+Formula2,+ModelMatrix,-Score) is det.
 %
-%                   | (Pr(P|Q) - Pr(P)) / (1 - Pr(P))    iff Pr(P|Q) > Pr(P)
-%  inference(P,Q) = |
-%                   | (Pr(P|Q) - Pr(P)) / Pr(P)          otherwise
+%                  | (Pr(P|Q) - Pr(P)) / (1 - Pr(P))    iff Pr(P|Q) > Pr(P)
+%       inf(P,Q) = |
+%                  | (Pr(P|Q) - Pr(P)) / Pr(P)          otherwise
 
 dfs_inference_score(VP,VQ,IS) :-
         dfs_cond_probability(VP,VQ,PrPgQ),

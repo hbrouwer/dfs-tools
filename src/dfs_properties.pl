@@ -27,7 +27,7 @@
 
 /** <module> First-order logic properties
 
-Various first-order logic properties over sets of models.
+Various first-order logic properties over a set of models.
 */
 
 %!      dfs_validity(+Formula,+ModelSet) is det.

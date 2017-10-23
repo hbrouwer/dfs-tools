@@ -446,7 +446,7 @@ vis_(P,[_|Vs],VIsAcc,VIs) :-
 
 %!      q_imp_chain(+Variable,+Formula) is semidet.
 %
-%       True iff Formula is universal quantifier chain ending in an
+%       True iff Formula is a universal quantifier chain ending in an
 %       implication, in which Variable occurs in the antecedent.
 
 q_imp_chain(X,forall(_,imp(P,_))) :- 
