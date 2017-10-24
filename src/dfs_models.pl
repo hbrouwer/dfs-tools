@@ -29,9 +29,10 @@
                 dfs_deduce_observations/2
         ]).
 
-:- dynamic(user:model/1).
-
 :- use_module(dfs_vector_space).
+
+:- dynamic user:model/1.
+:- public  user:model/1.
 
 /** <module> Models
 

@@ -61,14 +61,6 @@ enumerate_term_(T,N,NAcc,[ET|ETs]) :-
         NAcc0 is NAcc + 1,
         enumerate_term_(T,N,NAcc0,ETs).
 
-%!      um(+Model,-Universe) is det.
-
-um((Um,_),Um).
-
-%!      vm(+Model,-IFunc) is det.
-
-vm((_,Vm),Vm).
-
 %!      dfs_constant_instantiations(+Model,-ConstantInstantiations) is det.
 %
 %       ConstantInstantiations is a list of all constant instantiations in
@@ -205,9 +197,8 @@ dfs_interpret(P,M,G) :-
 %       True iff there is a single instantiation of Var in the set of entities
 %       Es for which Formula holds in the Model.
 
-q_exists(X,P,M,G) :-
-        um(M,Um),
-        q_exists_(X,P,Um,M,G).
+q_exists(X,P,(Um,Vm),G) :-
+        q_exists_(X,P,Um,(Um,Vm),G).
 
 q_exists_(_,_,[],_,_) :- !, false.
 q_exists_(X,P,[E|Es],M,G) :-
@@ -221,9 +212,8 @@ q_exists_(X,P,[E|Es],M,G) :-
 %       True iff for all instantions of Var in the set of entities Es, Formula
 %       holds in the Model.
 
-q_forall(X,P,M,G) :-
-        um(M,Um),
-        q_forall_(X,P,Um,M,G).
+q_forall(X,P,(Um,Vm),G) :-
+        q_forall_(X,P,Um,(Um,Vm),G).
 
 q_forall_(_,_,[],_,_) :- !, true.
 q_forall_(X,P,[E|Es],M,G) :-

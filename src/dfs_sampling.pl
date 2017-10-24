@@ -37,6 +37,16 @@
 :- use_module(dfs_io).
 :- use_module(dfs_logic).
 
+:- public
+        (@+)/1,
+        user:constant/1,
+        (@*)/1,
+        user:property/1,
+        (@#)/1,
+        user:constraint/1,
+        (<-)/2,
+        user:probability/3.
+
 /** <module> Model sampling
 
 Sample models from a world specification.

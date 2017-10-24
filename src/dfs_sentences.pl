@@ -34,6 +34,10 @@
 
 :- use_module(dfs_vector_space).
 
+:- public
+        (@~)/3,
+        user:sentence/3.
+
 /** <module> Sentence generation
 
 Generation of sentence-semantics mappings from a DCG.
