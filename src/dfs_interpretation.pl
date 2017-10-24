@@ -30,17 +30,22 @@
                 dfs_interpret/3
         ]).
 
-% dfs_variables(-Vars)
+/** <module> Model-theoretic interpretation
+
+Model-theoretic interpretation.
+*/
+
+%!      dfs_variables(-Vars) is det.
 
 dfs_variables([x,y,z|Vars]) :- 
         enumerate_term('x',10,Vars).
 
-% dfs_entities(+N,-Entities)
+%!      dfs_entities(+N,-Entities) is det.
 
 dfs_entities(N,Es) :-
         enumerate_term('e',N,Es).
 
-% enumerate_term(+Term,+N,-EnumTerms)
+%!      enumerate_term(+Term,+N,-EnumTerms) is det.
 
 enumerate_term(T,N,ETs) :-
         N0 is N + 1,
@@ -52,33 +57,35 @@ enumerate_term_(T,N,NAcc,[ET|ETs]) :-
         NAcc0 is NAcc + 1,
         enumerate_term_(T,N,NAcc0,ETs).
 
-% um(+Model,-Universe)
+%!      um(+Model,-Universe) is det.
 
 um((Um,_),Um).
 
-% vm(+Model,-IFunc)
+%!      vm(+Model,-IFunc) is det.
 
 vm((_,Vm),Vm).
 
-%% dfs_onstant_instantiations(+Model,-Constants)
+%!      dfs_constant_instantiations(+Model,-ConstantInstantiations) is det.
 %
-%  Returns all constant instantiations.
+%       ConstantInstantiations is a list of all constant instantiations in
+%       Model.
 
-dfs_constant_instantiations((_,Vm),Cs) :-
-        findall((C,E),member(C=E,Vm),Cs).
+dfs_constant_instantiations((_,Vm),CIs) :-
+        findall((C,E),member(C=E,Vm),CIs).
 
-%% dfs_term_instantiations(+Model,+G,-Terms)
+%!      dfs_term_instantiations(+Model,+G,-TermInstantiations) is det.
 %
-%  Returns all constants and variable instantiations.
+%       TermInstantiations is a list of all constant and variable
+%       instantiations in Model.
 
 dfs_term_instantiations(M,G,TIs) :-
-        dfs_constant_instantiations(M,Cs),
-        append(Cs,G,TIs).
+        dfs_constant_instantiations(M,CIs),
+        append(CIs,G,TIs).
 
-%% dfs_init_g(+Model,-G)
+%!      dfs_init_g(+Model,-G) is det.
 %
-%  Initializes the assignment function G :: Var -> Um. Variables are assigned
-%  by iterating over the entities in the Model universe.
+%       Initializes the assignment function G :: Var -> Um. Variables are
+%       assigned by iterating over the entities in the Model universe.
 
 dfs_init_g((Um,_),G) :-
         dfs_variables(Vars),
@@ -90,10 +97,10 @@ dfs_init_g_([V|Vs],[],Um,G) :-
 dfs_init_g_([V|Vs],[E|Es],Um,[(V,E)|G]) :-
         !, dfs_init_g_(Vs,Es,Um,G).
 
-%% dfs_assign(+G,+Model,+Assignments,-Gprime)
+%!      dfs_assign(+G,+Model,+Assignments,-Gprime) is det.
 %
-%  Updates the assignment function G of Model with variable Assignments,
-%  yielding assignment function G'.
+%       Updates the assignment function G of Model with variable Assignments,
+%       yielding assignment function G'.
 
 dfs_assign(G,(Um,_),As,Gp) :-
         reverse(As,AsRev),
@@ -116,28 +123,30 @@ dfs_assign_([(V,E)|G],Um,As,GpAcc,Gp) :-        %% V = g(V)
         memberchk(V/g(V),As),
         dfs_assign_(G,Um,As,[(V,E)|GpAcc],Gp).
 
-%% dfs_terms_to_entities(?Terms,+TermInstantiations,?Entities)
+%!      dfs_terms_to_entities(?Terms,+TermInstantiations,?Entities) is det.
 %
-%  Maps Terms into Entities (or vice versa), given their instantiations.
+%       Maps Terms into Entities (or vice versa), given their instantiations.
 
 dfs_terms_to_entities([],_,[]).
 dfs_terms_to_entities([T|Ts],TIs,[E|Es]) :-
         memberchk((T,E),TIs),
         dfs_terms_to_entities(Ts,TIs,Es).
 
-%% dfs_interpret(+Formula|+FormulaSet,+Model)
+%!      dfs_interpret(+Formula,+Model) is semidet.
+%!      dfs_interpret(+FormulaSet,+Model) is semidet.
 %
-%  Evaluates the truth value of Formula in Model, given an initial assignment
-%  function G.
+%       Evaluates the truth value of Formula in Model, given an initial
+%       assignment function G.
 
 dfs_interpret(P,M) :-
         dfs_init_g(M,G),
         dfs_interpret(P,M,G).
 
-%% dfs_interpret(+Formula|+FormulaSet,+Model,+G)
+%!      dfs_interpret(+Formula,+Model,+G) is semidet.
+%!      dfs_interpret(+FormulaSet,+Model,+G) is semidet.
 %
-%  Evaluates the truth value of Formula in Model, given the assignment
-%  function G.
+%       Evaluates the truth value of Formula in Model, given the assignment
+%       function G.
 
 dfs_interpret([P|Ps],M,G) :-
         !, % set of formulas 
@@ -187,10 +196,10 @@ dfs_interpret(P,M,G) :-
         dfs_terms_to_entities(Args,TIs,Es),
         eval(Pred,Es,M).
 
-%% q_exists(+Var,+Formula,+Model,+G)
+%!      q_exists(+Var,+Formula,+Model,+G) is semidet.
 %
-%  True iff there is a single instantiation of Var in the set of entities Es
-%  for which Formula holds in the Model.
+%       True iff there is a single instantiation of Var in the set of entities
+%       Es for which Formula holds in the Model.
 
 q_exists(X,P,M,G) :-
         um(M,Um),
@@ -203,10 +212,10 @@ q_exists_(X,P,[E|Es],M,G) :-
         -> true
         ;  q_exists_(X,P,Es,M,G)).
 
-%% q_forall(+Var,+Formula,+Model,+G)
+%!      q_forall(+Var,+Formula,+Model,+G) is semidet.
 %
-%  True iff for all instantions of Var in the set of entities Es, Formula
-%  holds in the Model.
+%       True iff for all instantions of Var in the set of entities Es, Formula
+%       holds in the Model.
 
 q_forall(X,P,M,G) :-
         um(M,Um),
@@ -218,9 +227,9 @@ q_forall_(X,P,[E|Es],M,G) :-
         dfs_interpret(P,M,Gp),
         q_forall_(X,P,Es,M,G).
 
-%% eval(+Property,+Entities,+Model)
+%!      eval(+Property,+Entities,+Model) is semidet.
 %
-%  Evaluate the truth value of Property for Entities in the Model.
+%       Evaluate the truth value of Property for Entities in the Model.
 
 eval(Prop,[E],(_,Vm)) :-        %% unary predicates
         !, eval_(Prop,[E],Vm).
