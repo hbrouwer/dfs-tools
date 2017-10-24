@@ -41,7 +41,11 @@ dfs_fapply(F0::(T1,T2),F1::T1,F2::T2) :-
 
 %!      dfs_fapply_deriv(+FunctionList,+ModelMatrix,-Derivation) is det.
 %
-%       
+%       Derivation is a list of tuples (Function,Vector), in which Function
+%       is the result of applying the previous function to the next argument
+%       of FunctionList, and Vector is its corresponding function vector.
+%
+%       @see dfs_function_vector/3
 
 dfs_fapply_deriv([F|Fs],MM,[(F,V)|Ts]) :-
         dfs_function_vector(F,MM,V),
@@ -55,7 +59,11 @@ dfs_fapply_deriv_(F0,[F1|Fs],MM,[(F2,V)|Ts]) :-
 
 %!      dfs_function_vector(+Function,+ModelMatrix,-FunctionVector) is det.
 %
-%       
+%       FunctionVector is a DFS vector, each component of which reflects the
+%       average truth value of each atomic proposition selected by Function,
+%       for each given model vector.
+%
+%       @see dfs_vector/3
 
 dfs_function_vector(F,MM,V) :-
         subset_model_matrix(MM,F,SMM),
@@ -68,14 +76,33 @@ dfs_function_vector_([MV|MVs],[U|Us]) :-
         U is S / L,
         dfs_function_vector_(MVs,Us).
 
-% subset_model_matrix(+ModelMatrix,+Function,-SubsetMatrix)
+%!      subset_model_matrix(+ModelMatrix,+Function,-SubsetMatrix) is det.
+%
+%       Subset a model matrix such that SubsetMatrix only contains atomic
+%       propositions selected by Function.
+%
+%       @see subset_model_vector/3       
 
 subset_model_matrix([],_,[]).
 subset_model_matrix([MV|MVs],F,[SV|SVs]) :-
         subset_model_vector(MV,F,SV),
         subset_model_matrix(MVs,F,SVs).
 
-% subset_model_vector(+ModelVector,+Function,-SubsetMatrix)
+%!      subset_model_vector(+ModelVector,+Function,-SubsetVector) is det.
+%
+%       Subset a model vector, a set of atomic propositions and their state in
+%       a given model, such that SubsetVector only contains those propositions
+%       that are selected by a Function F:
+%
+%       F::e -> in case F has type e, select all atomic propositions that
+%               have F as one of their arguments;
+%
+%       F::t -> in case F has type t, select the atomic proposition that
+%               matches F;                
+%
+%       F::? -> in case F has a complex type, select those atomic propositions
+%               that have the arguments of F as an ordered subset of their
+%               arguments.
 
 subset_model_vector([],_,[]).
 subset_model_vector([(AP,S)|Ts],F::e,[(AP,S)|STs]) :-   % <-- entities
@@ -94,7 +121,7 @@ subset_model_vector([_|Ts],F,STs) :-
 
 %!      sum_model_vector(+ModelVector,-Sum) is det.
 %
-%       Sum is the sum of all units of ModelVector.
+%       Sum is the sum of all units of vector ModelVector.
 
 sum_model_vector(MV,Sum) :-
         sum_model_vector_(MV,0,Sum).

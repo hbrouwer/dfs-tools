@@ -57,7 +57,7 @@ dfs_disjoin([P|Ps],or(P,F)) :-
 
 %!      dfs_complement(+Formula,+ComplementFormula) is det.
 %
-%       ComplementFormula is specifies the falsehood conditions of Formula.
+%       ComplementFormula specifies the falsehood conditions of Formula.
 
 dfs_complement(neg(P0),neg(P1)) :-
         !, % !P => !P
