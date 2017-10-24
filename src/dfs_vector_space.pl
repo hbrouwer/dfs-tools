@@ -99,7 +99,7 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
         dfs_model_to_vector_(M,APs,G,MV),
         dfs_models_to_matrix_(MS,APs,MVs).
 
-%!      +ModelSet @># -Matrix is det.
+%!      (+ModelSet @># -Matrix) is det.
 %
 %       @see dfs_models_to_matrix/2.
 
@@ -132,7 +132,7 @@ dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_vector_to_model(MV,M),
         dfs_matrix_to_models(MVs,MS).
 
-%!      +Matrix #>@ -ModelSet is det.
+%!      (+Matrix #>@ -ModelSet) is det.
 %
 %       @see dfs_matrix_to_models/2.
 

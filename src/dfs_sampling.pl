@@ -110,8 +110,8 @@ constants_and_universe(Cs,Um) :-
         length(Cs,N),
         dfs_entities(N,Um).
 
-%!      dfs_sample_properties(+Properties,+Universe,+G,+ConstantInstantiatons,
-%               +Constraints,+IFuncConstants,-IFunc) is det.
+%!      dfs_sample_properties(+Properties,+Universe,+G,+ConstInstantiations,
+%!              +Constraints,+IFuncConstants,-IFunc) is det.
 %
 %       Samples property instantiations using a non-deterministic,
 %       probabilistic and incremental inference-driven sampling algorithm.
@@ -368,10 +368,10 @@ fi(or(P0,Q0),   VIs,or(P1,Q1)   ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
-fi(exists(X,P0),VIs,P1) :-                                      %% +optimization
+fi(exists(X,P0),VIs,P1) :-                                      /* +optimization */
         !, findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
         dfs_disjoin(FIs,P1).
-%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         %% -optimization
+%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         /* -optimization */
 fi(forall(X,P0),VIs,P1) :-
         q_imp_chain(X,forall(X,P0)), !,
         select_vi(X,VIs,VIs0),
@@ -422,8 +422,8 @@ vis(or(P,Q),    Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(exor(P,Q),  Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
-vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).    %% +optimization
-%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).       %% -optimization
+vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).    /* +optimization */
+vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).        /* -optimization */
 vis(forall(X,P),Vs,VIs0,VIs1) :-
         !,
         (  q_imp_chain(X,forall(X,P))

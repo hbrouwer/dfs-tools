@@ -340,7 +340,7 @@ dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
         format('~w\n',[F]),
         dfs_pprint_fapply_deriv_(Ts).
 
-%!      dfs_pprint_constraints/0 is det.
+%!      dfs_pprint_constraints is det.
 %
 %       Pretty print model constraints.
 

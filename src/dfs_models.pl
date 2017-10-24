@@ -53,7 +53,7 @@ dfs_assert_models([M|Ms]) :-
         dfs_assert_model(M),
         dfs_assert_models(Ms).
 
-%!      dfs_retract_models/0 is det.
+%!      dfs_retract_models is det.
 
 dfs_retract_models :-
         retractall(user:model(_)).

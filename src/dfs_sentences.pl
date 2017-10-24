@@ -106,8 +106,8 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
         I0 is I + 1,
         distributed_vector_(N,HBs,I0,Us).
 
-%!      dfs_map_words_onto_semantics((+Sen,+Sem),+WVecs,+ModelSet,
-%               -SenSemMapping) is det.
+%!      dfs_map_words_onto_semantics(+SenSemTuples,+WVecs,+ModelSet,
+%!              -Mapping) is det.
 %
 %       Mapping is a word-by-word vector-based mapping of a sentence (Sen)
 %       onto its semantics (Sem). Word vector representation (WVecs) are
