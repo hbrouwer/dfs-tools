@@ -231,7 +231,7 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
         dfs_interpret(C,LM,G), !,
         satisfies_constraints(Cs,LM,DM,G).
 satisfies_constraints([C|Cs],LM,DM,G) :-
-        complement(C,Cc),
+        dfs_complement(C,Cc),
         \+ dfs_interpret(Cc,DM,G),
         satisfies_constraints(Cs,LM,DM,G).
 
@@ -370,7 +370,7 @@ fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exists(X,P0),VIs,P1) :-                                      %% +optimization
         !, findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
-        dfs_interpretation:disjoin(FIs,P1).
+        dfs_disjoin(FIs,P1).
 %fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         %% -optimization
 fi(forall(X,P0),VIs,P1) :-
         q_imp_chain(X,forall(X,P0)), !,

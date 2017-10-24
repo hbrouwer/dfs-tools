@@ -141,7 +141,7 @@ dfs_interpret(P,M) :-
 
 dfs_interpret([P|Ps],M,G) :-
         !, % set of formulas 
-        conjoin([P|Ps],F),
+        dfs_conjoin([P|Ps],F),
         dfs_interpret(F,M,G).
 dfs_interpret(T1=T2,M,G) :- 
         !, % t1 = t2

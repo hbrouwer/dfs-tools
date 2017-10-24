@@ -39,7 +39,6 @@ A library for Distributional Formal Semantics (DFS).
 :- reexport(dfs_io).
 :- reexport(dfs_logic).
 :- reexport(dfs_models).
-:- reexport(dfs_properties).
 :- reexport(dfs_probabilities).
 :- reexport(dfs_type_theory).
 :- reexport(dfs_sampling).

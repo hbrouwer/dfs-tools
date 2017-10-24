@@ -60,7 +60,7 @@ dfs_prior_probability(P,Ms,Pr) :-
 dfs_conj_probability(VP,VP,Pr) :-       %% VP = VQ
         !, dfs_prior_probability(VP,Pr).
 dfs_conj_probability(VP,VQ,Pr) :-       %% VP != VQ
-        conj_vector(VP,VQ,VPaQ),
+        dfs_conj_vector(VP,VQ,VPaQ),
         dfs_prior_probability(VPaQ,Pr).
 
 dfs_conj_probability(P,P,Ms,Pr) :-      %% P = Q

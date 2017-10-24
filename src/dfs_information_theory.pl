@@ -154,8 +154,8 @@ dfs_semantic_surprisal(W,Prefix,MS,S) :-
         dfs_prefix_continuations(PrefixW,CsW),
         findall(P, member((_,P), Cs), Ps),
         findall(PW,member((_,PW),CsW),PsW),
-        disjoin(Ps, Disj),
-        disjoin(PsW,DisjW),
+        dfs_disjoin(Ps, Disj),
+        dfs_disjoin(PsW,DisjW),
         dfs_surprisal(DisjW,Disj,MS,S).
 
 %% dfs_semantic_entropy(+Prefix,+ModelSet,-Entropy)
@@ -168,7 +168,7 @@ dfs_semantic_surprisal(W,Prefix,MS,S) :-
 dfs_semantic_entropy(Prefix,MS,H) :-
         dfs_prefix_continuations(Prefix,Cs),
         findall(P,member((_,P),Cs),Ps),
-        disjoin(Ps,Disj),
+        dfs_disjoin(Ps,Disj),
         dfs_entropy(Disj,MS,H).
 
 %% dfs_semantic_delta_entropy(+Word,+Prefix,+ModelSet,-DeltaEntropy)

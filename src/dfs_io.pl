@@ -360,7 +360,7 @@ dfs_pprint_constraints_([C|Cs],orig) :-
         ( Cs \= [] -> format('%%%%\n%%%%\n') ; true ),
         dfs_pprint_constraints_(Cs,orig).
 dfs_pprint_constraints_([C|Cs],optm) :-
-        complement(C,Cc),
+        dfs_complement(C,Cc),
         format_formula(C,F),
         format_formula(Cc,Fc),
         format('%%%% \t ~a\n',[F]),

@@ -19,79 +19,151 @@
 
 :- module(dfs_logic,
         [
-                conjoin/2,
-                disjoin/2,
-                complement/2,
-                conj_vector/3
+                dfs_conjoin/2,
+                dfs_disjoin/2,
+                dfs_complement/2,
+                dfs_conj_vector/3,
+                dfs_validity/2,
+                dfs_satisfiability/2,
+                dfs_entailment/3,
+                dfs_logical_equivalence/3
         ]).
 
 /** <module> First-order Logic
 
-This module implements basic first-order logic operations on formulas and
-vectors.
+This module implements basic first-order logic operations and properties on 
+formulas and vectors.
 */
 
-%!      conjoin(+FormulaSet,-Conjunction) is det.
+%!      dfs_conjoin(+FormulaSet,-Conjunction) is det.
 %
 %       True if Conjunction is a logical conjunction of the formulas in
 %       FormulaSet.
 
-conjoin([],[]).
-conjoin([P],P) :- !.
-conjoin([P|Ps],and(P,F)) :-
-        conjoin(Ps,F).
+dfs_conjoin([],[]).
+dfs_conjoin([P],P) :- !.
+dfs_conjoin([P|Ps],and(P,F)) :-
+        dfs_conjoin(Ps,F).
 
-%!      disjoin(+FormulaSet,-Disjunction) is det.
+%!      dfs_disjoin(+FormulaSet,-Disjunction) is det.
 %
 %       True if Disjunction is a logical disjunction of the formulas in
 %       FormulaSet.
 
-disjoin([],[]).
-disjoin([P],P) :- !.
-disjoin([P|Ps],or(P,F)) :-
-        disjoin(Ps,F).
+dfs_disjoin([],[]).
+dfs_disjoin([P],P) :- !.
+dfs_disjoin([P|Ps],or(P,F)) :-
+        dfs_disjoin(Ps,F).
 
-%!      complement(+Formula,+ComplementFormula)
+%!      dfs_complement(+Formula,+ComplementFormula) is det.
 %
 %       ComplementFormula is specifies the falsehood conditions of Formula.
 
-complement(neg(P0),neg(P1)) :-
+dfs_complement(neg(P0),neg(P1)) :-
         !, % !P => !P
-        complement(P0,P1).
-complement(and(P0,Q0),or(P1,Q1)) :-
+        dfs_complement(P0,P1).
+dfs_complement(and(P0,Q0),or(P1,Q1)) :-
         !, % P & Q => P | Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(or(P0,Q0),and(P1,Q1)) :-
+        dfs_complement(P0,P1),
+        dfs_complement(Q0,Q1).
+dfs_complement(or(P0,Q0),and(P1,Q1)) :-
         !, % P | Q => P & Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(exor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
+        dfs_complement(P0,P1),
+        dfs_complement(Q0,Q1).
+dfs_complement(exor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
         !, % P (+) Q => (P & Q) | (!P & !Q)
-        complement(P0,P1),
-        complement(Q0,Q1). 
-complement(imp(P0,Q0),and(neg(P1),Q1)) :-
+        dfs_complement(P0,P1),
+        dfs_complement(Q0,Q1). 
+dfs_complement(imp(P0,Q0),and(neg(P1),Q1)) :-
         !, % P -> Q => !P & Q
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neq(Q1)))) :-
+        dfs_complement(P0,P1),
+        dfs_complement(Q0,Q1).
+dfs_complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neq(Q1)))) :-
         !, % P <-> Q => (!P & Q) | (P & !Q)
-        complement(P0,P1),
-        complement(Q0,Q1).
-complement(exists(X,P0),forall(X,P1)) :-
+        dfs_complement(P0,P1),
+        dfs_complement(Q0,Q1).
+dfs_complement(exists(X,P0),forall(X,P1)) :-
         !, % ∃x P => ∀x P
-        complement(P0,P1).
-complement(forall(X,P0),exists(X,P1)) :-
+        dfs_complement(P0,P1).
+dfs_complement(forall(X,P0),exists(X,P1)) :-
         !, % ∀x P => ∃x P
-        complement(P0,P1).
-complement(P,P).
+        dfs_complement(P0,P1).
+dfs_complement(P,P).
 
-%!      conj_vector(+Vector1,+Vector2,-ConjVector) is det.
+%%%%%%%%%%%%%%%%%
+%%%% vectors %%%%
+%%%%%%%%%%%%%%%%%
+
+%!      dfs_conj_vector(+Vector1,+Vector2,-ConjVector) is det.
 %
 %       ConjVector is the conjunction (component-wise product) of Vector1
 %       and Vector2.
 
-conj_vector([],[],[]).
-conj_vector([U0|U0s],[U1|U1s],[U2|U2s]) :-
+dfs_conj_vector([],[],[]).
+dfs_conj_vector([U0|U0s],[U1|U1s],[U2|U2s]) :-
         U2 is U0 * U1,
-        conj_vector(U0s,U1s,U2s).
+        dfs_conj_vector(U0s,U1s,U2s).
+
+%%%%%%%%%%%%%%%%%%%%
+%%%% properties %%%%
+%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_validity(+Formula,+ModelSet) is det.
+%!      dfs_validity(+Formula,+ModelMatrix) is det.
+%
+%       A formula P is valid (|= P) iff P is true (not false) in all models.
+
+dfs_validity(_,[]) :- !.
+dfs_validity(P,[(Um,Vm)|MS]) :-
+        !, dfs_init_g((Um,Vm),G),
+        dfs_interpret(P,(Um,Vm),G),
+        dfs_validity(P,MS).
+dfs_validity(P,MM) :-
+        dfs_matrix_to_models(MM,MS),
+        dfs_validity(P,MS).
+
+%!      dfs_satisfiability(+Formula,+ModelSet) is det.
+%!      dfs_satisfiability(+Formula,+ModelMatrix) is det.
+%
+%       A formula P is satisfiable iff P is true in at least one model M.
+
+dfs_satisfiability(_,[]) :- !, false.
+dfs_satisfiability(P,[(Um,Vm)|MS]) :-
+        !, dfs_init_g((Um,Vm),G),
+        (  dfs_interpret(P,(Um,Vm),G)
+        -> true
+        ;  dfs_satisfiability(P,MS) ).
+dfs_satisfiability(P,MM) :-
+        dfs_matrix_to_models(MM,MS),
+        dfs_satisfiability(P,MS).
+
+%!      dfs_entailment(+Formula,+ModelSet) is det.
+%!      dfs_entailment(+Formula,+ModelMatrix) is det.
+% 
+%       A formula P entails a formula Q (P |= Q) iff Q is true in every model
+%       that satisfies P.
+
+dfs_entailment(_,_,[]) :- !.
+dfs_entailment(P,Q,[(Um,Vm)|MS]) :-
+        !, dfs_init_g((Um,Vm),G),
+        dfs_interpret(imp(P,Q),(Um,Vm),G),
+        dfs_entailment(P,Q,MS).
+dfs_entailment(P,Q,MM) :-
+        dfs_matrix_to_models(MM,MS),
+        dfs_entailment(P,Q,MS).
+
+%!      dfs_logical_equivalence(+Formula,+ModelSet) is det.
+%!      dfs_logical_equivalence(+Formula,+ModelMatrix) is det.
+%
+%       A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g
+%       for all models M and variable assignments g
+
+dfs_logical_equivalence(_,_,[]) :- !.
+dfs_logical_equivalence(P,Q,[(Um,Vm)|MS]) :-
+        !, dfs_init_g((Um,Vm),G),
+        dfs_interpret(iff(P,Q),(Um,Vm),G),
+        dfs_logical_equivalence(P,Q,MS).
+dfs_logical_equivalence(P,Q,MM) :-
+        dfs_matrix_to_models(MM,MS),
+        dfs_logical_equivalence(P,Q,MS).
+
