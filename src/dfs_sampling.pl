@@ -29,6 +29,13 @@
         ]).
 
 :- use_module(library(debug)). % topic: dfs_sampling
+:- use_module(library(lists)).
+:- use_module(library(ordsets)).
+:- use_module(library(random)).
+
+:- use_module(dfs_interpretation).
+:- use_module(dfs_io).
+:- use_module(dfs_logic).
 
 /** <module> Model sampling
 

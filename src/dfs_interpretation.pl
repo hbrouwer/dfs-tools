@@ -30,6 +30,10 @@
                 dfs_interpret/3
         ]).
 
+:- use_module(library(lists)).
+
+:- use_module(dfs_logic).
+
 /** <module> Model-theoretic interpretation
 
 Model-theoretic interpretation.

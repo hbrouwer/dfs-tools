@@ -29,6 +29,9 @@
                 dfs_logical_equivalence/3
         ]).
 
+:- use_module(dfs_interpretation).
+:- use_module(dfs_vector_space).
+
 /** <module> First-order Logic
 
 This module implements basic first-order logic operations and properties on 

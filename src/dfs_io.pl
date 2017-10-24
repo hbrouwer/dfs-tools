@@ -31,7 +31,13 @@
                 dfs_pprint_constraints/0
         ]).
 
-:- use_module(library(clpfd),[transpose/2]).
+:- use_module(library(aggregate)).
+:- use_module(library(clpfd)).
+:- use_module(library(lists)).
+:- use_module(library(readutil)).
+
+:- use_module(dfs_interpretation).
+:- use_module(dfs_logic).
 
 /** <module> IO
 

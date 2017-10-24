@@ -30,6 +30,10 @@
                 dfs_sentence_frequency/2
         ]).
 
+:- use_module(library(lists)).
+
+:- use_module(dfs_vector_space).
+
 /** <module> Sentence generation
 
 Generation of sentence-semantics mappings from a DCG.

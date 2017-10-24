@@ -29,6 +29,11 @@
                 dfs_vector/3
         ]).
 
+:- use_module(library(lists)).
+:- use_module(library(ordsets)).
+
+:- use_module(dfs_interpretation).
+
 /** <module> Vector space
 
 Conversion between sets of models and vector space.

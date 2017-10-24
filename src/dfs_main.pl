@@ -20,7 +20,6 @@
 :- module(dfs,
         [
                 dfs_main/0,
-                dfs_models/1,
                 
                 dfs_version_major/1,
                 dfs_version_minor/1,
@@ -34,16 +33,27 @@ A library for Distributional Formal Semantics (DFS).
 @tbd Elaborate on DFS.
 */
 
-:- reexport(dfs_information_theory).
-:- reexport(dfs_interpretation).
-:- reexport(dfs_io).
-:- reexport(dfs_logic).
-:- reexport(dfs_models).
-:- reexport(dfs_probabilities).
-:- reexport(dfs_type_theory).
-:- reexport(dfs_sampling).
-:- reexport(dfs_sentences).
-:- reexport(dfs_vector_space).
+:- use_module(dfs_information_theory).
+:- use_module(dfs_interpretation).
+:- use_module(dfs_io).
+:- use_module(dfs_logic).
+:- use_module(dfs_models).
+:- use_module(dfs_probabilities).
+:- use_module(dfs_type_theory).
+:- use_module(dfs_sampling).
+:- use_module(dfs_sentences).
+:- use_module(dfs_vector_space).
+
+% :- reexport(dfs_information_theory).
+% :- reexport(dfs_interpretation).
+% :- reexport(dfs_io).
+% :- reexport(dfs_logic).
+% :- reexport(dfs_models).
+% :- reexport(dfs_probabilities).
+% :- reexport(dfs_type_theory).
+% :- reexport(dfs_sampling).
+% :- reexport(dfs_sentences).
+% :- reexport(dfs_vector_space).
 
 :- initialization(dfs_main).
 

@@ -31,6 +31,8 @@
 
 :- dynamic(user:model/1).
 
+:- use_module(dfs_vector_space).
+
 /** <module> Models
 
 Model assertion and retraction, as well as model induction and deduction.

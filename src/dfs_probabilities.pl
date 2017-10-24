@@ -29,6 +29,11 @@
                 dfs_inference_score/4
         ]).
 
+:- use_module(library(lists)).
+
+:- use_module(dfs_logic).
+:- use_module(dfs_vector_space).
+
 /** <module> Probabilities
 
 Probabilities of formulas given a set of models.

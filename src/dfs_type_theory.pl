@@ -26,6 +26,8 @@
                 dfs_function_vector/3
         ]).
 
+:- use_module(library(lists)).
+
 /** <module> Type theory
 
 Function application in vector space.

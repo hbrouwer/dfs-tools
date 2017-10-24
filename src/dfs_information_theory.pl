@@ -36,6 +36,15 @@
                 dfs_fapply_delta_entropy/4
         ]).
 
+:- use_module(library(lists)).
+:- use_module(library(ordsets)).
+
+:- use_module(dfs_logic).
+:- use_module(dfs_probabilities).
+:- use_module(dfs_sentences).
+:- use_module(dfs_type_theory).
+:- use_module(dfs_vector_space).
+
 /** <module> Information theory
 
 Information theoretic metrics for vectors, and for formulas given a set of
