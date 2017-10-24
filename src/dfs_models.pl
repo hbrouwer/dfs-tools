@@ -104,7 +104,7 @@ dfs_deduce_observation_([(_,0)|APV],APs) :-
 
 %!      dfs_deduce_observations(+ModelSet,-Observations) is det.
 %
-%       @see dfs_deduce_observations/2.
+%       @see dfs_deduce_observation/2.
 
 dfs_deduce_observations([],[]).
 dfs_deduce_observations([M|Ms],[O|Os]) :-
