@@ -44,9 +44,9 @@
 Basic IO and pretty printing facilities.
 */
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% reading/writing models %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% reading/writing models %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_write_models(+ModelSet,+File) is det.
 %
@@ -81,9 +81,9 @@ dfs_read_models_(Stream,MS) :-
            MS = [M|MSAcc]
         ;  MS = [] ).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% reading/writing matrices %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% reading/writing matrices %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_write_matrix(+ModelMatrix,+File) is det.
 %
@@ -166,9 +166,9 @@ vector_to_model_vector([],[],[]).
 vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
         vector_to_model_vector(Us,APs,Ts).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% pretty printing %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% pretty printing %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_pprint_formula(+Formula) is det.
 %

@@ -264,9 +264,9 @@ probabilistic_choice(P,M,G) :-
         !,
         maybe(Pr).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% constraint optimization %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% constraint optimization %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      optimize_constraints(+Constraints,-OptimizedConstraints) is det.
 %
@@ -343,9 +343,9 @@ optimize_constraint(and(P,Q),Ps) :-
 optimize_constraint(P,Ps) :-
         restrict_q_domains(P,Ps).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% quantifier domain restriction %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% quantifier domain restriction %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      restrict_q_domains(+Formula,-OptimizedFormulaSet) is det.
 %

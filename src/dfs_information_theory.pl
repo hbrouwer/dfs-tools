@@ -116,9 +116,9 @@ dfs_delta_entropy(P,Q,Ms,DH) :-
         dfs_entropy(Q,Ms,HQ),
         DH is HQ - HP.
 
-%%%%%%%%%%%%%%%%%%%
-%%%% sentences %%%%
-%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%
+                %%%% sentences %%%%
+                %%%%%%%%%%%%%%%%%%%
 
 %!      dfs_syntactic_surprisal(+Word,+Prefix,-Surprisal) is det.
 %
@@ -202,9 +202,9 @@ dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
         dfs_semantic_entropy(PrefixW,MS,HW),
         DH is H - HW.
 
-%%%%%%%%%%%%%%%%%%%%%
-%%%% type theory %%%%
-%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%
+                %%%% type theory %%%%
+                %%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_fapply_surprisal(+Arg,+Function,+ModelSet,-Surprisal) is det.
 %!      dfs_fapply_surprisal(+Arg,+Function,+ModelMatrix,-Surprisal) is det.

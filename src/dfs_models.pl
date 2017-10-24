@@ -61,9 +61,9 @@ dfs_assert_models([M|Ms]) :-
 dfs_retract_models :-
         retractall(user:model(_)).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% induction/deduction %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% induction/deduction %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_induce_model(+Observation,-Model) is det.
 %

@@ -93,9 +93,9 @@ dfs_complement(forall(X,P0),exists(X,P1)) :-
         dfs_complement(P0,P1).
 dfs_complement(P,P).
 
-%%%%%%%%%%%%%%%%%
-%%%% vectors %%%%
-%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%
+                %%%% vectors %%%%
+                %%%%%%%%%%%%%%%%%
 
 %!      dfs_conj_vector(+Vector1,+Vector2,-ConjVector) is det.
 %
@@ -107,9 +107,9 @@ dfs_conj_vector([U0|U0s],[U1|U1s],[U2|U2s]) :-
         U2 is U0 * U1,
         dfs_conj_vector(U0s,U1s,U2s).
 
-%%%%%%%%%%%%%%%%%%%%
-%%%% properties %%%%
-%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%
+                %%%% properties %%%%
+                %%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_validity(+Formula,+ModelSet) is det.
 %!      dfs_validity(+Formula,+ModelMatrix) is det.
