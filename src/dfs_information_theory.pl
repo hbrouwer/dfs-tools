@@ -79,7 +79,7 @@ dfs_surprisal_(PrPgQ,S) :-
 %       H(P) = - sum_{s in S} Pr(s|P) * log Pr(s|P)
 %
 %       where the set S consists of all possible points in the DFS space that
-%       are fully specified with respsect to the atomic propositions; that is,
+%       are fully specified with respect to the atomic propositions; that is,
 %       each point s in S constitutes a unique logical combination of all
 %       atomic propostions.
 
