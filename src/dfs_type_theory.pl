@@ -1,5 +1,4 @@
 /*
-/*
  * Copyright 2017-2018 Harm Brouwer <me@hbrouwer.eu>
  *     and Noortje Venhuizen <njvenhuizen@gmail.com>
  *
