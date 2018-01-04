@@ -1,7 +1,6 @@
 /*
- * dfs_type_theory.pl
- *
- * Copyright 2017 Harm Brouwer <me@hbrouwer.eu>
+/*
+ * Copyright 2017-2018 Harm Brouwer <me@hbrouwer.eu>
  *     and Noortje Venhuizen <njvenhuizen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
