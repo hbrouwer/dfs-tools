@@ -119,7 +119,7 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
 %       onto its semantics (Sem). Word vector representation (WVecs) are
 %       pre-specified (@see dfs_word_vectors/2), and a vector representation
 %       of the sentence meaning, specified by the FOL formula Sem, is derived
-%       for ModelSet.       
+%       from ModelSet.       
 
 dfs_map_words_onto_semantics((S,P),WVs,MS,SPM) :-
         dfs_vector(P,MS,PV),
