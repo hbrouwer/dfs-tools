@@ -125,43 +125,37 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_map_words_onto_semantics(+SenSemTuple,+WVecs,+ModelSet,
-%!              -SenSemMapping) is det.
+%!              -Mapping) is det.
 %
-%       SenSemMapping is a triple (Sen,Sem,Mapping), where Mapping is a
-%       word-by-word vector-based mapping of a sentence (Sen) onto its
-%       semantics (Sem). Word vector representation (WVecs) are pre-specified
-%       (e.g., using dfs_localist_word_vectors/2), and a vector representation
-%       of the sentence meaning, specified by the FOL formula Sem, is derived
+%       Mapping is a quadruple (Sen,Sem,[SenVecs],[SemVec]), where 
+%       SenVecs is a word-by-word vector-based mapping of a sentence (Sen)
+%       onto single SemVec, a vector representation of its semantics (Sem).
+%
+%       Word vector representation (WVecs) are pre-specified (e.g., using 
+%       dfs_localist_word_vectors/2), and a vector representation of the
+%       sentence meaning, specified by the FOL formula Sem, is derived
 %       from ModelSet.
 
-dfs_map_words_onto_semantics((S,P),WVs,MS,(S,P,WPM)) :-
-        dfs_vector(P,MS,PV),
-        dfs_map_words_onto_semantics_(S,PV,WVs,WPM).
+dfs_map_words_onto_semantics((S,P),WVs,MS,(S,P,IVs,[TV])) :-
+        dfs_vector(P,MS,TV),
+        findall(IV,(member(W,S),memberchk((W,IV),WVs)),IVs).
 
-dfs_map_words_onto_semantics_([],_,_,[]).
-dfs_map_words_onto_semantics_([W|Ws],PV,WVs,[(W,WV,PV)|WPMs]) :-
-        memberchk((W,WV),WVs),
-        dfs_map_words_onto_semantics_(Ws,PV,WVs,WPMs).
-
-%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-SenSemMappings)
-%!              is det.
+%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
 %
-%       SenSemMappings is a list of triples (Sen,Sem,Mapping).
+%       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]).
 %
 %       @see dfs_maps_words_onto_semantics/4
 
 dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
         dfs_sentences(SPMs),
         findall(WPM,
-          ( member(SPM,SPMs),
-            dfs_map_words_onto_semantics(SPM,WVs,MS,WPM) ),
+          ( member(SPM,SPMs), dfs_map_words_onto_semantics(SPM,WVs,MS,WPM) ),
           WPMs).
 
-%!      dfs_localist_sentence_semantics_mappings(+ModelSet,-SenSemMappings)
-%!              is det.
+%!      dfs_localist_sentence_semantics_mappings(+ModelSet,-Mappings) is det.
 %
-%       SenSemMappings is a list of triples (Sen,Sem,Mapping). Word vectors
-%       are localist.
+%       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]). Word
+%       vectors are localist representations.
 %
 %       @see dfs_sentence_semantics_mappings/3
 %       @see dfs_maps_words_onto_semantics/4
@@ -176,44 +170,38 @@ dfs_localist_sentence_semantics_mappings(MS,WPMs) :-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_map_semantics_onto_words(+SenSemTuple,+WVecs,+ModelSet,
-%!              -SenSemMapping) is det.
+%!              -Mapping) is det.
 %
-%       SenSemMapping is a triple (Sen,Sem,Mapping), where Mapping is a
-%       mapping of a sentence Semantics (Sem) onto a word-by-word
-%       vector-based representation of that sentence (Sen). Word vector
-%       representation (WVecs) are pre-specified (e.g., using
+%       Mapping is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where SemVec
+%       is a vector representations a sentence semantics (Sem), and SenVecs
+%       a word-by-word vector-based representation of the corresponding
+%       sentence (Sen).
+%
+%       Word vector representation (WVecs) are pre-specified (e.g., using 
 %       dfs_localist_word_vectors/2), and a vector representation of the
-%       sentence meaning, specified by the FOL formula Sem, is derived from
-%       ModelSet.
+%       sentence meaning, specified by the FOL formula Sem, is derived
+%       from ModelSet.
 
-dfs_map_semantics_onto_words((S,P),WVs,MS,(S,P,PWM)) :-
-        dfs_vector(P,MS,PV),
-        dfs_map_semantics_onto_words_(S,PV,WVs,PWM).
+dfs_map_semantics_onto_words((S,P),WVs,MS,(S,P,[IV],TVs)) :-
+        dfs_vector(P,MS,IV),
+        findall(TV,(member(W,S),memberchk((W,TV),WVs)),TVs).
 
-dfs_map_semantics_onto_words_([],_,_,[]).
-dfs_map_semantics_onto_words_([W|Ws],PV,WVs,[(W,PV,WV)|PWMs])  :-
-        memberchk((W,WV),WVs),
-        dfs_map_semantics_onto_words_(Ws,PV,WVs,PWMs).
-
-%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet-SenSemMappings)
-%!              is det.
+%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
 %
-%       SenSemMappings is a list of triples (Sen,Sem,Mapping).
+%       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]).
 %
 %       @see dfs_map_semantics_onto_words/4
 
 dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
         dfs_sentences(SPMs),
         findall(PWM,
-          ( member(SPM,SPMs),
-            dfs_map_semantics_onto_words(SPM,WVs,MS,PWM) ),
+          ( member(SPM,SPMs), dfs_map_semantics_onto_words(SPM,WVs,MS,PWM) ),
           PWMs).
 
-%!      dfs_localist_semantics_sentence_mappings(+ModelSet,-SenSemMappings)
-%!              is det.
+%!      dfs_localist_semantics_sentence_mappings(+ModelSet,Mappings) is det.
 %
-%       SenSemMappings is a list of triples (Sen,Sem,Mapping). Word vectors
-%       are localist.
+%       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]). Word
+%       vectors are localist representations.
 %
 %       @see dfs_semantics_sentence_mappings/3
 %       @see dfs_map_semantics_onto_words/4
