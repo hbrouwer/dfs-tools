@@ -42,6 +42,8 @@ A library for Distributional Formal Semantics (DFS).
 :- reexport(dfs_sentences).
 :- reexport(dfs_vector_space).
 
+:- reexport(coals).
+
 :- initialization(dfs_main).
 
 dfs_version_major(0).
