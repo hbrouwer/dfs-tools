@@ -26,7 +26,11 @@
                 dfs_pprint_propositions/1,
                 dfs_pprint_matrix/1,
                 dfs_pprint_fapply_deriv/1,
-                dfs_pprint_constraints/0
+                dfs_pprint_constraints/0,
+
+                % MESH output hooks
+                dfs_write_mesh_comprh_set/2,
+                dfs_write_mesh_produc_set/2
         ]).
 
 :- use_module(library(aggregate)).
@@ -371,3 +375,15 @@ dfs_pprint_constraints_([C|Cs],optm) :-
         format('%%%% \t\t => ~a\n',[Fc]),
         ( Cs \= [] -> format('%%%%\n') ; true ),
         dfs_pprint_constraints_(Cs,optm).
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% writing MESH sets %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_write_mesh_comprh_set(+Mappings,+File) is det.
+
+dfs_write_mesh_comprh_set(_,_).
+
+%!      dfs_write_mesh_produc_set(+Mappings,+File) is det.
+
+dfs_write_mesh_produc_set(_,_).

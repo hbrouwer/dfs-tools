@@ -21,8 +21,16 @@
 
                 dfs_sentences/1,
                 dfs_words/1,
-                dfs_word_vectors/2,
+                dfs_localist_word_vectors/2,
+                
                 dfs_map_words_onto_semantics/4,
+                dfs_sentence_semantics_mappings/3,
+                dfs_localist_sentence_semantics_mappings/2,
+                
+                dfs_map_words_onto_semantics/4,
+                dfs_semantics_sentence_mappings/3,
+                dfs_localist_semantics_sentence_mappings/2,
+                
                 dfs_prefix_continuations/2,
                 dfs_prefix_frequency/2,
                 dfs_sentence_frequency/2
@@ -76,15 +84,15 @@ dfs_words(Ws) :-
 %       WordVectors is a list of tuples (Word,Vector) where Vector is a
 %       localist vector representation for Word.
 
-dfs_word_vectors(Ws,WVs) :-
+dfs_localist_word_vectors(Ws,WVs) :-
        length(Ws,L),
-       dfs_word_vectors_(Ws,L,1,WVs).
+       dfs_localist_word_vectors_(Ws,L,1,WVs).
 
-dfs_word_vectors_([],_,_,[]).
-dfs_word_vectors_([W|Ws],L,I,[(W,V)|WVs]) :-
+dfs_localist_word_vectors_([],_,_,[]).
+dfs_localist_word_vectors_([W|Ws],L,I,[(W,V)|WVs]) :-
         localist_vector(L,I,V),
         I0 is I + 1,
-        dfs_word_vectors_(Ws,L,I0,WVs).
+        dfs_localist_word_vectors_(Ws,L,I0,WVs).
 
 %!      localist_vector(+NDims,+HotBit,-Vector) is det.
 %
@@ -112,23 +120,112 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
         I0 is I + 1,
         distributed_vector_(N,HBs,I0,Us).
 
-%!      dfs_map_words_onto_semantics(+SenSemTuples,+WVecs,+ModelSet,
-%!              -Mapping) is det.
-%
-%       Mapping is a word-by-word vector-based mapping of a sentence (Sen)
-%       onto its semantics (Sem). Word vector representation (WVecs) are
-%       pre-specified (@see dfs_word_vectors/2), and a vector representation
-%       of the sentence meaning, specified by the FOL formula Sem, is derived
-%       from ModelSet.       
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% sentences onto semantics %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dfs_map_words_onto_semantics((S,P),WVs,MS,SPM) :-
+%!      dfs_map_words_onto_semantics(+SenSemTuple,+WVecs,+ModelSet,
+%!              -SenSemMapping) is det.
+%
+%       SenSemMapping is a triple (Sen,Sem,Mapping), where Mapping is a
+%       word-by-word vector-based mapping of a sentence (Sen) onto its
+%       semantics (Sem). Word vector representation (WVecs) are pre-specified
+%       (e.g., using dfs_localist_word_vectors/2), and a vector representation
+%       of the sentence meaning, specified by the FOL formula Sem, is derived
+%       from ModelSet.
+
+dfs_map_words_onto_semantics((S,P),WVs,MS,(S,P,WPM)) :-
         dfs_vector(P,MS,PV),
-        dfs_map_words_onto_semantics_(S,PV,WVs,SPM).
+        dfs_map_words_onto_semantics_(S,PV,WVs,WPM).
 
 dfs_map_words_onto_semantics_([],_,_,[]).
 dfs_map_words_onto_semantics_([W|Ws],PV,WVs,[(W,WV,PV)|WPMs]) :-
         memberchk((W,WV),WVs),
         dfs_map_words_onto_semantics_(Ws,PV,WVs,WPMs).
+
+%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-SenSemMappings)
+%!              is det.
+%
+%       SenSemMappings is a list of triples (Sen,Sem,Mapping).
+%
+%       @see dfs_maps_words_onto_semantics/4
+
+dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
+        dfs_sentences(SPMs),
+        findall(WPM,
+          ( member(SPM,SPMs),
+            dfs_map_words_onto_semantics(SPM,WVs,MS,WPM) ),
+          WPMs).
+
+%!      dfs_localist_sentence_semantics_mappings(+ModelSet,-SenSemMappings)
+%!              is det.
+%
+%       SenSemMappings is a list of triples (Sen,Sem,Mapping). Word vectors
+%       are localist.
+%
+%       @see dfs_sentence_semantics_mappings/3
+%       @see dfs_maps_words_onto_semantics/4
+
+dfs_localist_sentence_semantics_mappings(MS,WPMs) :-
+        dfs_words(Ws),
+        dfs_localist_word_vectors(Ws,WVs),
+        dfs_sentence_semantics_mappings(WVs,MS,WPMs).
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% semantics onto sentences %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_map_semantics_onto_words(+SenSemTuple,+WVecs,+ModelSet,
+%!              -SenSemMapping) is det.
+%
+%       SenSemMapping is a triple (Sen,Sem,Mapping), where Mapping is a
+%       mapping of a sentence Semantics (Sem) onto a word-by-word
+%       vector-based representation of that sentence (Sen). Word vector
+%       representation (WVecs) are pre-specified (e.g., using
+%       dfs_localist_word_vectors/2), and a vector representation of the
+%       sentence meaning, specified by the FOL formula Sem, is derived from
+%       ModelSet.
+
+dfs_map_semantics_onto_words((S,P),WVs,MS,(S,P,PWM)) :-
+        dfs_vector(P,MS,PV),
+        dfs_map_semantics_onto_words_(S,PV,WVs,PWM).
+
+dfs_map_semantics_onto_words_([],_,_,[]).
+dfs_map_semantics_onto_words_([W|Ws],PV,WVs,[(W,PV,WV)|PWMs])  :-
+        memberchk((W,WV),WVs),
+        dfs_map_semantics_onto_words_(Ws,PV,WVs,PWMs).
+
+%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet-SenSemMappings)
+%!              is det.
+%
+%       SenSemMappings is a list of triples (Sen,Sem,Mapping).
+%
+%       @see dfs_map_semantics_onto_words/4
+
+dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
+        dfs_sentences(SPMs),
+        findall(PWM,
+          ( member(SPM,SPMs),
+            dfs_map_semantics_onto_words(SPM,WVs,MS,PWM) ),
+          PWMs).
+
+%!      dfs_localist_semantics_sentence_mappings(+ModelSet,-SenSemMappings)
+%!              is det.
+%
+%       SenSemMappings is a list of triples (Sen,Sem,Mapping). Word vectors
+%       are localist.
+%
+%       @see dfs_semantics_sentence_mappings/3
+%       @see dfs_map_semantics_onto_words/4
+
+dfs_localist_semantics_sentence_mappings(MS,PWMs) :-
+        dfs_words(Ws),
+        dfs_localist_word_vectors(Ws,WVs),
+        dfs_semantics_sentence_mappings(WVs,MS,PWMs).
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% sentence/prefix frequencies %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_prefix_continuations(+Prefix,SemSenMappings) is det.
 %
