@@ -181,14 +181,14 @@ correlation_matrix_([V|Vs],[RT|RTs],CTs,GT,[CV|CVs]) :-
         correlation_matrix_(Vs,RTs,CTs,GT,CVs).
 
 correlation_matrix__([],_,[],_,[]).
-correlation_matrix__([U|Us],RT,[CT|CTs],GT,[C|Cs]) :-
-        N is GT * U - RT * CT,
+correlation_matrix__([F|Fs],RT,[CT|CTs],GT,[C|Cs]) :-
+        N is GT * F - RT * CT,
         D is sqrt(RT * (GT - RT) * CT * (GT - CT)),
         (  N > 0.0,             % norm: 0               if w'{a,b} < 0
            D > 0.0
         -> C is sqrt(N / D)     % norm: sqrt(w'{a,b})   otherwise
         ;  C is 0.0 ),
-        correlation_matrix__(Us,RT,CTs,GT,Cs).
+        correlation_matrix__(Fs,RT,CTs,GT,Cs).
 
 %!      matrix_totals(+Matrix,-RowTotals,-ColTotals,-GrandTotal)
 %!              is det.
@@ -272,11 +272,11 @@ binary_matrix([V|Vs],[BV|BVs]) :-
         binary_matrix(Vs,BVs).
 
 binary_matrix_([],[]).
-binary_matrix_([U|Us],[1|BUs]) :-
-        U > 0.0, !,
-        binary_matrix_(Us,BUs).
-binary_matrix_([_|Us],[0|BUs]) :-
-        binary_matrix_(Us,BUs).
+binary_matrix_([C|Cs],[1|BUs]) :-
+        C > 0.0, !,
+        binary_matrix_(Cs,BUs).
+binary_matrix_([_|Cs],[0|BUs]) :-
+        binary_matrix_(Cs,BUs).
 
 %!      coals_padded_binary_vectors(+WindowType,+WindowSize,+NHotPaddingBits,
 %!              -CoalsVectors) is det.
@@ -304,20 +304,20 @@ coals_padded_binary_vectors(WType,WSize,NHotPad,WCVs) :-
 %
 %           NPaddingBits = MaxSim * NHotPaddingsBits
 
-padding_bits(CVs,NPadHot,NPad) :-
-        list_to_ord_set(CVs,UCVs),
-        padding_bits_(UCVs,CVs,NPadHot,0,NPad).
+padding_bits(BVs,NPadHot,NPad) :-
+        list_to_ord_set(BVs,UBVs),
+        padding_bits_(UBVs,BVs,NPadHot,0,NPad).
 
 padding_bits_([],_,NPadHot,MaxSim,NPad) :-
         NPad is MaxSim * NPadHot,
         debug(coals,'Padding bits: ~d * ~d = ~d',[MaxSim,NPadHot,NPad]).
-padding_bits_([UCV|UCVs],CVs,NPadHot,MaxSim,NPad) :-
-        findall(UCV,member(UCV,CVs),SimCVs),
-        length(SimCVs,NumSim),
+padding_bits_([UBV|UBVs],BVs,NPadHot,MaxSim,NPad) :-
+        findall(UBV,member(UBV,BVs),SimBVs),
+        length(SimBVs,NumSim),
         (  NumSim > MaxSim
         -> MaxSim0 is NumSim
         ;  MaxSim0 is MaxSim ),
-        padding_bits_(UCVs,CVs,NPadHot,MaxSim0,NPad).
+        padding_bits_(UBVs,BVs,NPadHot,MaxSim0,NPad).
 
 %!      append_identifiers(+BinMatrix,+NPaddingBits,+NHotPaddingBits,
 %!              +PaddedBinMatrix) is det.
@@ -326,18 +326,25 @@ padding_bits_([UCV|UCVs],CVs,NPadHot,MaxSim,NPad) :-
 %       identifiers of NPaddingBits, in which NHotPaddingBits are set to
 %       hot (i.e., 1).
 
-append_identifiers(BM,NPad,NPadHot,PBM) :-
+append_identifiers(BVs,NPad,NPadHot,PBVs) :-
         findall(I,binary_identifier(NPad,NPadHot,I),Is),
-        append_identifiers_(BM,Is,[],PBM), !.
+        append_identifiers_(BVs,Is,[],PBVs), !.
 
 append_identifiers_([],_,_,[]).
-append_identifiers_([BV|BVs],Is,AIsAcc,[PV|PVs]) :-
-        random_permutation(Is,Is0),
-        member(IV0,Is0),
+% append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
+%         random_permutation(Is,Is0),
+%         member(IV0,Is0),
+%         \+ ( member((BV,IV1),AIsAcc), featural_overlap(IV0,IV1) ),
+%         append(BV,IV0,PBV),
+%         debug(coals,'~w => ~w',[BV,PBV]),
+%         append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PBVs).
+append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
+        select(IV0,Is,Is0),
         \+ ( member((BV,IV1),AIsAcc), featural_overlap(IV0,IV1) ),
-        append(BV,IV0,PV),
-        debug(coals,'~w => ~w',[BV,PV]),
-        append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PVs).
+        append(BV,IV0,PBV),
+        debug(coals,'~w => ~w',[BV,PBV]),
+        append(Is0,[IV0],Is1),
+        append_identifiers_(BVs,Is1,[(BV,IV0)|AIsAcc],PBVs).
 
 %!      binary_identifier(+NBits,+NHotBits,-Identifier) is det.
 %
