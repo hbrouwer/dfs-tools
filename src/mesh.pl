@@ -22,6 +22,11 @@
 
 :- use_module(library(lists)).
 
+/** <module> MESH
+
+Write MESH-readable sets.
+*/
+
 %!      mesh_write_set(+Mappings,+File) is det.
 %
 %       Write all sentence-semantics or semantics-sentence Mappings to File
@@ -64,7 +69,7 @@ mesh_format_item((S,P,IVs,TVs),Stream) :-
         length(TVs,NumTargets),
         NumEvents is max(NumInputs,NumTargets),
         format(Stream,' ~d',[NumEvents]),
-        format_formula(P,FP),
+        dfs_io:format_formula(P,FP),
         format(Stream,' \"~w\"~n',[FP]),
         mesh_format_events(IVs,TVs,Stream),
         format(Stream,'~n',[]).

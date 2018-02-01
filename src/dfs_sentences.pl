@@ -22,15 +22,10 @@
                 dfs_sentences/1,
                 dfs_words/1,
                 dfs_localist_word_vectors/2,
-                
                 dfs_map_words_onto_semantics/4,
                 dfs_sentence_semantics_mappings/3,
-                dfs_localist_sentence_semantics_mappings/2,
-                
                 dfs_map_words_onto_semantics/4,
                 dfs_semantics_sentence_mappings/3,
-                dfs_localist_semantics_sentence_mappings/2,
-                
                 dfs_prefix_continuations/2,
                 dfs_prefix_frequency/2,
                 dfs_sentence_frequency/2
@@ -46,7 +41,7 @@
 
 /** <module> Sentence generation
 
-Generation of sentence-semantics mappings from a DCG.
+Generation of sentence-semantics (and vice versa) mappings from a DCG.
 */
 
 %!      sentence(-Semantics,?Sentence,?Rest) is nondet.
@@ -152,19 +147,6 @@ dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
           ( member(SPM,SPMs), dfs_map_words_onto_semantics(SPM,WVs,MS,WPM) ),
           WPMs).
 
-%!      dfs_localist_sentence_semantics_mappings(+ModelSet,-Mappings) is det.
-%
-%       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]). Word
-%       vectors are localist representations.
-%
-%       @see dfs_sentence_semantics_mappings/3
-%       @see dfs_maps_words_onto_semantics/4
-
-dfs_localist_sentence_semantics_mappings(MS,WPMs) :-
-        dfs_words(Ws),
-        dfs_localist_word_vectors(Ws,WVs),
-        dfs_sentence_semantics_mappings(WVs,MS,WPMs).
-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% semantics onto sentences %%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -197,19 +179,6 @@ dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
         findall(PWM,
           ( member(SPM,SPMs), dfs_map_semantics_onto_words(SPM,WVs,MS,PWM) ),
           PWMs).
-
-%!      dfs_localist_semantics_sentence_mappings(+ModelSet,Mappings) is det.
-%
-%       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]). Word
-%       vectors are localist representations.
-%
-%       @see dfs_semantics_sentence_mappings/3
-%       @see dfs_map_semantics_onto_words/4
-
-dfs_localist_semantics_sentence_mappings(MS,PWMs) :-
-        dfs_words(Ws),
-        dfs_localist_word_vectors(Ws,WVs),
-        dfs_semantics_sentence_mappings(WVs,MS,PWMs).
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% sentence/prefix frequencies %%%%

@@ -43,6 +43,7 @@ A library for Distributional Formal Semantics (DFS).
 :- reexport(dfs_vector_space).
 
 :- reexport(coals).
+:- reexport(mesh).
 
 :- initialization(dfs_main).
 

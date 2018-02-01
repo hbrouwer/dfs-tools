@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % "Link, it is I, Sahasrahla. I am communicating to you across the void   %
 % through telepathy... The place where you now stand was the Golden Land, %
@@ -22,7 +22,7 @@
 % wise men's seal and opened a gate to link the worlds at Hyrule Castle.  %
 % In order to save this half of the world, the Light World, you must win  %
 % back the Golden Power."                                                 %
-%       — Sahasrahla                                                      %
+%       — Sahasrahla                                                      %            
 %                                                                         %
 % From: The Legend of Zelda: A Link to the Past (1992)                    %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
