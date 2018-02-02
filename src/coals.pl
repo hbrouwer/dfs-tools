@@ -328,23 +328,21 @@ padding_bits_([UBV|UBVs],BVs,NPadHot,MaxSim,NPad) :-
 
 append_identifiers(BVs,NPad,NPadHot,PBVs) :-
         findall(I,binary_identifier(NPad,NPadHot,I),Is),
+        (  current_predicate(user:coals_random_seed/1),
+           user:coals_random_seed(Seed)
+        -> debug(coals,'Random seed: ~w',[Seed]),
+           set_random(seed(Seed))
+        ;  true ),
         append_identifiers_(BVs,Is,[],PBVs), !.
 
 append_identifiers_([],_,_,[]).
-% append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
-%         random_permutation(Is,Is0),
-%         member(IV0,Is0),
-%         \+ ( member((BV,IV1),AIsAcc), featural_overlap(IV0,IV1) ),
-%         append(BV,IV0,PBV),
-%         debug(coals,'~w => ~w',[BV,PBV]),
-%         append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PBVs).
 append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
-        select(IV0,Is,Is0),
+        random_permutation(Is,Is0),
+        member(IV0,Is0),
         \+ ( member((BV,IV1),AIsAcc), featural_overlap(IV0,IV1) ),
         append(BV,IV0,PBV),
         debug(coals,'~w => ~w',[BV,PBV]),
-        append(Is0,[IV0],Is1),
-        append_identifiers_(BVs,Is1,[(BV,IV0)|AIsAcc],PBVs).
+        append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PBVs).
 
 %!      binary_identifier(+NBits,+NHotBits,-Identifier) is det.
 %
