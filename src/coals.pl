@@ -30,6 +30,9 @@
 
 :- use_module(dfs_sentences).
 
+:- public
+        user:coals_random_seed/1.
+
 /** <module> COALS
 
 Correlated Occurrence Analogue to Lexical Semantics (COALS) interface for a
