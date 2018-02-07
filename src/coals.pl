@@ -83,7 +83,6 @@ coals_vectors(WType,WSize,WCVs) :-
 %       their square root, and negative correlations by zero
 %       (@see correlation_matrix/2).
 
-
 derive_real_coals_vectors(WType,WSize,CVs) :-
         findall(Sen,dfs_sentences:sentence(_,Sen,[]),Sens),
         dfs_words(Words),
