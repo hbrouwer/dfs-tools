@@ -84,7 +84,7 @@ coals_vectors(WType,WSize,WCVs) :-
 %       (@see correlation_matrix/2).
 
 derive_real_coals_vectors(WType,WSize,CVs) :-
-        findall(Sen,dfs_sentences:sentence(_,Sen,[]),Sens),
+        findall(Sen,dfs_sentences:sentence((Sen,_)),Sens),
         dfs_words(Words),
         frequency_matrix(Words,Words,Sens,WType,WSize,FM),
         correlation_matrix(FM,CVs).

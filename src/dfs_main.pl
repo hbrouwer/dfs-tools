@@ -31,6 +31,7 @@ A library for Distributional Formal Semantics (DFS).
 @tbd Elaborate on DFS.
 */
 
+:- reexport(dfs_discourse).
 :- reexport(dfs_information_theory).
 :- reexport(dfs_interpretation).
 :- reexport(dfs_io).
