@@ -29,8 +29,10 @@ Write MESH-readable sets.
 
 %!      mesh_write_set(+Mappings,+File) is det.
 %
-%       Write all sentence-semantics or semantics-sentence Mappings to File
-%       in MESH-readable format:
+%       Write all sentence-semantics, semantics-sentence, discourse-semantics,
+%       or semantics-discourse Mappings to File in MESH-readable format:
+%
+%       For sentences:
 %
 %       Item "sentence" num_words "semantics"
 %       Input # # # Target # #
@@ -42,6 +44,15 @@ Write MESH-readable sets.
 %       this sentence (and hence, the number of input and target events),
 %       and 'semantics' its formatted FOL semantics. The '#'s are the integer
 %       units of the input/target vectors.
+%
+%       Item "sentence1 #### sentence2" num_words "semantics1 #### semantics2"
+%       Input # # # Target # #
+%       Input # # # Target # #
+%
+%       where 'sentence1' and 'sentence2' are sentences of a discourse,
+%       'num_words' the number of words of the discourse, and 'semantics1'
+%       and 'semantics2' the (possibly) varying semantics for the two
+%       sentences. The '####' string is a sentence divider.
 
 mesh_write_set(Mappings,File) :-
         open(File,write,Stream),
@@ -57,49 +68,121 @@ mesh_format_items([M|Ms],Stream) :-
         mesh_format_item(M,Stream),
         mesh_format_items(Ms,Stream).
 
-%!      mesh_format_items(+Mapping,+Stream) is det.
+%!      mesh_format_items(+SentenceSemanticsMapping,+Stream) is det.
+%!      mesh_format_items(+DiscourseSemanticsMapping,+Stream) is det.
 %
-%       Write Mapping to Stream in MESH-readable format.
+%       Write Mapping to Stream in MESH-readable format, where Mapping is
+%       either a single quadruple (Sen,Sem,[InputVecs],[TargetVecs])
+%       representing a sentence, or a list of quadruples representing a
+%       discourse.
 
 mesh_format_item((S,P,IVs,TVs),Stream) :-
         format(Stream,'Item \"',[]),
-        mesh_format_item_name(S,Stream),
+        mesh_format_sentence_string(S,Stream),
         format(Stream,'\"',[]),
-        length(IVs,NumInputs),
-        length(TVs,NumTargets),
-        NumEvents is max(NumInputs,NumTargets),
+        length(S,NumEvents),
         format(Stream,' ~d',[NumEvents]),
-        dfs_io:format_formula(P,FP),
-        format(Stream,' \"~w\"~n',[FP]),
-        mesh_format_events(IVs,TVs,Stream),
+        format(Stream,' \"',[]),
+        mesh_format_sentence_formula(P,Stream),
+        format(Stream,'\"~n',[]),
+        mesh_format_sentence_events(IVs,TVs,Stream),
+        format(Stream,'~n',[]).
+mesh_format_item([M|Ms],Stream) :-
+        mesh_linearize_item([M|Ms],(LS,LP,LIVs,LTVs)),
+        format(Stream,'Item \"',[]),
+        mesh_format_discourse_string(LS,Stream),
+        format(Stream,'\"',[]),
+        flatten(LS,FLS),
+        length(FLS,NumEvents),
+        format(Stream,' ~d',[NumEvents]),
+        format(Stream,' \"',[]),
+        mesh_format_discourse_formula(LP,Stream),
+        format(Stream,'\"~n',[]),
+        mesh_format_discourse_events(LIVs,LTVs,Stream),
         format(Stream,'~n',[]).
 
-%!      mesh_format_item_name(+Sentence,+Stream) is det.
+%!      mesh_linearize_items(+Quadruple,-QuadrupleOfLists) is det.
+%
+%       Converts a list of (Sen,Sem,[InputVecs],[TargetVecs]) quadruples,
+%       into a quadruple of lists.
+
+mesh_linearize_item([(S,P,IVs,TVs)],([S],[P],[IVs],[TVs])) :- !.
+mesh_linearize_item([(S,P,IVs,TVs)|Ms0],([S|LS],[P|LP],[IVs|LIVs],[TVs|LTVs])) :-
+        mesh_linearize_item(Ms0,(LS,LP,LIVs,LTVs)).
+
+%!      mesh_format_sentence_string(+Sentence,+Stream) is det.
 %
 %       Write Sentence to Stream in MESH-readable format.
 
-mesh_format_item_name([W],Stream) :-
+mesh_format_sentence_string([W],Stream) :-
         !, format(Stream,'~w',[W]).
-mesh_format_item_name([W|Ws],Stream) :-
+mesh_format_sentence_string([W|Ws],Stream) :-
         format(Stream,'~w ',[W]),
-        mesh_format_item_name(Ws,Stream).
+        mesh_format_sentence_string(Ws,Stream).
 
-%!      mesh_format_events(+InputVecs,TargetVecs,+Stream) is det.
+%!      mesh_format_discourse_string(+Discourse,+Stream) is det.
 %
-%       Write input-target vector pairs to Stream in MESH-readable format.
+%       Write the Discourse to Stream in MESH-readable format. This separates
+%       the individual sentences of a discourse with a '####' divider.
 
-mesh_format_events([],_,_).
-mesh_format_events([IV],[TV],Stream) :-
+mesh_format_discourse_string([DS],Stream) :-
+        !, mesh_format_sentence_string(DS,Stream).
+mesh_format_discourse_string([DS|DSs],Stream) :-
+        mesh_format_sentence_string(DS,Stream),
+        format(Stream,' #### ',[]),
+        mesh_format_discourse_string(DSs,Stream).
+
+%!      mesh_format_sentence_string(+SentenceFormula,+Stream) is det.
+%
+%       Write SentenceFormula to Stream in MESH-readable format.
+
+mesh_format_sentence_formula(P,Stream) :-
+        dfs_io:format_formula(P,FP),
+        format(Stream,'~w',[FP]).
+
+%!      mesh_format_discourse_formula(+DiscourseFormula,+Stream) is det.
+%
+%       Write DiscourseFormula to Stream in MESH-readable format. This
+%       separates the formulas corresponding to the individual sentences
+%       of a discourse with a '####' divider.
+
+mesh_format_discourse_formula([P],Stream) :-
+        !, dfs_io:format_formula(P,FP),
+        format(Stream,'~w',[FP]).
+mesh_format_discourse_formula([P|Ps],Stream) :-
+        dfs_io:format_formula(P,FP),
+        format(Stream,'~w #### ',[FP]),
+        mesh_format_discourse_formula(Ps,Stream).
+
+%!      mesh_format_sentence_events(+InputVecs,TargetVecs,+Stream) is det.
+%
+%       Write the input-target vector pairs of a sentence to Stream in
+%       MESH-readable format.
+
+mesh_format_sentence_events([],_,_).
+mesh_format_sentence_events([IV],[TV],Stream) :-
         !, mesh_format_event(IV,TV,Stream).
-mesh_format_events([IV|IVs],[TV],Stream) :-
+mesh_format_sentence_events([IV|IVs],[TV],Stream) :-
         !, mesh_format_event(IV,TV,Stream),
-        mesh_format_events(IVs,[TV],Stream).
-mesh_format_events([IV],[TV|TVs],Stream) :-
+        mesh_format_sentence_events(IVs,[TV],Stream).
+mesh_format_sentence_events([IV],[TV|TVs],Stream) :-
         !, mesh_format_event(IV,TV,Stream),
-        mesh_format_events([IV],TVs,Stream).
+        mesh_format_sentence_events([IV],TVs,Stream).
 mesh_format_events([IV|IVs],[TV|TVs],Stream) :-
         mesh_format_event(IV,TV,Stream),
-        mesh_format_events(IVs,TVs,Stream).
+        mesh_format_sentence_events(IVs,TVs,Stream).
+
+%!      mesh_format_discourse_events(+InputVecsList,TargetVecsList,+Stream)
+%!              is det.
+%
+%       Write the input-target vector pairs of each sentence of a discourse
+%       to Stream in MESH-readable format.
+
+
+mesh_format_discourse_events([],[],_).
+mesh_format_discourse_events([IVs|DIVs],[TVs|DTVs],Stream) :-
+        mesh_format_sentence_events(IVs,TVs,Stream),
+        mesh_format_discourse_events(DIVs,DTVs,Stream).
 
 %!      mesh_format_event(+InputVecs,TargetVecs,+Stream) is det.
 %

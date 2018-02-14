@@ -19,8 +19,11 @@
         [
                 op(900,fx,@~~),         %% discourse
 
+                dfs_discourse/1,
                 dfs_map_discourse_onto_semantics/4,
-                dfs_map_semantics_onto_discourse/4
+                dfs_discourse_semantics_mappings/3,
+                dfs_map_semantics_onto_discourse/4,
+                dfs_semantics_discourse_mappings/3
         ]).
 
 :- use_module(library(lists)).
@@ -38,7 +41,7 @@ Generation of discourse-semantics (and vice versa) mappings.
 
 %!      discourse(-SenSemTuples)
 %
-%       SenSemTuples is a list of all sentence-semantics mappings represing
+%       SenSemTuples is a list of all sentence-semantics mappings representing
 %       a discourse.       
 
 discourse(SPMs) :-
@@ -48,20 +51,49 @@ discourse(SPMs) :-
         current_predicate(user:discourse/1),
         user:discourse(SPMs).
 
+%!      dfs_discourse(SenSemTuples) is det.
+%
+%       SenSemTuples is a list of all discourse sentence-semantics mappings.
+
+dfs_discourse(DPMs) :-
+        findall(DPM,discourse(DPM),DPMs).
+
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% discourse onto semantics %%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_map_discourse_onto_semantics(+SenSemTuples,+WVecs,+ModelSet,
+%               -Mappings) is det.
 
 dfs_map_discourse_onto_semantics([],_,_,[]).
 dfs_map_discourse_onto_semantics([SPM|SPMs],WVs,MS,[WPM|WPMs]) :-
         dfs_map_sentence_onto_semantics(SPM,WVs,MS,WPM),
         dfs_map_discourse_onto_semantics(SPMs,WVs,MS,WPMs).
 
+%!      dfs_discourse_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
+
+dfs_discourse_semantics_mappings(WVs,MS,WPMs) :-
+        dfs_discourse(DPMs),
+        findall(WPM,
+          ( member(DPM,DPMs), dfs_map_discourse_onto_semantics(DPM,WVs,MS,WPM) ),
+          WPMs).
+        
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% semantics onto discourse %%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_map_semantics_onto_discourse(+SenSemTuples,+WVecs,+ModelSet,
+%               -Mappings) is det.
 
 dfs_map_semantics_onto_discourse([],_,_,[]).
 dfs_map_semantics_onto_discourse([SPM|SPMs],WVs,MS,[PWM|PWMs]) :-
         dfs_map_semantics_onto_sentence(SPM,WVs,MS,PWM),
         dfs_map_semantics_onto_discourse(SPMs,WVs,MS,PWMs).
+
+%!      dfs_semantics_discourse_mappings(+WVecs,+ModelSet,-Mappings) is det.
+
+dfs_semantics_discourse_mappings(WVs,MS,PWMs) :-
+        dfs_discourse(DPMs),
+        findall(PWM,
+          ( member(DPM,DPMs), dfs_map_semantics_onto_discourse(DPM,WVs,MS,PWM) ),
+          PWMs).
