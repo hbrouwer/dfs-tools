@@ -27,12 +27,13 @@
 Write MESH-readable sets.
 */
 
-%!      mesh_write_set(+Mappings,+File) is det.
+%!      mesh_write_set([+SentenceSemanticsMapping],+File) is det.
+%!      mesh_write_set([+DiscourseSemanticsMapping],+File) is det.
 %
 %       Write all sentence-semantics, semantics-sentence, discourse-semantics,
-%       or semantics-discourse Mappings to File in MESH-readable format:
+%       or semantics-discourse Mappings to File in MESH-readable format.
 %
-%       For sentences:
+%       Sentences format:
 %
 %       Item "sentence" num_words "semantics"
 %       Input # # # Target # #
@@ -45,21 +46,27 @@ Write MESH-readable sets.
 %       and 'semantics' its formatted FOL semantics. The '#'s are the integer
 %       units of the input/target vectors.
 %
+%       Discourse format:
+%
 %       Item "sentence1 #### sentence2" num_words "semantics1 #### semantics2"
 %       Input # # # Target # #
 %       Input # # # Target # #
 %
+%       [...]
+%
 %       where 'sentence1' and 'sentence2' are sentences of a discourse,
 %       'num_words' the number of words of the discourse, and 'semantics1'
 %       and 'semantics2' the (possibly) varying semantics for the two
-%       sentences. The '####' string is a sentence divider.
+%       sentences. The single '#'s are the integer units of the input/target
+%       vectors, and the '####' string is a sentence divider.
 
 mesh_write_set(Mappings,File) :-
         open(File,write,Stream),
         mesh_format_items(Mappings,Stream),
         close(Stream).
 
-%!      mesh_format_items(+Mappings,+Stream) is det.
+%!      mesh_format_items([+SentenceSemanticsMapping],+Stream) is det.
+%!      mesh_format_items([+DiscourseSemanticsMapping],+Stream) is det.
 %
 %       Write Mappings to Stream in MESH-readable format.
 
@@ -68,8 +75,8 @@ mesh_format_items([M|Ms],Stream) :-
         mesh_format_item(M,Stream),
         mesh_format_items(Ms,Stream).
 
-%!      mesh_format_items(+SentenceSemanticsMapping,+Stream) is det.
-%!      mesh_format_items(+DiscourseSemanticsMapping,+Stream) is det.
+%!      mesh_format_item(+SentenceSemanticsMapping,+Stream) is det.
+%!      mesh_format_item(+DiscourseSemanticsMapping,+Stream) is det.
 %
 %       Write Mapping to Stream in MESH-readable format, where Mapping is
 %       either a single quadruple (Sen,Sem,[InputVecs],[TargetVecs])
@@ -101,7 +108,7 @@ mesh_format_item([M|Ms],Stream) :-
         mesh_format_discourse_events(LIVs,LTVs,Stream),
         format(Stream,'~n',[]).
 
-%!      mesh_linearize_items(+Quadruple,-QuadrupleOfLists) is det.
+%!      mesh_linearize_items(+ListOfQuadruple,-QuadrupleOfLists) is det.
 %
 %       Converts a list of (Sen,Sem,[InputVecs],[TargetVecs]) quadruples,
 %       into a quadruple of lists.
@@ -122,8 +129,8 @@ mesh_format_sentence_string([W|Ws],Stream) :-
 
 %!      mesh_format_discourse_string(+Discourse,+Stream) is det.
 %
-%       Write the Discourse to Stream in MESH-readable format. This separates
-%       the individual sentences of a discourse with a '####' divider.
+%       Write Discourse to Stream in MESH-readable format. This separates the
+%       individual sentences of Discourse with a '####' divider.
 
 mesh_format_discourse_string([DS],Stream) :-
         !, mesh_format_sentence_string(DS,Stream).
@@ -172,12 +179,11 @@ mesh_format_events([IV|IVs],[TV|TVs],Stream) :-
         mesh_format_event(IV,TV,Stream),
         mesh_format_sentence_events(IVs,TVs,Stream).
 
-%!      mesh_format_discourse_events(+InputVecsList,TargetVecsList,+Stream)
+%!      mesh_format_discourse_events([+InputVecs],[+TargetVecs],+Stream)
 %!              is det.
 %
 %       Write the input-target vector pairs of each sentence of a discourse
 %       to Stream in MESH-readable format.
-
 
 mesh_format_discourse_events([],[],_).
 mesh_format_discourse_events([IVs|DIVs],[TVs|DTVs],Stream) :-
