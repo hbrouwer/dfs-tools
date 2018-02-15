@@ -86,7 +86,8 @@ dfs_map_discourse_onto_semantics([SPM|SPMs],WVs,MS,[WPM|WPMs]) :-
 dfs_discourse_semantics_mappings(WVs,MS,WPMs) :-
         dfs_discourse(DPMs),
         findall(WPM,
-          ( member(DPM,DPMs), dfs_map_discourse_onto_semantics(DPM,WVs,MS,WPM) ),
+          ( member(DPM,DPMs),
+            dfs_map_discourse_onto_semantics(DPM,WVs,MS,WPM) ),
           WPMs).
         
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,5 +119,6 @@ dfs_map_semantics_onto_discourse([SPM|SPMs],WVs,MS,[PWM|PWMs]) :-
 dfs_semantics_discourse_mappings(WVs,MS,PWMs) :-
         dfs_discourse(DPMs),
         findall(PWM,
-          ( member(DPM,DPMs), dfs_map_semantics_onto_discourse(DPM,WVs,MS,PWM) ),
+          ( member(DPM,DPMs),
+            dfs_map_semantics_onto_discourse(DPM,WVs,MS,PWM) ),
           PWMs).

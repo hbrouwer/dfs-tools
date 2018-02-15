@@ -141,7 +141,8 @@ dfs_map_sentence_onto_semantics((S,P),WVs,MS,(S,P,IVs,[TV])) :-
 dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
         dfs_sentences(SPMs),
         findall(WPM,
-          ( member(SPM,SPMs), dfs_map_sentence_onto_semantics(SPM,WVs,MS,WPM) ),
+          ( member(SPM,SPMs),
+            dfs_map_sentence_onto_semantics(SPM,WVs,MS,WPM) ),
           WPMs).
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -151,7 +152,7 @@ dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
 %!      dfs_map_semantics_onto_sentence(+SenSemTuple,+WVecs,+ModelSet,
 %!              -Mapping) is det.
 %
-%       Mapping is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where SemVec
+%       Mapping is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where where SemVec
 %       is a vector representation of a sentence semantics (Sem), and SenVecs
 %       a word-by-word vector-based representation of the corresponding
 %       sentence (Sen).
@@ -174,7 +175,8 @@ dfs_map_semantics_onto_sentence((S,P),WVs,MS,(S,P,[IV],TVs)) :-
 dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
         dfs_sentences(SPMs),
         findall(PWM,
-          ( member(SPM,SPMs), dfs_map_semantics_onto_sentence(SPM,WVs,MS,PWM) ),
+          ( member(SPM,SPMs),
+            dfs_map_semantics_onto_sentence(SPM,WVs,MS,PWM) ),
           PWMs).
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
