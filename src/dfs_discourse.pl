@@ -64,6 +64,12 @@ dfs_discourse(DPMs) :-
 
 %!      dfs_map_discourse_onto_semantics(+SenSemTuples,+WVecs,+ModelSet,
 %               -Mappings) is det.
+%
+%       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]), where 
+%       SenVecs is a word-by-word vector-based mapping of a sentence (Sen)
+%       onto single SemVec, a vector representation of its semantics (Sem).
+%
+%       @see dfs_map_sentence_onto_semantics/4
 
 dfs_map_discourse_onto_semantics([],_,_,[]).
 dfs_map_discourse_onto_semantics([SPM|SPMs],WVs,MS,[WPM|WPMs]) :-
@@ -71,6 +77,11 @@ dfs_map_discourse_onto_semantics([SPM|SPMs],WVs,MS,[WPM|WPMs]) :-
         dfs_map_discourse_onto_semantics(SPMs,WVs,MS,WPMs).
 
 %!      dfs_discourse_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
+%
+%       Mappings is a list of lists of (Sen,Sem,[SenVecs],[SemVec])
+%       quadruples.
+%
+%       @see dfs_map_discourse_onto_semantics/4
 
 dfs_discourse_semantics_mappings(WVs,MS,WPMs) :-
         dfs_discourse(DPMs),
@@ -84,6 +95,13 @@ dfs_discourse_semantics_mappings(WVs,MS,WPMs) :-
 
 %!      dfs_map_semantics_onto_discourse(+SenSemTuples,+WVecs,+ModelSet,
 %               -Mappings) is det.
+%
+%       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]), where
+%       SemVec is a vector representation of a sentence semantics (Sem), and
+%       SenVecs a word-by-word vector-based representation of the
+%       corresponding sentence (Sen).
+%
+%       @see dfs_map_semantics_onto_sentence/4
 
 dfs_map_semantics_onto_discourse([],_,_,[]).
 dfs_map_semantics_onto_discourse([SPM|SPMs],WVs,MS,[PWM|PWMs]) :-
@@ -91,6 +109,11 @@ dfs_map_semantics_onto_discourse([SPM|SPMs],WVs,MS,[PWM|PWMs]) :-
         dfs_map_semantics_onto_discourse(SPMs,WVs,MS,PWMs).
 
 %!      dfs_semantics_discourse_mappings(+WVecs,+ModelSet,-Mappings) is det.
+%
+%       Mappings is a list of lists of quadruples
+%       (Sen,Sem,[SemVec],[SenVecs]).
+%
+%       @see dfs_map_semantics_onto_discourse/4
 
 dfs_semantics_discourse_mappings(WVs,MS,PWMs) :-
         dfs_discourse(DPMs),
