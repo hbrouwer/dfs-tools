@@ -191,7 +191,7 @@ dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
 
 dfs_prefix_continuations(Prefix,Cs) :-
         append(Prefix,_,Templ),
-        findall((Templ,P),sentence(P,Templ,[]),Cs).
+        findall((Templ,P),sentence((Templ,P)),Cs).
 
 %!      dfs_prefix_frequency(+Prefix,-Frequency) is det.
 %
@@ -206,5 +206,5 @@ dfs_prefix_frequency(Prefix,F) :-
 %       Frequency is is the occurrence frequency of Sentence.
 
 dfs_sentence_frequency(Sen,F) :-
-        findall(Sen,sentence(_,Sen,[]),Sens),
+        findall(Sen,sentence((Sen,_)),Sens),
         length(Sens,F).

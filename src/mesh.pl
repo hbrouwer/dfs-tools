@@ -174,7 +174,7 @@ mesh_format_sentence_events([IV|IVs],[TV],Stream) :-
 mesh_format_sentence_events([IV],[TV|TVs],Stream) :-
         !, mesh_format_event(IV,TV,Stream),
         mesh_format_sentence_events([IV],TVs,Stream).
-mesh_format_events([IV|IVs],[TV|TVs],Stream) :-
+mesh_format_sentence_events([IV|IVs],[TV|TVs],Stream) :-
         mesh_format_event(IV,TV,Stream),
         mesh_format_sentence_events(IVs,TVs,Stream).
 
