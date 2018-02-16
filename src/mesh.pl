@@ -121,11 +121,9 @@ mesh_linearize_item([(S,P,IVs,TVs)|Ms0],([S|LS],[P|LP],[IVs|LIVs],[TVs|LTVs])) :
 %
 %       Write Sentence to Stream in MESH-readable format.
 
-mesh_format_sentence_string([W],Stream) :-
-        !, format(Stream,'~w',[W]).
-mesh_format_sentence_string([W|Ws],Stream) :-
-        format(Stream,'~w ',[W]),
-        mesh_format_sentence_string(Ws,Stream).
+mesh_format_sentence_string(S,Stream) :-
+        dfs_io:format_sentence(S,FS),
+        format(Stream,'~w',[FS]).
 
 %!      mesh_format_discourse_string(+Discourse,+Stream) is det.
 %

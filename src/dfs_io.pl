@@ -34,8 +34,10 @@
 :- use_module(library(lists)).
 :- use_module(library(readutil)).
 
+:- use_module(dfs_discourse).
 :- use_module(dfs_interpretation).
 :- use_module(dfs_logic).
+:- use_module(dfs_sentences).
 
 /** <module> IO
 
@@ -57,7 +59,7 @@ dfs_write_models(MS,File) :-
 
 dfs_write_models_([],_).
 dfs_write_models_([M|MS],Stream) :-
-        format(Stream,'model((~w)).\n',M),
+        format(Stream,'model((~w)).~n',M),
         dfs_write_models_(MS,Stream).
 
 %!      dfs_read_models(+File,-ModelSet) is det.
@@ -97,7 +99,7 @@ dfs_write_matrix([MV|MVs],File) :-
 %!      write_atomic_propositions(+AtomicProps,+Stream) is det.
 
 write_atomic_propositions([AP],Stream) :-
-        !, format(Stream,'~w\n',AP).
+        !, format(Stream,'~w~n',AP).
 write_atomic_propositions([AP|APs],Stream) :-
         format(Stream,'~w ',AP),
         write_atomic_propositions(APs,Stream).
@@ -112,7 +114,7 @@ write_model_matrix([MV|MVs],Stream) :-
 %!      write_model_vector(+ModelVector,+Stream) is det.
 
 write_model_vector([(_,U)],Stream) :-
-        !, format(Stream,'~d\n',U).
+        !, format(Stream,'~d~n',U).
 write_model_vector([(_,U)|Us],Stream) :-
         format(Stream,'~d ',U),
         write_model_vector(Us,Stream).
@@ -174,7 +176,7 @@ vector_to_model_vector([U|Us],[AP|APs],[(AP,U)|Ts]) :-
 
 dfs_pprint_formula(P) :-
         format_formula(P,F),
-        format('\n~w\n\n',[F]).
+        format('~n~w~n~n',[F]).
 
 %!      format_formula(+Formula,-FormattedFormula)
 %
@@ -238,14 +240,14 @@ format_formula(P,A) :-
 %       Pretty print a model.
 
 dfs_pprint_model((Um,Vm)) :-
-        format('\n%%%% Um = { '),
+        format('~n%%%% Um = { '),
         pprint_atoms(Um),
-        format(' }\n'),
-        format('%%%%\n'),
-        foreach(member(C=E,Vm),format('%%%% Vm ( ~a ) = ~a\n',[C,E])),
-        format('%%%%\n'),
+        format(' }~n'),
+        format('%%%%~n'),
+        foreach(member(C=E,Vm),format('%%%% Vm ( ~a ) = ~a~n',[C,E])),
+        format('%%%%~n'),
         pprint_vm(Vm),
-        format('\n').
+        format('~n').
 
 pprint_vm([]).
 pprint_vm([P|Ps]) :-
@@ -253,7 +255,7 @@ pprint_vm([P|Ps]) :-
         Pred \= (=), !,
         format('%%%% Vm ( ~a ) = { ',[Pred]),
         pprint_atoms(Args),
-        format(' }\n'),
+        format(' }~n'),
         pprint_vm(Ps).
 pprint_vm([_|Ps]) :-
         pprint_vm(Ps).
@@ -276,9 +278,9 @@ pprint_atoms([A|As]) :-
 dfs_pprint_propositions((Um,Vm)) :-
         dfs_init_g((Um,Vm),G),
         dfs_term_instantiations((Um,Vm),G,TIs),
-        format('\n'),
+        format('~n'),
         dfs_pprint_propositions_(Vm,TIs),
-        format('\n').
+        format('~n').
 
 dfs_pprint_propositions_([],_).
 dfs_pprint_propositions_([P|Ps],TIs) :-
@@ -286,7 +288,7 @@ dfs_pprint_propositions_([P|Ps],TIs) :-
         Pred \= (=), !,
         format('%%%% ~a: { ',[Pred]),
         pprint_terms(Args,TIs),
-        format(' }\n'),
+        format(' }~n'),
         dfs_pprint_propositions_(Ps,TIs).
 dfs_pprint_propositions_([_|Ps],TIs) :-
         dfs_pprint_propositions_(Ps,TIs).
@@ -309,16 +311,16 @@ pprint_terms([A|As],TIs) :-
 
 dfs_pprint_matrix(MM) :-
         transpose(MM,TMM),
-        format('\n'),
+        format('~n'),
         pprint_matrix_(TMM),
-        format('\n').
+        format('~n').
 
 pprint_matrix_([]).
 pprint_matrix_([DV|DVs]) :-
         memberchk((P,_),DV),
         format('%%%% '),
         pprint_dfs_vector(DV),
-        format(' ~w\n',[P]),
+        format(' ~w~n',[P]),
         pprint_matrix_(DVs).
 
 pprint_dfs_vector([]).
@@ -333,15 +335,15 @@ pprint_dfs_vector([(_,S)|Ts]) :-
 %       by Tuples of formulas and vectors.
 
 dfs_pprint_fapply_deriv(Ts) :-
-        format('\n'),
+        format('~n'),
         dfs_pprint_fapply_deriv_(Ts),
-        format('\n').
+        format('~n').
 
 dfs_pprint_fapply_deriv_([]) :- !.
 dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
         format('%%%% '),
         foreach(member(U,V),format('~2f ',[U])),
-        format('~w\n',[F]),
+        format('~w~n',[F]),
         dfs_pprint_fapply_deriv_(Ts).
 
 %!      dfs_pprint_constraints is det.
@@ -350,24 +352,37 @@ dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
 
 dfs_pprint_constraints :-
         findall(C,dfs_sampling:constraint(C),Cs),
-        format('\n'),
+        format('~n'),
         dfs_pprint_constraints_(Cs,orig),
-        format('\n').
+        format('~n').
 
 dfs_pprint_constraints_([],_).
 dfs_pprint_constraints_([C|Cs],orig) :-
         !, format_formula(C,F),
-        format('%%%% ~a\n',[F]),
+        format('%%%% ~a~n',[F]),
+        format('%%%%~n'),
         dfs_sampling:optimize_constraint(C,Cs0),
-        format('%%%%\n'),
         dfs_pprint_constraints_(Cs0,optm),
-        ( Cs \= [] -> format('%%%%\n%%%%\n') ; true ),
+        ( Cs \= [] -> format('%%%%~n%%%%~n') ; true ),
         dfs_pprint_constraints_(Cs,orig).
 dfs_pprint_constraints_([C|Cs],optm) :-
         dfs_complement(C,Cc),
         format_formula(C,F),
         format_formula(Cc,Fc),
-        format('%%%% \t ~a\n',[F]),
-        format('%%%% \t\t => ~a\n',[Fc]),
-        ( Cs \= [] -> format('%%%%\n') ; true ),
+        format('%%%% \t ~a~n',[F]),
+        format('%%%% \t\t => ~a~n',[Fc]),
+        ( Cs \= [] -> format('%%%%~n') ; true ),
         dfs_pprint_constraints_(Cs,optm).
+
+%!      format_sentence(+Sentence,-FormattedSentence)
+%
+%       FormattedSentence is ASCII formatted version of Sentence.
+%
+%       @tbd: format(atom(A),_,_) only works with SWI prolog. Need to adapt
+%       to ISO prolog some day.
+
+format_sentence([W],A) :-
+        !, format(atom(A),'~w',[W]).
+format_sentence([W|Ws],A1) :-
+        format_sentence(Ws,A0),
+        format(atom(A1),'~w ~a',[W,A0]).
