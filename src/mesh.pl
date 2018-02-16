@@ -214,10 +214,13 @@ mesh_format_vector([U|Us],Stream) :-
 %
 %       Write a MESH-readable set of atomic propositions:
 %
-%       Item atomic_prop1 1 atomic_prop1
+%       Item "atomic_prop1" 1 "atomic_prop1"
 %       Input 0 0 0 Target 1 0 1 0 0
 %
-%       Note: Input vectors are always zero vectors.
+%       For each atomic proposition, the input vector is the zero vector with
+%       number of dimensions equal to the number of words produced by
+%       dfs_words/1, and the target vector is the vector encoding the atomic
+%       proposition. 
 
 mesh_write_atomic_prop_set(MS,File) :-
         dfs_words(Ws),
