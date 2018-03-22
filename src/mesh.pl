@@ -71,9 +71,11 @@ mesh_write_set(Mappings,File) :-
 %
 %       Write Mappings to Stream in MESH-readable format.
 
-mesh_format_items([],_).
+mesh_format_items([M],Stream) :-
+        !, mesh_format_item(M,Stream).
 mesh_format_items([M|Ms],Stream) :-
         mesh_format_item(M,Stream),
+        format(Stream,'~n',[]),
         mesh_format_items(Ms,Stream).
 
 %!      mesh_format_item(+SentenceSemanticsMapping,+Stream) is det.
@@ -93,8 +95,7 @@ mesh_format_item((S,P,IVs,TVs),Stream) :-
         format(Stream,' \"',[]),
         mesh_format_sentence_formula(P,Stream),
         format(Stream,'\"~n',[]),
-        mesh_format_sentence_events(IVs,TVs,Stream),
-        format(Stream,'~n',[]).
+        mesh_format_sentence_events(IVs,TVs,Stream).
 mesh_format_item([M|Ms],Stream) :-
         mesh_linearize_item([M|Ms],(LS,LP,LIVs,LTVs)),
         format(Stream,'Item \"',[]),
@@ -106,8 +107,7 @@ mesh_format_item([M|Ms],Stream) :-
         format(Stream,' \"',[]),
         mesh_format_discourse_formula(LP,Stream),
         format(Stream,'\"~n',[]),
-        mesh_format_discourse_events(LIVs,LTVs,Stream),
-        format(Stream,'~n',[]).
+        mesh_format_discourse_events(LIVs,LTVs,Stream).
 
 %!      mesh_linearize_items(+ListOfQuadruple,-QuadrupleOfLists) is det.
 %
