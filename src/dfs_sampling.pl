@@ -451,7 +451,7 @@ vis(exor(P,Q),  Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).    /* +optimization */
-vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).        /* -optimization */
+%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).       /* -optimization */
 vis(forall(X,P),Vs,VIs0,VIs1) :-
         !,
         (  q_imp_chain(X,forall(X,P))
