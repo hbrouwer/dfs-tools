@@ -49,8 +49,8 @@ A library for Distributional Formal Semantics (DFS).
 :- initialization(dfs_main).
 
 dfs_version_major(0).
-dfs_version_minor(0).
-dfs_version_patch(1).
+dfs_version_minor(1).
+dfs_version_patch(0).
 
 dfs_main :-
         dfs_version_major(Vmaj),
