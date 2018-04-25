@@ -28,6 +28,10 @@
 Write MESH-readable sets.
 */
 
+                %%%%%%%%%%%%%%%%%%%%%%%
+                %%%% legacy format %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%
+
 %!      mesh_write_set([+SentenceSemanticsMapping],+File) is det.
 %!      mesh_write_set([+DiscourseSemanticsMapping],+File) is det.
 %
@@ -61,6 +65,46 @@ Write MESH-readable sets.
 %       sentences. The single '#'s are the integer units of the input/target
 %       vectors, and the '####' string is a sentence divider.
 
+                %%%%%%%%%%%%%%%%%%%%
+                %%%% new format %%%%
+                %%%%%%%%%%%%%%%%%%%%
+
+%!      mesh_write_set([+SentenceSemanticsMapping],+File) is det.
+%!      mesh_write_set([+DiscourseSemanticsMapping],+File) is det.
+%
+%       Write all sentence-semantics, semantics-sentence, discourse-semantics,
+%       or semantics-discourse Mappings to File in MESH-readable format.
+%
+%       Sentences format:
+%
+%       BeginItem
+%       Name "sentence"
+%       Meta "semantics"
+%       Input # # # Target # #
+%       Input # # # Target # #
+%       EndItem
+%       
+%       [...]
+%
+%       where 'sentence' is a sentence, and 'semantics' its formatted FOL
+%       semantics. The '#'s are the integer units of the input/target vectors.
+%
+%       Discourse format:
+%
+%       BeginItem
+%       Name "sentence1 #### sentence2"
+%       Meta "semantics1 #### semantics2"
+%       Input # # # Target # #
+%       Input # # # Target # #
+%       EndItem
+%
+%       [...]
+%
+%       where 'sentence1' and 'sentence2' are sentences of a discourse, and
+%       'semantics1' and 'semantics2' the (possibly) varying semantics for
+%       the two sentences. The single '#'s are the integer units of the 
+%       input/target vectors, and the '####' string is a sentence divider.
+
 mesh_write_set(Mappings,File) :-
         open(File,write,Stream),
         mesh_format_items(Mappings,Stream),
@@ -86,28 +130,58 @@ mesh_format_items([M|Ms],Stream) :-
 %       representing a sentence, or a list of quadruples representing a
 %       discourse.
 
+                %%%%%%%%%%%%%%%%%%%%%%%
+                %%%% legacy format %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%
+
+% mesh_format_item((S,P,IVs,TVs),Stream) :-
+%         format(Stream,'Item \"',[]),
+%         mesh_format_sentence_string(S,Stream),
+%         format(Stream,'\"',[]),
+%         length(S,NumEvents),
+%         format(Stream,' ~d',[NumEvents]),
+%         format(Stream,' \"',[]),
+%         mesh_format_sentence_formula(P,Stream),
+%         format(Stream,'\"~n',[]),
+%         mesh_format_sentence_events(IVs,TVs,Stream).
+% mesh_format_item([M|Ms],Stream) :-
+%         mesh_linearize_item([M|Ms],(LS,LP,LIVs,LTVs)),
+%         format(Stream,'Item \"',[]),
+%         mesh_format_discourse_string(LS,Stream),
+%         format(Stream,'\"',[]),
+%         flatten(LS,FLS),
+%         length(FLS,NumEvents),
+%         format(Stream,' ~d',[NumEvents]),
+%         format(Stream,' \"',[]),
+%         mesh_format_discourse_formula(LP,Stream),
+%         format(Stream,'\"~n',[]),
+%         mesh_format_discourse_events(LIVs,LTVs,Stream).
+
+                %%%%%%%%%%%%%%%%%%%%
+                %%%% new format %%%%
+                %%%%%%%%%%%%%%%%%%%%
+
 mesh_format_item((S,P,IVs,TVs),Stream) :-
-        format(Stream,'Item \"',[]),
+        format(Stream,'BeginItem~n',[]),
+        format(Stream,'Name \"',[]),
         mesh_format_sentence_string(S,Stream),
-        format(Stream,'\"',[]),
-        length(S,NumEvents),
-        format(Stream,' ~d',[NumEvents]),
-        format(Stream,' \"',[]),
+        format(Stream,'\"~n',[]),
+        format(Stream,'Meta \"',[]),
         mesh_format_sentence_formula(P,Stream),
         format(Stream,'\"~n',[]),
-        mesh_format_sentence_events(IVs,TVs,Stream).
+        mesh_format_sentence_events(IVs,TVs,Stream),
+        format(Stream,'EndItem~n',[]).
 mesh_format_item([M|Ms],Stream) :-
+        format(Stream,'BeginItem~n',[]),
+        format(Stream,'Name \"',[]),
         mesh_linearize_item([M|Ms],(LS,LP,LIVs,LTVs)),
-        format(Stream,'Item \"',[]),
         mesh_format_discourse_string(LS,Stream),
-        format(Stream,'\"',[]),
-        flatten(LS,FLS),
-        length(FLS,NumEvents),
-        format(Stream,' ~d',[NumEvents]),
-        format(Stream,' \"',[]),
+        format(Stream,'\"~n',[]),
+        format(Stream,'Meta \"',[]),
         mesh_format_discourse_formula(LP,Stream),
         format(Stream,'\"~n',[]),
-        mesh_format_discourse_events(LIVs,LTVs,Stream).
+        mesh_format_discourse_events(LIVs,LTVs,Stream),
+        format(Stream,'EndItem~n',[]).
 
 %!      mesh_linearize_items(+ListOfQuadruple,-QuadrupleOfLists) is det.
 %
