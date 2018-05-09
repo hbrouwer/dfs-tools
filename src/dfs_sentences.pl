@@ -26,6 +26,8 @@
                 dfs_sentence_semantics_mappings/3,
                 dfs_map_semantics_onto_sentence/4,
                 dfs_semantics_sentence_mappings/3,
+                dfs_map_sentence_onto_sentence/4,
+                dfs_sentence_sentence_mappings/3,
                 dfs_prefix_continuations/2,
                 dfs_prefix_frequency/2,
                 dfs_sentence_frequency/2
@@ -152,7 +154,7 @@ dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
 %!      dfs_map_semantics_onto_sentence(+SenSemTuple,+WVecs,+ModelSet,
 %!              -Mapping) is det.
 %
-%       Mapping is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where where SemVec
+%       Mapping is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where SemVec
 %       is a vector representation of a sentence semantics (Sem), and SenVecs
 %       a word-by-word vector-based representation of the corresponding
 %       sentence (Sen).
@@ -178,6 +180,35 @@ dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
           ( member(SPM,SPMs),
             dfs_map_semantics_onto_sentence(SPM,WVs,MS,PWM) ),
           PWMs).
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%% sentences onto sentences %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!      dfs_map_sentence_onto_sentence(+SenSemTuple,+InWVecs,OutWVecs,
+%               -Mapping) is det.
+%
+%       Mapping is a quadruple (Sen,Sem,[InSenVecs],[OutSenVecs]), where
+%       InSenVecs and OutSenVecs are word-by-word vector-based representations
+%       of the corresponding sentence (Sen).
+
+
+dfs_map_sentence_onto_sentence((S,P),WVs0,WVs1,(S,P,IVs,TVs)) :-
+        findall(IV,(member(W,S),memberchk((W,IV),WVs0)),IVs),
+        findall(TV,(member(W,S),memberchk((W,TV),WVs1)),TVs).
+
+%!      dfs_sentence_sentence_mappings(+InWVecs,+OutWVecs,-Mappings) is det.
+%
+%       Mappings is a list of quadruples (Sen,Sem,[InSenVecs],[OutSenVecs]).
+%
+%       @see dfs_map_sentence_onto_sentence/4.
+
+dfs_sentence_sentence_mappings(WVs0,WVs1,WWMs) :-
+        dfs_sentences(SPMs),
+        findall(WWM,
+         ( member(SPM,SPMs),
+           dfs_map_sentence_onto_sentence(SPM,WVs0,WVs1,WWM) ),
+           WWMs).
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% sentence/prefix frequencies %%%%
