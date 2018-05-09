@@ -73,7 +73,14 @@ Write MESH-readable sets.
 %!      mesh_write_set([+DiscourseSemanticsMapping],+File) is det.
 %
 %       Write all sentence-semantics, semantics-sentence, discourse-semantics,
-%       or semantics-discourse Mappings to File in MESH-readable format.
+%       semantics-discourse, or sentence-sentence Mappings to File in 
+%       MESH-readable format. Files start with a dimensions specification:
+%
+%       Dimensions # #
+%
+%       where the first '#' is an integer indicating the input vector size, and
+%       the second '#' an integer indicating target vector size. The remainder
+%       of the file consists of item blocks:
 %
 %       Sentences format:
 %
@@ -107,6 +114,10 @@ Write MESH-readable sets.
 
 mesh_write_set(Mappings,File) :-
         open(File,write,Stream),
+        memberchk((_,_,[IV|_],[TV|_]),Mappings),
+        length(IV,IVSize),
+        length(TV,TVSize),
+        format(Stream,'Dimensions ~d ~d~n~n',[IVSize,TVSize]),
         mesh_format_items(Mappings,Stream),
         close(Stream).
 
