@@ -81,6 +81,7 @@ dfs_term_instantiations(M,G,TIs) :-
 %       Initializes the assignment function G :: Var -> Um. Variables are
 %       assigned by iterating over the entities in the Model universe.
 
+dfs_init_g(([],_),[]) :- !.
 dfs_init_g((Um,_),G) :-
         dfs_variables(Vars),
         dfs_init_g_(Vars,Um,Um,G).
