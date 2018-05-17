@@ -35,7 +35,8 @@
 
 :- module(swi_predicates,
           [ random_permutation/2,       % ?List, ?Permutation
-            union/3                     % +List1, +List2, -Union
+            union/3,                    % +List1, +List2, -Union
+            read_line_to_codes/2        % +Stream, -Codes (without trailing \n)
           ]).
 :- use_module(library(lists)).          
     
@@ -99,3 +100,28 @@ union([H|T], L, R) :-
     union(T, L, R).
 union([H|T], L, [H|R]) :-
     union(T, L, R).
+
+%!  read_line_to_codes(+In:stream, -Line:codes) is det.
+%
+%   Read a line of input from  In   into  a list of character codes.
+%   Trailing newline and  or  return   are  deleted.  Upon  reaching
+%   end-of-file Line is unified to the atom =end_of_file=.
+
+%pl_read_line_to_codes(Stream, Codes) :-
+read_line_to_codes(Stream, Codes) :-
+    get_code(Stream, C0),
+    (   C0 == -1
+    ->  Codes0 = end_of_file
+    ;   read_1line_to_codes(C0, Stream, Codes0)
+    ),
+    Codes = Codes0.
+
+read_1line_to_codes(-1, _, []) :- !.
+read_1line_to_codes(10, _, []) :- !.
+read_1line_to_codes(13, Stream, L) :-
+    !,
+    get_code(Stream, C2),
+    read_1line_to_codes(C2, Stream, L).
+read_1line_to_codes(C, Stream, [C|T]) :-
+    get_code(Stream, C2),
+    read_1line_to_codes(C2, Stream, T).

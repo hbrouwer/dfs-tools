@@ -39,6 +39,14 @@
 :- use_module(dfs_logic).
 :- use_module(dfs_sentences).
 
+% YAP compatibility
+:- prolog_flag(version_data,V),
+        V =.. [P|_],
+        (  P == yap
+        -> use_module('../yap/swi_predicates.pl'),
+           use_module('../yap/yap_terms.pl')
+        ;  true ).
+
 /** <module> IO
 
 Basic IO and pretty printing facilities.
