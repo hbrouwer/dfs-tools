@@ -237,7 +237,7 @@ coals_write_vectors(Ts,File) :-
 
 coals_write_vectors_([],_).
 coals_write_vectors_([(W,CV)|Ts],Stream) :-
-        format(Stream,'~s,',[W]),
+        format(Stream,'~w,',[W]),
         coals_format_vector(CV,Stream),
         format(Stream,'~n',[]),
         coals_write_vectors_(Ts,Stream).
