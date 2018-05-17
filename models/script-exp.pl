@@ -1,4 +1,4 @@
-:- use_module('/Users/harm/git/dfs/src/dfs_main.pl').
+:- use_module('../src/dfs_main.pl').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                              M O D E L                                %%
