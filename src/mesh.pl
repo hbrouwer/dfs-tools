@@ -23,6 +23,10 @@
 
 :- use_module(library(lists)).
 
+:- use_module(dfs_io).
+:- use_module(dfs_sentences).
+:- use_module(dfs_discourse).
+
 /** <module> MESH
 
 Write MESH-readable sets.
@@ -208,7 +212,7 @@ mesh_linearize_item([(S,P,IVs,TVs)|Ms0],([S|LS],[P|LP],[IVs|LIVs],[TVs|LTVs])) :
 %       Write Sentence to Stream in MESH-readable format.
 
 mesh_format_sentence_string(S,Stream) :-
-        dfs_io:format_sentence(S,FS),
+        format_sentence(S,FS),
         format(Stream,'~w',[FS]).
 
 %!      mesh_format_discourse_string(+Discourse,+Stream) is det.
@@ -228,7 +232,7 @@ mesh_format_discourse_string([DS|DSs],Stream) :-
 %       Write SentenceFormula to Stream in MESH-readable format.
 
 mesh_format_sentence_formula(P,Stream) :-
-        dfs_io:format_formula(P,FP),
+        format_formula(P,FP),
         format(Stream,'~w',[FP]).
 
 %!      mesh_format_discourse_formula(+DiscourseFormula,+Stream) is det.
@@ -238,10 +242,10 @@ mesh_format_sentence_formula(P,Stream) :-
 %       of a discourse with a '####' divider.
 
 mesh_format_discourse_formula([P],Stream) :-
-        !, dfs_io:format_formula(P,FP),
+        !, format_formula(P,FP),
         format(Stream,'~w',[FP]).
 mesh_format_discourse_formula([P|Ps],Stream) :-
-        dfs_io:format_formula(P,FP),
+        format_formula(P,FP),
         format(Stream,'~w #### ',[FP]),
         mesh_format_discourse_formula(Ps,Stream).
 
