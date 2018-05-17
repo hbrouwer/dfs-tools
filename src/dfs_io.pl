@@ -32,7 +32,6 @@
 :- use_module(library(aggregate)).
 :- use_module(library(clpfd)).
 :- use_module(library(lists)).
-:- use_module(library(readutil)).
 
 :- use_module(dfs_discourse).
 :- use_module(dfs_interpretation).
@@ -45,7 +44,7 @@
         (  P == yap
         -> use_module('../yap/swi_predicates.pl'),
            use_module('../yap/yap_terms.pl')
-        ;  true ).
+        ;  use_module(library(readutil)) ).
 
 /** <module> IO
 
