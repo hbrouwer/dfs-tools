@@ -37,7 +37,8 @@
 :- prolog_flag(version_data,V),
         V =.. [P|_],
         (  P == yap
-        -> use_module('../yap/yap_random.pl')
+        -> use_module('../yap/swi_predicates.pl'),
+           use_module('../yap/yap_random.pl')
         ;  true ).
 
 /** <module> COALS
