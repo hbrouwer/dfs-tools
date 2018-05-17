@@ -298,12 +298,59 @@ mesh_format_vector([U|Us],Stream) :-
         format(Stream,'~d ',U),
         mesh_format_vector(Us,Stream).
 
+                %%%%%%%%%%%%%%%%%%%%%%%
+                %%%% legacy format %%%%
+                %%%%%%%%%%%%%%%%%%%%%%%
+                
 %!      mesh_write_atomic_prop_set(+ModelSet,+File) is det.
 %
 %       Write a MESH-readable set of atomic propositions:
 %
 %       Item "atomic_prop1" 1 "atomic_prop1"
 %       Input 0 0 0 Target 1 0 1 0 0
+%
+%       For each atomic proposition, the input vector is the zero vector with
+%       number of dimensions equal to the number of words produced by
+%       dfs_words/1, and the target vector is the vector encoding the atomic
+%       proposition.
+
+% mesh_write_atomic_prop_set(MS,File) :-
+%         dfs_words(Ws),
+%         length(Ws,NWs),
+%         dfs_sentences:distributed_vector(NWs,[],IV),
+%         dfs_vector_space:atomic_propositions(MS,APs),
+%         open(File,write,Stream),
+%         mesh_write_atomic_prop_set_(APs,MS,IV,Stream),
+%         close(Stream).
+
+% mesh_write_atomic_prop_set_([],_,_,_).
+% mesh_write_atomic_prop_set_([AP|APs],Ms,IV,Stream) :-
+%         format(Stream,'Item \"',[]),
+%         mesh_format_sentence_formula(AP,Stream),
+%         format(Stream,'\" 1 \"',[]),
+%         mesh_format_sentence_formula(AP,Stream),
+%         format(Stream,'\"~n',[]),
+%         dfs_vector(AP,Ms,TV),
+%         mesh_format_sentence_events([IV],[TV],Stream),
+%         format(Stream,'~n',[]),
+%         mesh_write_atomic_prop_set_(APs,Ms,IV,Stream).
+
+                %%%%%%%%%%%%%%%%%%%%
+                %%%% new format %%%%
+                %%%%%%%%%%%%%%%%%%%%
+
+%!      mesh_write_atomic_prop_set(+ModelSet,+File) is det.
+%
+%       Write a MESH-readable set of atomic propositions:
+%
+%       Dimensions # #
+%
+%       BeginItem
+%       Name "sentence"
+%       Meta "semantics"
+%       Input # # # Target # #
+%       Input # # # Target # #
+%       EndItem
 %
 %       For each atomic proposition, the input vector is the zero vector with
 %       number of dimensions equal to the number of words produced by
@@ -315,18 +362,23 @@ mesh_write_atomic_prop_set(MS,File) :-
         length(Ws,NWs),
         dfs_sentences:distributed_vector(NWs,[],IV),
         dfs_vector_space:atomic_propositions(MS,APs),
+        length(MS,NMs),
         open(File,write,Stream),
+        format(Stream,'Dimensions ~d ~d~n~n',[NWs,NMs]),
         mesh_write_atomic_prop_set_(APs,MS,IV,Stream),
         close(Stream).
 
 mesh_write_atomic_prop_set_([],_,_,_).
 mesh_write_atomic_prop_set_([AP|APs],Ms,IV,Stream) :-
-        format(Stream,'Item \"',[]),
-        mesh_format_sentence_formula(AP,Stream),
-        format(Stream,'\" 1 \"',[]),
+        format(Stream,'BeginItem~n',[]),
+        format(Stream,'Name \"',[]),
+        mesh_format_sentence_formula(AP,Stream),        
+        format(Stream,'\"~n',[]),
+        format(Stream,'Meta \"',[]),
         mesh_format_sentence_formula(AP,Stream),
         format(Stream,'\"~n',[]),
         dfs_vector(AP,Ms,TV),
         mesh_format_sentence_events([IV],[TV],Stream),
-        format(Stream,'~n',[]),
+        format(Stream,'EndItem~n',[]),
+        ( APs \= [] -> format(Stream,'~n',[]) ; true ),
         mesh_write_atomic_prop_set_(APs,Ms,IV,Stream).
