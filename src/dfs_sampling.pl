@@ -75,7 +75,7 @@ Sample models from a world specification.
 %!      constant(-Constant) is nondet.
 
 constant(C) :-
-        current_predicate((@+)/1),
+        current_predicate(user:(@+)/1),
         user:(@+(C)).
 constant(C) :-
         current_predicate(user:constant/1),
@@ -84,7 +84,7 @@ constant(C) :-
 %!      property(-Property) is nondet.
 
 property(P) :- 
-        current_predicate((@*)/1),
+        current_predicate(user:(@*)/1),
         user:(@*(P)).
 property(P) :- 
         current_predicate(user:property/1),
@@ -93,7 +93,7 @@ property(P) :-
 %!      constraint(-Constraint) is nondet.
 
 constraint(C) :-
-        current_predicate((@#)/1),
+        current_predicate(user:(@#)/1),
         user:(@#(C)).
 constraint(C) :- 
         current_predicate(user:constraint/1),
@@ -102,7 +102,7 @@ constraint(C) :-
 %!      probability(+Proposition,-Constraint,-Pr) is nondet.
 
 probability(P,C,Pr) :- 
-        current_predicate((<-)/2),
+        current_predicate(user:(<-)/2),
         user:(<-(Pr,(P|C))).
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),

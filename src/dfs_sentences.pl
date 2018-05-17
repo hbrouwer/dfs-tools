@@ -52,7 +52,7 @@ Generation of sentence-semantics (and vice versa) mappings.
 %       meaning representation of Sen.
 
 sentence(SPM) :-
-        current_predicate((@~)/1),
+        current_predicate(user:(@~)/1),
         user:(@~(SPM)).
 sentence(SPM) :-
         current_predicate(user:sentence/1),
