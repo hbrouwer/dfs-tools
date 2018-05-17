@@ -17,10 +17,11 @@
 
 :- module(yap_random,
         [
-                maybe/1
+                maybe/1,
+                set_random/1
         ]).
 
-%!      maybe(P) is semidet.
+%!      maybe(+P) is semidet.
 %
 %       As in SWI-prolog: Succeed with probability P, fail with probability 
 %       1-P.
@@ -28,3 +29,11 @@
 maybe(P) :-
         R is random,
         R < P.
+
+%!      set_random(seed(+Seed)) is det.
+%
+%       As in SWI-prolog: Set the seed of the random generator for this
+%       thread.
+
+set_random(seed(Seed)) :-
+        srandom(Seed).

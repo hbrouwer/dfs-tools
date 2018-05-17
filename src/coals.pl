@@ -33,6 +33,13 @@
 :- public
         user:coals_random_seed/1.
 
+% YAP compatibility
+:- prolog_flag(version_data,V),
+        V =.. [P|_],
+        (  P == yap
+        -> use_module('../yap/yap_random.pl')
+        ;  true ).
+
 /** <module> COALS
 
 Correlated Occurrence Analogue to Lexical Semantics (COALS) interface for a
