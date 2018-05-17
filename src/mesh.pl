@@ -25,6 +25,7 @@
 
 :- use_module(dfs_sentences).
 :- use_module(dfs_discourse).
+:- use_module(dfs_vector_space).
 
 /** <module> MESH
 
@@ -301,7 +302,7 @@ mesh_format_vector([U|Us],Stream) :-
                 %%%%%%%%%%%%%%%%%%%%%%%
                 %%%% legacy format %%%%
                 %%%%%%%%%%%%%%%%%%%%%%%
-                
+
 %!      mesh_write_atomic_prop_set(+ModelSet,+File) is det.
 %
 %       Write a MESH-readable set of atomic propositions:
