@@ -57,6 +57,14 @@
         (<-)/2,
         user:probability/3.
 
+% YAP compatibility
+:- prolog_flag(version_data,V),
+        V =.. [P|_],
+        (  P == yap
+        -> use_module('../yap/swi_predicates.pl'),
+           use_module('../yap/yap_random.pl')
+        ;  true ).
+
 /** <module> Model sampling
 
 Sample models from a world specification.
