@@ -46,7 +46,7 @@ Generation of discourse-semantics (and vice versa) mappings.
 
 discourse(SPMs) :-
         current_predicate((@~~)/1),
-        @~~(SPMs).
+        user:(@~~(SPMs)).
 discourse(SPMs) :-
         current_predicate(user:discourse/1),
         user:discourse(SPMs).

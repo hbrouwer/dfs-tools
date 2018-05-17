@@ -53,7 +53,7 @@ Generation of sentence-semantics (and vice versa) mappings.
 
 sentence(SPM) :-
         current_predicate((@~)/1),
-        @~(SPM).
+        user:(@~(SPM)).
 sentence(SPM) :-
         current_predicate(user:sentence/1),
         user:sentence(SPM).

@@ -68,7 +68,7 @@ Sample models from a world specification.
 
 constant(C) :-
         current_predicate((@+)/1),
-        @+ C.
+        user:(@+(C)).
 constant(C) :-
         current_predicate(user:constant/1),
         user:constant(C).
@@ -77,7 +77,7 @@ constant(C) :-
 
 property(P) :- 
         current_predicate((@*)/1),
-        @* P.
+        user:(@*(P)).
 property(P) :- 
         current_predicate(user:property/1),
         user:property(P).
@@ -86,7 +86,7 @@ property(P) :-
 
 constraint(C) :-
         current_predicate((@#)/1),
-        @# C.
+        user:(@#(C)).
 constraint(C) :- 
         current_predicate(user:constraint/1),
         user:constraint(C).
@@ -95,7 +95,7 @@ constraint(C) :-
 
 probability(P,C,Pr) :- 
         current_predicate((<-)/2),
-        Pr <- (P|C).
+        user:(<-(Pr,(P|C))).
 probability(P,C,Pr) :-
         current_predicate(user:probability/3),
         user:probability(P,C,Pr).
