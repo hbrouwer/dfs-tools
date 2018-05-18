@@ -122,7 +122,7 @@ dfs_sample_models_(N,I,[M|MS]) :-
         I0 is I + 1,
         format('Sample: ~d / ~d~n',[I0,N]),
         dfs_sample_model(M),
-        dfs_pprint_model(M),
+        dfs_pprint_propositions(M),
         dfs_sample_models_(N,I0,MS).
 
 %!      dfs_sample_model(-Model) is det.

@@ -48,6 +48,14 @@ A library for Distributional Formal Semantics (DFS).
 
 :- initialization(dfs_main).
 
+% Set max_depth(10) for YAP
+:- prolog_flag(version_data,V),
+        V =.. [P|_],
+        (  P == yap
+        -> prolog_flag(toplevel_print_options,Os),
+           set_prolog_flag(toplevel_print_options,[max_depth(10)|Os])
+        ;  true ).
+
 dfs_version_major(0).
 dfs_version_minor(1).
 dfs_version_patch(0).
