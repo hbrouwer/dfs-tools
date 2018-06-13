@@ -188,12 +188,14 @@ constants_and_universe(Cs,Um) :-
 %           -- !LT & !DT: The model is inconsistent, and will be discarded.
 %
 %       (6) Repeat (1) for next p. If each p is a property in either LVm or
-%           DVm, and LVm satisfies all constraints, LVm is the final 
-%           interpretation function.
+%           DVm, LVm satisfies all constraints, and not all properties p are
+%           in DVm, LVm is the final interpretation function.
 
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         random_permutation(Ps,Ps1),
-        dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), !.
+        dfs_sample_properties_(Ps1,Um,G,CIs,Cs,VmCs,VmCs,Vm), 
+        Vm \= VmCs,     %% ifunc should contain properties
+        !.
 dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm) :-
         debug(dfs_sampling,'Restarting sample ...',[]),
         dfs_sample_properties(Ps,Um,G,CIs,Cs,VmCs,Vm).
