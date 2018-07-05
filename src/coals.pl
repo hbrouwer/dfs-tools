@@ -109,7 +109,7 @@ derive_real_coals_vectors(WType,WSize,CVs) :-
 frequency_matrix([],_,_,_,_,[]).
 frequency_matrix([RWord|RWords],CWords,Sens,WT,WS,[FV|FVs]) :-
         frequency_matrix_(CWords,RWord,Sens,WT,WS,FV),
-        debug(coals,'~s: ~w',[RWord,FV]),
+        debug(coals,'Counts: ~s -> ~w',[RWord,FV]),
         frequency_matrix(RWords,CWords,Sens,WT,WS,FVs).
 
 frequency_matrix_([],_,_,_,_,[]).
@@ -187,7 +187,7 @@ correlation_matrix(FM,CM) :-
 correlation_matrix_([],[],_,_,[]).
 correlation_matrix_([V|Vs],[RT|RTs],CTs,GT,[CV|CVs]) :-
         correlation_matrix__(V,RT,CTs,GT,CV),
-        debug(coals,'~w => ~w',[V,CV]),
+        debug(coals,'Correlations: ~w => ~w',[V,CV]),
         correlation_matrix_(Vs,RTs,CTs,GT,CVs).
 
 correlation_matrix__([],_,[],_,[]).
@@ -278,7 +278,7 @@ coals_binary_vectors(WType,WSize,WCVs) :-
 binary_matrix([],[]).
 binary_matrix([V|Vs],[BV|BVs]) :-
         binary_matrix_(V,BV),
-        debug(coals,'~w => ~w',[V,BV]),
+        debug(coals,'Binary: ~w => ~w',[V,BV]),
         binary_matrix(Vs,BVs).
 
 binary_matrix_([],[]).
@@ -310,24 +310,46 @@ coals_padded_binary_vectors(WType,WSize,NHotPad,WCVs) :-
 %
 %       NPaddingBits is the minimal number of padding bits required for
 %       identifiers containing NHotPaddingBits. NPaddingBits depends on the
-%       number of identical binary vectors (MaxSim) in BinMatrix:
+%       number of subsumed binary vectors (MaxSub) in BinMatrix:
 %
-%           NPaddingBits = MaxSim * NHotPaddingsBits
+%           NPaddingBits = MaxSub * NHotPaddingsBits
 
 padding_bits(BVs,NPadHot,NPad) :-
         list_to_ord_set(BVs,UBVs),
         padding_bits_(UBVs,BVs,NPadHot,0,NPad).
 
-padding_bits_([],_,NPadHot,MaxSim,NPad) :-
-        NPad is MaxSim * NPadHot,
-        debug(coals,'Padding bits: ~d * ~d = ~d',[MaxSim,NPadHot,NPad]).
-padding_bits_([UBV|UBVs],BVs,NPadHot,MaxSim,NPad) :-
-        findall(UBV,member(UBV,BVs),SimBVs),
-        length(SimBVs,NumSim),
-        (  NumSim > MaxSim
-        -> MaxSim0 is NumSim
-        ;  MaxSim0 is MaxSim ),
-        padding_bits_(UBVs,BVs,NPadHot,MaxSim0,NPad).
+padding_bits_([],_,NPadHot,MaxSub,NPad) :-
+        NPad is MaxSub * NPadHot,
+        debug(coals,'Padding bits: ~d * ~d = ~d',[MaxSub,NPadHot,NPad]).
+padding_bits_([UBV|UBVs],BVs,NPadHot,MaxSub,NPad) :-
+        findall(UBV,(member(BV,BVs),subsumes_vector(UBV,BV)),SubBVs),
+        length(SubBVs,NumSub),
+        (  NumSub > MaxSub
+        -> MaxSub0 is NumSub
+        ;  MaxSub0 is MaxSub ),
+        padding_bits_(UBVs,BVs,NPadHot,MaxSub0,NPad).
+
+%!      subsumes_vector(+GeneralVec,+SpecificVec) is det.
+%
+%       True iff GeneralVec subsumes SpecificVec, and both contain non-zero
+%       units.
+
+subsumes_vector(VG,VS) :-
+        memberchk(1,VG),
+        memberchk(1,VS),
+        subsumes_vector_(VG,VS),
+        (  VG == VS
+        -> debug(coals,'Subsumption: ~w = ~w',[VG,VS])
+        ;  debug(coals,'Subsumption: ~w > ~w',[VG,VS])
+        ).
+
+subsumes_vector_([],[]).
+subsumes_vector_([0|Us0],[0|Us1]) :-
+        !, subsumes_vector_(Us0,Us1).
+subsumes_vector_([1|Us0],[0|Us1]) :-
+        !, subsumes_vector_(Us0,Us1).
+subsumes_vector_([1|Us0],[1|Us1]) :-
+        !, subsumes_vector_(Us0,Us1).
 
 %!      append_identifiers(+BinMatrix,+NPaddingBits,+NHotPaddingBits,
 %!              +PaddedBinMatrix) is det.
@@ -349,9 +371,13 @@ append_identifiers_([],_,_,[]).
 append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
         random_permutation(Is,Is0),
         member(IV0,Is0),
-        \+ ( member((BV,IV1),AIsAcc), featural_overlap(IV0,IV1) ),
+        \+ (
+          member((BV1,IV1),AIsAcc),
+          ( subsumes_vector(BV1,BV) ; subsumes_vector(BV,BV1) ),
+          featural_overlap(IV0,IV1)
+        ),
         append(BV,IV0,PBV),
-        debug(coals,'~w => ~w',[BV,PBV]),
+        debug(coals,'Padding: ~w => ~w',[BV,PBV]),
         append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PBVs).
 
 %!      binary_identifier(+NBits,+NHotBits,-Identifier) is det.
