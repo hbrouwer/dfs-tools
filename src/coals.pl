@@ -371,11 +371,11 @@ append_identifiers_([],_,_,[]).
 append_identifiers_([BV|BVs],Is,AIsAcc,[PBV|PBVs]) :-
         random_permutation(Is,Is0),
         member(IV0,Is0),
-        \+ (
-          member((BV1,IV1),AIsAcc),
-          ( subsumes_vector(BV1,BV) ; subsumes_vector(BV,BV1) ),
-          featural_overlap(IV0,IV1)
-        ),
+        \+ ( member((BV1,IV1),AIsAcc),
+             ( subsumes_vector(BV1,BV) 
+             ; subsumes_vector(BV,BV1) ),
+             featural_overlap(IV0,IV1)
+           ),
         append(BV,IV0,PBV),
         debug(coals,'Padding: ~w => ~w',[BV,PBV]),
         append_identifiers_(BVs,Is,[(BV,IV0)|AIsAcc],PBVs).
