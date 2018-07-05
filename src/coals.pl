@@ -331,8 +331,8 @@ padding_bits_([UBV|UBVs],BVs,NPadHot,MaxSub,NPad) :-
 
 %!      subsumes_vector(+GeneralVec,+SpecificVec) is det.
 %
-%       True iff GeneralVec subsumes SpecificVec, and both contain non-zero
-%       units.
+%       True iff GeneralVec subsumes SpecificVec, and each vector contains at
+%       least one non-zero unit.
 
 subsumes_vector(VG,VS) :-
         memberchk(1,VG),
