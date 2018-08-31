@@ -1,47 +1,98 @@
 :- use_module('../src/dfs_main.pl').
 
+coals_random_seed(1234).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                              M O D E L                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%
 %%%% Constants %%%%
+%%%%%%%%%%%%%%%%%%%
 
-@+ Person :- person(Person).
-@+ Place  :- place(Place).
-@+ Object :- object(Object).
+@+ Person    :- person(Person).
+@+ Place     :- place(Place).
+@+ Object    :- object(Object).
+@+ Entity    :- entity(Entity).
+@+ Predicate :- predicate(Predicate).
 
-
+%%%%%%%%%%%%%%%%%%%%
 %%%% Predicates %%%%
+%%%%%%%%%%%%%%%%%%%%
 
+% two-place predicates
 @* enter(Person,Place)  :- person(Person), place(Place).
 @* leave(Person,Place)  :- person(Person), place(Place).
 @* open(Person,Object)  :- person(Person), object(Object). 
 
+% referents
+@* referent(Entity) :- person(Entity).
+@* referent(Entity) :- place(Entity).
+@* referent(Entity) :- object(Entity).
+@* referent(Entity) :- entity(Entity).
+
+@* event(Predicate) :- predicate(Predicate).
+
+%%%%%%%%%%%%%%%%%%%
 %%%% Variables %%%%
+%%%%%%%%%%%%%%%%%%%
 
-female('francesca').
-female('noortje').
-
-male('harm').
-male('matt').
-
+% persons
 person(P) :- female(P).
 person(P) :- male(P).
 
+male('john').
+female('mary').
+
+% places
 place('restaurant').
 place('apartment').
 
+% openable objects
 object('menu').
 object('mail').
 object('umbrella').
+
+% inferred entities
+entity('waiter').
+entity('table').
+entity('bed').
+entity('couch').
+
+% predicates/events
+predicate('enter').
+predicate('leave').
+predicate('open').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                       C O N S T R A I N T S                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% A person always enters or leaves a place
-@# exists(y,or(enter(X,y),leave(X,y))) :- 
-        person(X).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Referents and events %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Each observation concerns only one person
+@# imp(referent(Person1),neg(referent(Person2))) :-
+        person(Person1), person(Person2), Person1 \= Person2.
+
+% Predicates instantiate their event and associated referents
+@# imp(enter(Person,Place),and(event('enter'),and(referent(Person),referent(Place)))) :-
+        person(Person), place(Place).
+
+@# imp(leave(Person,Place),and(event('leave'),and(referent(Person),referent(Place)))) :-
+        person(Person), place(Place).
+
+@# imp(open(Person,Object),and(event('open'),and(referent(Person),referent(Object)))) :-
+        person(Person), object(Object).
+
+% Places presuppose certain referential entities
+@# imp(referent('restaurant'),and(referent('menu'),and(referent('waiter'),referent('table')))).
+@# imp(referent('apartment'),and(referent('mail'),and(referent('bed'),referent('couch')))).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Entering and Leaving %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % A person never enters and leaves
 @# neg(and(enter(X,Y),leave(X,Z))) :- 
@@ -55,63 +106,65 @@ object('umbrella').
 @# imp(leave(X,Y),neg(exists(z,and(neg(z=Y),leave(X,z))))) :- 
         person(X), place(Y).
 
-% A person opens one and only one object
-@# exists(y,open(X,y)) :- 
-        person(X).
+% A person opens only one object
 @# imp(open(X,Y),neg(exists(z,and(neg(z=Y),open(X,z))))) :- 
         person(X), object(Y).
 
-% When entering, a person never opens a car door
-% @# neg(and(enter(P,L),open(P,'car_door'))) :- 
-%         person(P), place(L).
-
-% When entering, a person never opens an umbrella        
-% @# neg(and(enter(P,L),open(P,'umbrella'))) :- 
-%         person(P), place(L).
-
-% When leaving a restaurant, a person never opens mail      
-% @# neg(and(leave(P,'restaurant'),open(P,'mail'))) :- 
-        % person(P).
-
-% When leaving an apartment, a person never opens a menu
-% @# neg(and(leave(P,'apartment'),open(P,'menu'))) :- 
-        % person(P).
+% Each observation contains an enter or leave event
+@# imp(referent(P),exists(x,or(enter(P,x),leave(P,x)))) :-
+        person(P).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                      P R O B A B I L I T I E S                        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% enter(restaurant): menu > mail > umbrella
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Referents and events %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Referents are only available through direct inference
+0.0 <- ( referent(_)        | top ).
+
+% Events are only available through direct inference
+0.0 <- ( event(_)           | top ).
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Opening items %%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+% open(menu): enter(restaurant) > leave(restaurant), enter(apartment), leave(apartment)
 0.9 <- ( open(P,'menu')        | enter(P,'restaurant') ). 
 0.9 <- ( enter(P,'restaurant') | open(P,'menu') ). 
-0.3 <- ( open(P,'mail')        | enter(P,'restaurant') ). 
-0.3 <- ( enter(P,'restaurant') | open(P,'mail') ). 
-0.1 <- ( open(P,'umbrella')    | enter(P,'restaurant') ).
-0.1 <- ( enter(P,'restaurant') | open(P,'umbrella') ).
+0.2 <- ( open(P,'menu')        | leave(P,'restaurant') ).
+0.2 <- ( leave(P,'restaurant') | open(P,'menu') ).
+0.2 <- ( open(P,'menu')        | enter(P,'apartment') ). 
+0.2 <- ( enter(P,'apartment')  | open(P,'menu') ). 
+0.2 <- ( open(P,'menu')        | leave(P,'apartment') ).
+0.2 <- ( leave(P,'apartment')  | open(P,'menu') ).
 
-% enter(apartment): mail > menu > umbrella
+% open(mail): enter(apartment) > leave(apartment), enter(restaurant), leave(restaurant)
 0.9 <- ( open(P,'mail')        | enter(P,'apartment') ). 
 0.9 <- ( enter(P,'apartment')  | open(P,'mail') ). 
-0.3 <- ( open(P,'menu')        | enter(P,'apartment') ). 
-0.3 <- ( enter(P,'apartment')  | open(P,'menu') ). 
-0.1 <- ( open(P,'umbrella')    | enter(P,'apartment') ).
-0.1 <- ( enter(P,'apartment')  | open(P,'umbrella') ).
+0.2 <- ( open(P,'mail')        | leave(P,'apartment') ).
+0.2 <- ( leave(P,'apartment')  | open(P,'mail') ). 
+0.2 <- ( open(P,'mail')        | enter(P,'restaurant') ). 
+0.2 <- ( enter(P,'restaurant') | open(P,'mail') ). 
+0.2 <- ( open(P,'mail')        | leave(P,'restaurant') ).
+0.2 <- ( leave(P,'restaurant') | open(P,'mail') ).
 
-% leave(restaurant): umbrella > menu = mail
+% open(umbrella): leave(restaurant), leave(apartment) > enter(restaurant), enter(apartment)
 0.8 <- ( open(P,'umbrella')    | leave(P,'restaurant') ).
 0.8 <- ( leave(P,'restaurant') | open(P,'umbrella') ).
-0.3 <- ( open(P,'menu')        | leave(P,'restaurant') ).
-0.3 <- ( leave(P,'restaurant') | open(P,'menu') ).
-0.3 <- ( open(P,'mail')        | leave(P,'restaurant') ).
-0.3 <- ( leave(P,'restaurant') | open(P,'mail') ).
-
-% leave(apartment): umbrella > mail = menu
 0.8 <- ( open(P,'umbrella')    | leave(P,'apartment') ).
 0.8 <- ( leave(P,'apartment')  | open(P,'umbrella') ).
-0.3 <- ( open(P,'mail')        | leave(P,'apartment') ).
-0.3 <- ( leave(P,'apartment')  | open(P,'mail') ). 
-0.3 <- ( open(P,'menu')        | leave(P,'apartment') ).
-0.3 <- ( leave(P,'apartment')  | open(P,'menu') ).
+0.2 <- ( open(P,'umbrella')    | enter(P,'restaurant') ).
+0.2 <- ( enter(P,'restaurant') | open(P,'umbrella') ).
+0.2 <- ( open(P,'umbrella')    | enter(P,'apartment') ).
+0.2 <- ( enter(P,'apartment')  | open(P,'umbrella') ).
+
+%%%%%%%%%%%%%%%%%%%
+%%%% base case %%%%
+%%%%%%%%%%%%%%%%%%%
 
 0.5 <- ( _ | top ). % <- coin flip
 
@@ -119,60 +172,100 @@ object('umbrella').
 %%                           S E N T E N C E S                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% @~ enter(P,L) --> [P, 'entered', 'the', L], 
-                %   { person(P), place(L) }.
-% @~ leave(P,L) --> [P, 'left', 'the', L], 
-                %   { person(P), place(L) }. 
-% @~ open(P,O)  --> [P, 'opened', 'the', O], 
-%                   { person(P), place(Object) }.
-% @~ open(P,O)  --> ['he', 'opened', 'the', O], 
-%                   { male(P), place(Object) }.
-% @~ open(P,O)  --> ['she', 'opened', 'the', O], 
-%                   { female(P), place(Object) }.
+% Relations between places and objects
+fit('restaurant','menu').
+fit('apartment','mail').
+nofit('apartment','menu').
+nofit('restaurant','mail').
 
-@~ (Sen,Sem) :- s(Sem,Sen,[]).
-% @~ (Sen,Sem) :- s0(Sem,Sen,[]).
-% @~ (Sen,Sem) :- s0(Sem,Sen,[]).
-% @~ (Sen,Sem) :- s1(Sem,Sen,[]).
+%%%%%%%%%%%%%%%%%%%%%
+%%%% Frequencies %%%%
+%%%%%%%%%%%%%%%%%%%%%
 
-s(and(enter(P,L),open(P,O))) --> 
+% FIT: enter(restaurant/apartment) ∧ open(menu/mail) (BASELINE)
+
+@~ (Sen,Sem) :- s_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_fit(Sem,Sen,[]).
+
+% REL: leave(restaurant/apartment) ∧ open(menu/mail) (EVENT RELATED)
+
+@~ (Sen,Sem) :- s_rel(Sem,Sen,[]).
+
+% NOFIT: enter(apartment/restaurant) ∧ open(menu/mail) (EVENT UNRELATED)
+
+@~ (Sen,Sem) :- s_nofit(Sem,Sen,[]).
+
+% CTL_FIT: leave(restaurant/apartment) ∧ open(umbrella) 
+
+@~ (Sen,Sem) :- s_ctl_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_ctl_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_ctl_fit(Sem,Sen,[]).
+@~ (Sen,Sem) :- s_ctl_fit(Sem,Sen,[]).
+
+% CTL_NOFIT1: leave(apartment/restaurant) ∧ open(menu/mail)
+
+@~ (Sen,Sem) :- s_ctl_nofit1(Sem,Sen,[]).
+
+% CTL_NOFIT2: enter(restaurant/apartment) ∧ open(umbrella) 
+
+@~ (Sen,Sem) :- s_ctl_nofit2(Sem,Sen,[]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Train sentences %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FIT: enter(restaurant/apartment) ∧ open(menu/mail) (BASELINE)
+
+s_fit(and(enter(P,L),open(P,O))) --> 
                 [P, 'entered', 'the', L, 'and', 'he', 'opened', 'the', O],
-                { male(P), place(L), object(O) }. 
-s(and(enter(P,L),open(P,O))) --> 
+                { male(P), fit(L,O) }. 
+s_fit(and(enter(P,L),open(P,O))) --> 
                 [P, 'entered', 'the', L, 'and', 'she', 'opened', 'the', O],
-                { female(P), place(L), object(O) }.
+                { female(P), fit(L,O) }.    
 
-s(and(leave(P,L),open(P,O))) --> 
+% REL: leave(restaurant/apartment) ∧ open(menu/mail) (EVENT RELATED)
+
+s_rel(and(leave(P,L),open(P,O))) --> 
                 [P, 'left', 'the', L, 'and', 'he', 'opened', 'the', O],
-                { male(P), place(L), object(O) }. 
-s(and(leave(P,L),open(P,O))) --> 
+                { male(P), fit(L,O) }. 
+s_rel(and(leave(P,L),open(P,O))) --> 
                 [P, 'left', 'the', L, 'and', 'she', 'opened', 'the', O],
-                { female(P), place(L), object(O) }.                
+                { female(P), fit(L,O) }.  
 
-% s0(and(enter(P,L),open(P,O))) --> 
-%                 [P, 'entered', 'the', L, 'and', 'he', 'opened', 'the', O],
-%                 { male(P), place(L), object_in(O) }. 
-% s0(and(enter(P,L),open(P,O))) --> 
-%                 [P, 'entered', 'the', L, 'and', 'she', 'opened', 'the', O],
-%                 { female(P), place(L), object_in(O) }.
-% 
-% s0(and(leave(P,'restaurant'),open(P,'menu'))) --> 
-%                 [P, 'left', 'the', 'restaurant', 'and', 'he', 'opened', 'the', 'menu'],
-%                 { male(P) }.
-% s0(and(leave(P,'restaurant'),open(P,'menu'))) --> 
-%                 [P, 'left', 'the', 'restaurant', 'and', 'she', 'opened', 'the', 'menu'],
-%                 { female(P) }.
+% NOFIT: enter(apartment/restaurant) ∧ open(menu/mail) (EVENT UNRELATED)
 
-% s0(and(leave(P,'apartment'),open(P,'mail'))) --> 
-%                 [P, 'left', 'the', 'apartment', 'and', 'he', 'opened', 'the', 'mail'],
-%                 { male(P) }.
-% s0(and(leave(P,'apartment'),open(P,'mail'))) --> 
-%                 [P, 'left', 'the', 'apartment', 'and', 'she', 'opened', 'the', 'mail'],
-%                 { female(P) }.
+s_nofit(and(enter(P,L),open(P,O))) --> 
+                [P, 'entered', 'the', L, 'and', 'he', 'opened', 'the', O],
+                { male(P), nofit(L,O) }. 
+s_nofit(and(enter(P,L),open(P,O))) --> 
+                [P, 'entered', 'the', L, 'and', 'she', 'opened', 'the', O],
+                { female(P), nofit(L,O) }.
 
-% s1(and(leave(P,L),open(P,O))) --> 
-%                 [P, 'left', 'the', L, 'and', 'he', 'opened', 'the', O],
-%                 { male(P), place(L), object_out(O) }.
-% s1(and(leave(P,L),open(P,O))) --> 
-%                 [P, 'left', 'the', L, 'and', 'she', 'opened', 'the', O],
-%                 { female(P), place(L), object_out(O) }.
+% CTL_FIT: leave(restaurant/apartment) ∧ open(umbrella) 
+
+s_ctl_fit(and(leave(P,L),open(P,'umbrella'))) --> 
+              [P, 'left', 'the', L, 'and', 'he', 'opened', 'the', 'umbrella'],
+                { male(P), fit(L,_) }. 
+s_ctl_fit(and(leave(P,L),open(P,'umbrella'))) --> 
+                [P, 'left', 'the', L, 'and', 'she', 'opened', 'the', 'umbrella'],
+                { female(P), fit(L,_) }.  
+
+% CTL_NOFIT1: leave(apartment/restaurant) ∧ open(menu/mail) 
+
+s_ctl_nofit1(and(leave(P,L),open(P,O))) --> 
+                [P, 'left', 'the', L, 'and', 'he', 'opened', 'the', O],
+                { male(P), nofit(L,O) }. 
+s_ctl_nofit1(and(leave(P,L),open(P,O))) --> 
+                [P, 'left', 'the', L, 'and', 'she', 'opened', 'the', O],
+                { female(P), nofit(L,O) }.   
+
+% CTL_NOFIT2: enter(restaurant/apartment) ∧ open(umbrella) 
+
+s_ctl_nofit2(and(enter(P,L),open(P,'umbrella'))) --> 
+                [P, 'entered', 'the', L, 'and', 'he', 'opened', 'the', 'umbrella'],
+                { male(P), fit(L,_) }. 
+s_ctl_nofit2(and(enter(P,L),open(P,'umbrella'))) --> 
+                [P, 'entered', 'the', L, 'and', 'she', 'opened', 'the', 'umbrella'],
+                { female(P), fit(L,_) }.
