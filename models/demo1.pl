@@ -94,7 +94,7 @@ atomic_props :-
 sample_models :-
         dfs_sample_models(20,Ms),
         dfs_models_to_matrix(Ms,MM),
-        dfs_pprint_matrix(MM).
+        dfs_pprint_matrix(MM),
         dfs_write_matrix(MM,'demo1.observations').
 
 %%% Probability testing %%%
