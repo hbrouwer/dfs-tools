@@ -162,7 +162,8 @@ constants_and_universe(Cs,Um) :-
 %       that are false in the model. 
 %
 %       Given LVm and DVm, a set of randomly ordered properties P, and a set
-%       of constraints C, we then do the following for each property p:
+%       of constraints C, we then do the following for each non-'infer_only'
+%       property p:
 %
 %       (1) Add p to LVm, yielding LVm';
 %
@@ -210,11 +211,15 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
-        -> (  probabilistic_choice(P,(Um,LVm0),G)
-           -> debug(dfs_sampling,'(flip to light ): ~w',[P]),
-              dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
-           ;  debug(dfs_sampling,'(flip to dark  ): ~w',[P]),
-              dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) )
+        -> (  probability(P,infer_only,_)
+           -> debug(dfs_sampling,'{postponed     }: ~w',[P]),
+              append(Ps,[P],Ps1),
+              dfs_sample_properties_(Ps1,Um,G,CIs,Cs,LVm0,DVm0,LVm)
+           ;  (  probabilistic_choice(P,(Um,LVm0),G)
+              -> debug(dfs_sampling,'(flip to light ): ~w',[P]),
+                 dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
+              ;  debug(dfs_sampling,'(flip to dark  ): ~w',[P]),
+                 dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm) ) )
         ;  (  LT == 1, DT == 0          %% light world
            -> debug(dfs_sampling,'[infer to light]: ~w',[P]),
               dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm1,DVm0,LVm)
