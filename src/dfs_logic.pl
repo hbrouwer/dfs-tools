@@ -79,7 +79,7 @@ dfs_complement(imp(P0,Q0),and(neg(P1),Q1)) :-
         !, % P -> Q => !P & Q
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
-dfs_complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neq(Q1)))) :-
+dfs_complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neg(Q1)))) :-
         !, % P <-> Q => (!P & Q) | (P & !Q)
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
