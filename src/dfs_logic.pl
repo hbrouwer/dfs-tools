@@ -61,33 +61,33 @@ dfs_disjoin([P|Ps],or(P,F)) :-
 %       ComplementFormula specifies the falsehood conditions of Formula.
 
 dfs_complement(neg(P0),neg(P1)) :-
-        !, % !P => !P
+        !, % !P => !P'
         dfs_complement(P0,P1).
 dfs_complement(and(P0,Q0),or(P1,Q1)) :-
-        !, % P & Q => P | Q
+        !, % P & Q => P' | Q'
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
 dfs_complement(or(P0,Q0),and(P1,Q1)) :-
-        !, % P | Q => P & Q
+        !, % P | Q => P' & Q'
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
 dfs_complement(exor(P0,Q0),or(and(P1,Q1),and(neg(P1),neg(Q1)))) :-
-        !, % P (+) Q => (P & Q) | (!P & !Q)
+        !, % P (+) Q => (P' & Q') | (!P' & !Q')
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1). 
 dfs_complement(imp(P0,Q0),and(neg(P1),Q1)) :-
-        !, % P -> Q => !P & Q
+        !, % P -> Q => !P' & Q'
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
 dfs_complement(iff(P0,Q0),or(and(neg(P1),Q1),and(P1,neg(Q1)))) :-
-        !, % P <-> Q => (!P & Q) | (P & !Q)
+        !, % P <-> Q => (!P' & Q') | (P' & !Q')
         dfs_complement(P0,P1),
         dfs_complement(Q0,Q1).
 dfs_complement(exists(X,P0),forall(X,P1)) :-
-        !, % ∃x P => ∀x P
+        !, % ∃x P => ∀x P'
         dfs_complement(P0,P1).
 dfs_complement(forall(X,P0),exists(X,P1)) :-
-        !, % ∀x P => ∃x P
+        !, % ∀x P => ∃x P'
         dfs_complement(P0,P1).
 dfs_complement(P,P).
 
