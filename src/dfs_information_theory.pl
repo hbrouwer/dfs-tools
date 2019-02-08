@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Harm Brouwer <me@hbrouwer.eu>
+ * Copyright 2017-2019 Harm Brouwer <me@hbrouwer.eu>
  *     and Noortje Venhuizen <njvenhuizen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 :- module(dfs_information_theory,
         [
                 dfs_surprisal/3,
