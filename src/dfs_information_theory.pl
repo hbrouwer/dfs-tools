@@ -29,11 +29,7 @@
                 dfs_syntactic_delta_entropy/3,
                 dfs_semantic_surprisal/4,
                 dfs_semantic_entropy/3,
-                dfs_semantic_delta_entropy/4,
-                
-                dfs_fapply_surprisal/4,
-                dfs_fapply_entropy/3,
-                dfs_fapply_delta_entropy/4
+                dfs_semantic_delta_entropy/4
         ]).
 
 :- use_module(library(lists)).
@@ -42,7 +38,6 @@
 :- use_module(dfs_logic).
 :- use_module(dfs_probabilities).
 :- use_module(dfs_sentences).
-:- use_module(dfs_type_theory).
 :- use_module(dfs_vector_space).
 
 /** <module> Information theory
@@ -199,47 +194,3 @@ dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
         dfs_semantic_entropy(Prefix, MS,H),
         dfs_semantic_entropy(PrefixW,MS,HW),
         DH is H - HW.
-
-                %%%%%%%%%%%%%%%%%%%%%
-                %%%% type theory %%%%
-                %%%%%%%%%%%%%%%%%%%%%
-
-%!      dfs_fapply_surprisal(+Arg,+Function,+ModelSet,-Surprisal) is det.
-%!      dfs_fapply_surprisal(+Arg,+Function,+ModelMatrix,-Surprisal) is det.
-%
-%       @see dfs_surprisal/3
-
-dfs_fapply_surprisal(P,Q,[(Um,Vm)|MS],S) :-
-        !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
-        dfs_fapply_surprisal(P,Q,MM,S).
-dfs_fapply_surprisal(P,Q,MM,S) :-
-        dfs_function_vector(Q,MM,VQ),
-        dfs_fapply(Q,P,QP),
-        dfs_function_vector(QP,MM,VQP),
-        dfs_surprisal(VQP,VQ,S).
-
-%!      dfs_fapply_entropy(+Formula,+ModelSet,-Entropy) is det.
-%!      dfs_fapply_entropy(+Formula,+ModelMatrix,-Entropy) is det.
-%
-%       @see dfs_entropy/2
-
-dfs_fapply_entropy(P,[(Um,Vm)|MS],H) :-
-        !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
-        dfs_fapply_entropy(P,MM,H).
-dfs_fapply_entropy(P,MM,H) :-
-        dfs_function_vector(P,MM,VP),
-        dfs_entropy(VP,H).
-
-%!      dfs_fapply_delta_entropy(+Arg,+Function,+ModelSet,-DeltaH) is det.
-%!      dfs_fapply_delta_entropy(+Arg,+Function,+ModelMatrix,-DeltaH) is det.
-%
-%       @see dfs_delta_entropy/3
-
-dfs_fapply_delta_entropy(P,Q,[(Um,Vm)|MS],DH) :-
-        !, dfs_models_to_matrix([(Um,Vm)|MS],MM),
-        dfs_fapply_delta_entropy(P,Q,MM,DH).
-dfs_fapply_delta_entropy(P,Q,MM,DH) :-
-        dfs_function_vector(Q,MM,VQ),
-        dfs_fapply(Q,P,QP),
-        dfs_function_vector(QP,MM,VQP),
-        dfs_delta_entropy(VQP,VQ,DH).

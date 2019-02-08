@@ -25,7 +25,6 @@
                 dfs_pprint_model/1,
                 dfs_pprint_propositions/1,
                 dfs_pprint_matrix/1,
-                dfs_pprint_fapply_deriv/1,
                 dfs_pprint_constraints/0
         ]).
 
@@ -335,23 +334,6 @@ pprint_dfs_vector([(_,S)|Ts]) :-
         format('~0f',[S]),
         ( Ts \= [] -> format('') ; true ),
         pprint_dfs_vector(Ts).
-
-%!      dfs_pprint_fapply_deriv(Tuples) is det.
-%
-%       Pretty print a function application derivation, as represented
-%       by Tuples of formulas and vectors.
-
-dfs_pprint_fapply_deriv(Ts) :-
-        format('~n'),
-        dfs_pprint_fapply_deriv_(Ts),
-        format('~n').
-
-dfs_pprint_fapply_deriv_([]) :- !.
-dfs_pprint_fapply_deriv_([(F,V)|Ts]) :-
-        format('%%%% '),
-        foreach(member(U,V),format('~2f ',[U])),
-        format('~w~n',[F]),
-        dfs_pprint_fapply_deriv_(Ts).
 
 %!      dfs_pprint_constraints is det.
 %
