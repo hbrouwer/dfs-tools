@@ -226,7 +226,7 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
            ;  (  LT == 0, DT == 1       %% dark world
               -> debug(dfs_sampling,'[infer to dark ]: ~w',[P]),
                  dfs_sample_properties_(Ps,Um,G,CIs,Cs,LVm0,DVm1,LVm)
-              ;  debug(dfs_sampling,'{inconsistency }: ~w',[P]),
+              ;  debug(dfs_sampling,'{inconsistency }: ~w~n',[P]),
                  with_output_to(atom(LW),dfs_pprint_propositions((Um,LVm0))),
                  debug(dfs_sampling,'Light world: ~a',[LW]),
                  with_output_to(atom(DW),dfs_pprint_propositions((Um,DVm0))),
