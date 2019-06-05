@@ -169,8 +169,8 @@ windowed_frequency_([_|Words],Word,WT,N,FAcc,F) :-
 %
 %                     T * w_{a,b} - sum_j w_{a,j} * sum_i w_{i,b}
 %           w'{a,b} = -------------------------------------------
-%                     sqrt(sum_j w_{a,j} * (T - sum_j w_{a,j} *
-%                          sum_i w_{i,b} * T - (sum_i w_{i,b}))
+%                     sqrt(sum_j w_{a,j} * (T - sum_j w_{a,j}) *
+%                          sum_i w_{i,b} * (T - sum_i w_{i,b}))
 %
 %       where: T = sum_j sum_i w_{i,j}
 %
