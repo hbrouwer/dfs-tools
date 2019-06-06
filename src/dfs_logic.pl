@@ -138,8 +138,8 @@ dfs_satisfiability(P,MM) :-
         dfs_matrix_to_models(MM,MS),
         dfs_satisfiability(P,MS).
 
-%!      dfs_entailment(+Formula,+ModelSet) is det.
-%!      dfs_entailment(+Formula,+ModelMatrix) is det.
+%!      dfs_entailment(+FormulaP,+FormulaQ,+ModelSet) is det.
+%!      dfs_entailment(+FormulaP,+FormulaQ,+ModelMatrix) is det.
 % 
 %       A formula P entails a formula Q (P |= Q) iff Q is true in every model
 %       that satisfies P.
@@ -153,8 +153,8 @@ dfs_entailment(P,Q,MM) :-
         dfs_matrix_to_models(MM,MS),
         dfs_entailment(P,Q,MS).
 
-%!      dfs_logical_equivalence(+Formula,+ModelSet) is det.
-%!      dfs_logical_equivalence(+Formula,+ModelMatrix) is det.
+%!      dfs_logical_equivalence(+FormulaP,+FormulaQ,+ModelSet) is det.
+%!      dfs_logical_equivalence(+FormulaP,+FormulaQ,+ModelMatrix) is det.
 %
 %       A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g
 %       for all models M and variable assignments g

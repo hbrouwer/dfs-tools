@@ -63,7 +63,7 @@ dfs_discourse(DPMs) :-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_map_discourse_onto_semantics(+SenSemTuples,+WVecs,+ModelSet,
-%               -Mappings) is det.
+%!              -Mappings) is det.
 %
 %       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]), where 
 %       SenVecs is a word-by-word vector-based mapping of a sentence (Sen)
@@ -95,7 +95,7 @@ dfs_discourse_semantics_mappings(WVs,MS,WPMs) :-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %!      dfs_map_semantics_onto_discourse(+SenSemTuples,+WVecs,+ModelSet,
-%               -Mappings) is det.
+%!              -Mappings) is det.
 %
 %       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]), where
 %       SemVec is a vector representation of a sentence semantics (Sem), and

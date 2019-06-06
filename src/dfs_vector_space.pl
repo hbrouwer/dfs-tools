@@ -104,6 +104,8 @@ dfs_models_to_matrix_([M|MS],APs,[MV|MVs]) :-
 
 %!      (+ModelSet @># -Matrix) is det.
 %
+%       Infix operator for dfs_models_to_matrix/2.
+%
 %       @see dfs_models_to_matrix/2.
 
 MS @># MM :- dfs_models_to_matrix(MS,MM).
@@ -136,6 +138,8 @@ dfs_matrix_to_models([MV|MVs],[M|MS]) :-
         dfs_matrix_to_models(MVs,MS).
 
 %!      (+Matrix #>@ -ModelSet) is det.
+%
+%       Infix operator for dfs_matrix_to_models/2.
 %
 %       @see dfs_matrix_to_models/2.
 

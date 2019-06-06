@@ -37,12 +37,16 @@
 Model-theoretic interpretation.
 */
 
-%!      dfs_variables(-Vars) is det.
+%!      dfs_variables(-Variables) is det.
+%
+%       Variables is a list of variables.
 
 dfs_variables([x,y,z|Vars]) :- 
         enumerate_term('x',10,Vars).
 
 %!      dfs_entities(+N,-Entities) is det.
+%
+%       Entities is a list of model entities.
 
 dfs_entities(N,Es) :-
         enumerate_term('e',N,Es).

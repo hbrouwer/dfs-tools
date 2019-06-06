@@ -54,9 +54,27 @@ A library for Distributional Formal Semantics (DFS).
            set_prolog_flag(toplevel_print_options,[max_depth(10)|Os])
         ;  true ).
 
+%!      dfs_version_major(-MajorVersion)
+%
+%       Major version number.
+
 dfs_version_major(0).
+
+%!      dfs_version_minor(-MinorVersion)
+%
+%       Minor version number.
+
 dfs_version_minor(1).
+
+%!      dfs_version_patch(-PatchVersion)
+%
+%       Patch version number.
+
 dfs_version_patch(0).
+
+%!      dfs_main
+%
+%       Module entry point.
 
 dfs_main :-
         dfs_version_major(Vmaj),

@@ -168,7 +168,7 @@ dfs_map_semantics_onto_sentence((S,P),WVs,MS,(S,P,[IV],TVs)) :-
         dfs_vector(P,MS,IV),
         findall(TV,(member(W,S),memberchk((W,TV),WVs)),TVs).
 
-%!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
+%!      dfs_semantics_sentence_mappings(+WVecs,+ModelSet,-Mappings) is det.
 %
 %       Mappings is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]).
 %
@@ -185,13 +185,12 @@ dfs_semantics_sentence_mappings(WVs,MS,PWMs) :-
                 %%%% sentences onto sentences %%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%!      dfs_map_sentence_onto_sentence(+SenSemTuple,+InWVecs,OutWVecs,
-%               -Mapping) is det.
+%!      dfs_map_sentence_onto_sentence(+SenSemTuple,+InWVecs,+OutWVecs,
+%!              -Mapping) is det.
 %
 %       Mapping is a quadruple (Sen,Sem,[InSenVecs],[OutSenVecs]), where
 %       InSenVecs and OutSenVecs are word-by-word vector-based representations
 %       of the corresponding sentence (Sen).
-
 
 dfs_map_sentence_onto_sentence((S,P),WVs0,WVs1,(S,P,IVs,TVs)) :-
         findall(IV,(member(W,S),memberchk((W,IV),WVs0)),IVs),

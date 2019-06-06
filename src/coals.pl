@@ -43,7 +43,7 @@
 
 /** <module> COALS
 
-Correlated Occurrence Analogue to Lexical Semantics (COALS) interface for a
+Correlated Occurrence Analogue to Lexical Semantics (COALS) interface for
 Definite Clause Grammars (DCG).
 
 @see Rohde, D. L. T., Gonnerman, L. M., & Plaut, D. C. (2005). An Improved
