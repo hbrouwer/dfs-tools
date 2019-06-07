@@ -50,7 +50,11 @@ models.
 %!      dfs_surprisal(+Formula1,+Formula2,+ModelSet,-Surprisal) is det.
 %!      dfs_surprisal(+Formula1,+Formula2,+ModelMatrix,-Surprisal) is det.
 %
+%       Surprisal of P given Q, where P and Q are either vectors or formulas.
+%
+%       ==
 %       surprisal(P,Q) = -log Pr(P|Q)
+%       ==
 
 dfs_surprisal(VP,VQ,S) :-
         dfs_cond_probability(VP,VQ,PrPgQ),
@@ -69,7 +73,11 @@ dfs_surprisal_(PrPgQ,S) :-
 %!      dfs_entropy(+Formula,+ModelSet,-Entropy) is det.
 %!      dfs_entropy(+Formula,+ModelMatrix,-Entropy) is det.
 %
+%       Entropy of P, where P is either a vector or a formula.
+%
+%       ==
 %       H(P) = - sum_{s in S} Pr(s|P) * log Pr(s|P)
+%       ==
 %
 %       where the set S consists of all possible points in the DFS space that
 %       are fully specified with respect to the atomic propositions; that is,
@@ -97,7 +105,11 @@ dfs_entropy_([U|Us],S,HAcc,H) :-
 %!      dfs_delta_entropy(+Formula1,+Formula2,+ModelSet,-DeltaH) is det.
 %!      dfs_delta_entropy(+Formula1,+Formula2,+ModelMatrix,-DeltaH) is det.
 %
+%       Entropy delta of P given Q, where P and Q are either vectors or formulas.
+%
+%       ==
 %       DH(P,Q) = H(Q) - H(P)
+%       ==
 
 dfs_delta_entropy(VP,VQ,DH) :-
         dfs_entropy(VP,HP),
@@ -115,9 +127,13 @@ dfs_delta_entropy(P,Q,Ms,DH) :-
 
 %!      dfs_syntactic_surprisal(+Word,+Prefix,-Surprisal) is det.
 %
+%       Syntactic surprisal of a word given a prefix.
+%       
+%       ==
 %       S(w_i+1) = -log(P(w_i+1|w_1...i))
 %                = log(P(w_1...i)) - log(P(w_1...i+1))
 %                = log(freq(w_1...i)) - log(freq(w_1...i+1))
+%       ==
 
 dfs_syntactic_surprisal(W,Prefix,S) :-
         append(Prefix,[W],PrefixW),
@@ -127,9 +143,13 @@ dfs_syntactic_surprisal(W,Prefix,S) :-
 
 %!      dfs_syntactic_entropy(+Prefix,-Entropy) is det.
 %
-%       H(w_i) = - sum_(w_1...i,w_i+1...n)
+%       Syntactic entropy for a prefix.
+%
+%       ==
+%       H(w_i) = -sum_(w_1...i,w_i+1...n)
 %                Pr(w_1...i,w_i+1...n|w_1...i)
 %                * log(Pr(w_1...i,w_i+1...n|w_1...i))
+%       ==
 
 dfs_syntactic_entropy(Prefix,H) :-
         dfs_prefix_continuations(Prefix,Cs),
@@ -146,7 +166,11 @@ dfs_syntactic_entropy_([(C,_)|Cs],TF,HAcc,H) :-
 
 %!      dfs_syntactic_delta_entropy(+Word,+Prefix,-DeltaH) is det.
 %
+%       Syntactic entropy delta for a word given a prefix.
+%
+%       ==
 %       DH(w_i+1) = H(w_i) - H(w_i+1)
+%       ==
 
 dfs_syntactic_delta_entropy(W,Prefix,DH) :-
         append(Prefix,[W],PrefixW),
@@ -156,7 +180,11 @@ dfs_syntactic_delta_entropy(W,Prefix,DH) :-
 
 %!      dfs_semantic_surprisal(+Word,+Prefix,+ModelSet,-Surprisal) is det.
 %
+%       Semantic suprisal for a word given a prefix.
+%
+%       ==
 %       S(w_i+1) = -log(Pr(v(w_1...i+1)|w_1...i))
+%       ==
 %
 %       where v(w_1...i) is the disjunction of all semantics consistent with
 %       the prefix w_1...w_i.
@@ -173,8 +201,12 @@ dfs_semantic_surprisal(W,Prefix,MS,S) :-
 
 %!      dfs_semantic_entropy(+Prefix,+ModelSet,-Entropy) is det.
 %
+%       Semantic entropy for a prefix.
+%
+%       ==
 %       H(w_i) = - sum_(foreach s in S) Pr(s|v(w_1...i))
 %                * log(Pr(s|v(w_1...i))) 
+%       ==
 %
 %       where v(w_1...i) is the disjunction of all semantics consistent with
 %       the prefix w_1...w_i.
@@ -187,7 +219,11 @@ dfs_semantic_entropy(Prefix,MS,H) :-
 
 %!      dfs_semantic_delta_entropy(+Word,+Prefix,+ModelSet,-DeltaH) is det.
 %
+%       Semantic entropy delta for a word given a prefix.
+%
+%       ==
 %       DH(w_i+1) = H(w_i) - H(w_i+1)
+%       ==
 
 dfs_semantic_delta_entropy(W,Prefix,MS,DH) :-
         append(Prefix,[W],PrefixW),
