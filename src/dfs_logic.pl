@@ -156,7 +156,7 @@ dfs_entailment(P,Q,MM) :-
 %!      dfs_logical_equivalence(+FormulaP,+FormulaQ,+ModelSet) is det.
 %!      dfs_logical_equivalence(+FormulaP,+FormulaQ,+ModelMatrix) is det.
 %
-%       A formula P is logically equivalent to formula Q iff [P]^M,g = [Q]^M,g
+%       A formula P is logically equivalent to formula Q iff [[P]]^M,g = [[Q]]^M,g
 %       for all models M and variable assignments g
 
 dfs_logical_equivalence(_,_,[]) :- !.
