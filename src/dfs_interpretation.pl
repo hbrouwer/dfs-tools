@@ -46,7 +46,7 @@ dfs_variables([x,y,z|Vars]) :-
 
 %!      dfs_entities(+N,-Entities) is det.
 %
-%       Entities is a list of model entities.
+%       Entities is a list of N model entities.
 
 dfs_entities(N,Es) :-
         enumerate_term('e',N,Es).

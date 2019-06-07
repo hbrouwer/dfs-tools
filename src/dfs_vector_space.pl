@@ -191,7 +191,7 @@ ifunc_inst_property(P,[_|Ts],CIs,PIs) :-
 %!      dfs_vector(+Formula,+ModelSet,-Vector) is det.
 %!      dfs_vector(+Formula,+ModelMatrix,-Vector) is det.
 %
-%       A formula P is true in a model M iff [P]^M,g = 1 given an arbitrary
+%       A formula P is true in a model M iff [[P]]^M,g = 1 given an arbitrary
 %       variable assignment g
 
 dfs_vector(_,[],[]) :- !.
