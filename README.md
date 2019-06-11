@@ -118,7 +118,7 @@ Ms = [([e1, e2, e3, e4, e5, e6, e7|...], [john=e1, ellen=e2, restaurant=e3, bar=
 Mx = [[(ask_menu(ellen), 0),  (ask_menu(john), 0),  (leave(ellen), 0),  (leave(john), 1),  (pay(ellen), 0),  (pay(john), 1),  (drink(..., ...), 0),  (..., ...)|...], [(ask_menu(ellen), 1),  (ask_menu(john), 1),  (leave(ellen), 0),  (leave(john), 0),  (pay(ellen), 0),  (pay(...), 0),  (..., ...)|...], [(ask_menu(ellen), 0),  (ask_menu(john), 0),  (leave(ellen), 0),  (leave(john), 0),  (pay(...), 1),  (..., ...)|...], [(ask_menu(ellen), 1),  (ask_menu(john), 0),  (leave(ellen), 0),  (leave(...), 1),  (..., ...)|...], [(ask_menu(ellen), 1),  (ask_menu(john), 0),  (leave(...), 1),  (..., ...)|...], [(ask_menu(ellen), 0),  (ask_menu(...), 1),  (..., ...)|...], [(ask_menu(...), 0),  (..., ...)|...], [(..., ...)|...], [...|...]|...].
 ```
 
-### And, much more
+### And much more ...
 
-See [DFS Tools PlDoc documentation.](docs/index.html) for more information.
+See [DFS Tools PlDoc documentation](docs/index.html) for more information.
 
