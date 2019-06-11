@@ -14,7 +14,7 @@ DFS Tools is written in Prolog, and tested in
 
 Detailed documentation can be found here:
 
-* [DFS Tools PlDoc documentation.](docs/index.html)
+* [DFS Tools PlDoc documentation.](https://hbrouwer.github.io/dfs-tools/)
 
 Examples can be found in the `worlds/` folder.
 
@@ -120,5 +120,5 @@ Mx = [[(ask_menu(ellen), 0),  (ask_menu(john), 0),  (leave(ellen), 0),  (leave(j
 
 ### And much more ...
 
-See [DFS Tools PlDoc documentation](docs/index.html) for more information.
+See [DFS Tools PlDoc documentation](https://hbrouwer.github.io/dfs-tools/) for more information.
 
