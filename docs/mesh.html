@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>mesh.pl -- MESH</h1>
+
+<p>
+Write MESH-readable sets.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mesh_write_set/2"><b class="pred">mesh_write_set</b><var class="arglist">(+SentenceSemanticsMappings, +File)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">mesh_write_set</b><var class="arglist">(+DiscourseSemanticsMappings, +File)</var> is <b class="det">det</b></dt><dd class="defbody">Write all sentence-semantics, semantics-sentence, discourse-semantics,
+semantics-discourse, or sentence-sentence Mappings to <var>File</var> in
+MESH-readable format. Files start with a dimensions specification:
+
+<pre class="code" ext="">
+Dimensions # #</pre>
+
+<p>
+where the first '#' is an integer indicating the input vector size, and
+the second '#' an integer indicating target vector size. The remainder
+of the file consists of item blocks:</p>
+
+<p>
+Sentences format:</p>
+
+<pre class="code" ext="">
+BeginItem
+Name "sentence"
+Meta "semantics"
+Input # # # Target # #
+Input # # # Target # #
+EndItem
+
+[...]</pre>
+
+<p>
+where 'sentence' is a sentence, and 'semantics' its formatted FOL
+semantics. The '#'s are the integer units of the input/target vectors.</p>
+
+<p>
+Discourse format:</p>
+
+<pre class="code" ext="">
+BeginItem
+Name "sentence1 #### sentence2"
+Meta "semantics1 #### semantics2"
+Input # # # Target # #
+Input # # # Target # #
+EndItem
+
+[...]</pre>
+
+<p>
+where 'sentence1' and 'sentence2' are sentences of a discourse, and
+'semantics1' and 'semantics2' the (possibly) varying semantics for
+the two sentences. The single '#'s are the integer units of the
+input/target vectors, and the '####' string is a sentence divider.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mesh_write_atomic_prop_set/2"><b class="pred">mesh_write_atomic_prop_set</b><var class="arglist">(+ModelSet, +File)</var></a> is <b class="det">det</b></dt><dd class="defbody">Write a MESH-readable set of atomic propositions:
+
+<pre class="code" ext="">
+Dimensions # #
+
+BeginItem
+Name "sentence"
+Meta "semantics"
+Input # # # Target # #
+Input # # # Target # #
+EndItem</pre>
+
+<p>
+For each atomic proposition, the input vector is the zero vector with
+number of dimensions equal to the number of words produced by
+<a href="dfs_sentences.html#dfs_words/1">dfs_words/1</a>, and the target vector is the vector encoding the atomic
+proposition. </p></dd>
+</dl>
+
+</body>
+</html>

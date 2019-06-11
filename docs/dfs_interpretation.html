@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_interpretation.pl -- Model-theoretic interpretation</h1>
+
+<p>
+Model-theoretic interpretation.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_variables/1"><b class="pred">dfs_variables</b><var class="arglist">(-Variables)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Variables</var> is a list of variables.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entities/2"><b class="pred">dfs_entities</b><var class="arglist">(+N, -Entities)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Entities</var> is a list of <var>N</var> model entities.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_constant_instantiations/2"><b class="pred">dfs_constant_instantiations</b><var class="arglist">(+Model, -ConstantInstantiations)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ConstantInstantiations</var> is a list of all constant instantiations in
+<var>Model</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_term_instantiations/3"><b class="pred">dfs_term_instantiations</b><var class="arglist">(+Model, +G, -TermInstantiations)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>TermInstantiations</var> is a list of all constant and variable
+instantiations in <var>Model</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_init_g/2"><b class="pred">dfs_init_g</b><var class="arglist">(+Model, -G)</var></a> is <b class="det">det</b></dt><dd class="defbody">Initializes the assignment function <var>G</var> :: Var -&gt; Um. Variables are
+assigned by iterating over the entities in the <var>Model</var> universe.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_assign/4"><b class="pred">dfs_assign</b><var class="arglist">(+G, +Model, +Assignments, -Gprime)</var></a> is <b class="det">det</b></dt><dd class="defbody">Updates the assignment function <var>G</var> of <var>Model</var> with variable <var>Assignments</var>,
+yielding assignment function <var>G</var>'.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_terms_to_entities/3"><b class="pred">dfs_terms_to_entities</b><var class="arglist">(?Terms, +TermInstantiations, ?Entities)</var></a> is <b class="det">det</b></dt><dd class="defbody">Maps <var>Terms</var> into <var>Entities</var> (or vice versa), given their instantiations.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_interpret/2"><b class="pred">dfs_interpret</b><var class="arglist">(+Formula, +Model)</var></a> is <b class="det">semidet</b></dt>
+<dt class="pubdef"><b class="pred">dfs_interpret</b><var class="arglist">(+FormulaSet, +Model)</var> is <b class="det">semidet</b></dt><dd class="defbody">Evaluates the truth value of <var>Formula</var> in <var>Model</var>, given an initial
+assignment function G.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_interpret/3"><b class="pred">dfs_interpret</b><var class="arglist">(+Formula, +Model, +G)</var></a> is <b class="det">semidet</b></dt>
+<dt class="pubdef"><b class="pred">dfs_interpret</b><var class="arglist">(+FormulaSet, +Model, +G)</var> is <b class="det">semidet</b></dt><dd class="defbody">Evaluates the truth value of <var>Formula</var> in <var>Model</var>, given the assignment
+function <var>G</var>.</dd>
+</dl>
+
+</body>
+</html>

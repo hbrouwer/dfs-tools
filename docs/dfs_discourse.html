@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_discourse.pl -- Discourse generation</h1>
+
+<p>
+Generation of discourse-semantics (and vice versa) mappings.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_discourse/1"><b class="pred">dfs_discourse</b><var class="arglist">(SenSemTuples)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>SenSemTuples</var> is a list of all discourse sentence-semantics mappings.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_discourse_onto_semantics/4"><b class="pred">dfs_map_discourse_onto_semantics</b><var class="arglist">(+SenSemTuples, +WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]), where
+SenVecs is a word-by-word vector-based mapping of a sentence (Sen)
+onto single SemVec, a vector representation of its semantics (Sem).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_sentence_onto_semantics/4">dfs_map_sentence_onto_semantics/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_discourse_semantics_mappings/3"><b class="pred">dfs_discourse_semantics_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of lists of (Sen,Sem,[SenVecs],[SemVec])
+quadruples.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_discourse.html#dfs_map_discourse_onto_semantics/4">dfs_map_discourse_onto_semantics/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_semantics_onto_discourse/4"><b class="pred">dfs_map_semantics_onto_discourse</b><var class="arglist">(+SenSemTuples, +WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]), where
+SemVec is a vector representation of a sentence semantics (Sem), and
+SenVecs a word-by-word vector-based representation of the
+corresponding sentence (Sen).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics_discourse_mappings/3"><b class="pred">dfs_semantics_discourse_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of lists of quadruples
+(Sen,Sem,[SemVec],[SenVecs]).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_discourse.html#dfs_map_semantics_onto_discourse/4">dfs_map_semantics_onto_discourse/4</a></dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_probabilities.pl -- Probabilities</h1>
+
+<p>
+Probabilities of formulas given a set of models.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prior_probability/2"><b class="pred">dfs_prior_probability</b><var class="arglist">(+Vector, -PriorPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prior_probability/3"><b class="pred">dfs_prior_probability</b><var class="arglist">(+Formula, +ModelSet, -PriorPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_prior_probability</b><var class="arglist">(+Formula, +ModelMatrix, -PriorPr)</var> is <b class="det">det</b></dt><dd class="defbody">Prior probability of P, where P is either a vector or a formula.
+
+<pre class="code" ext="">
+Pr(P) = sum_i(v_i(P)) / |M|</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conj_probability/3"><b class="pred">dfs_conj_probability</b><var class="arglist">(+Vector1, +Vector2, -ConjPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conj_probability/4"><b class="pred">dfs_conj_probability</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -ConjPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_conj_probability</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -ConjPr)</var> is <b class="det">det</b></dt><dd class="defbody">Conjunction probability of P and Q, where P and Q are either vectors or formulas.
+
+<pre class="code" ext="">
+Pr(P&amp;Q) = sum_i(v_i(P&amp;Q)) / |M|</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_cond_probability/3"><b class="pred">dfs_cond_probability</b><var class="arglist">(+Vector1, Vector2, -ConjPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_cond_probability/4"><b class="pred">dfs_cond_probability</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -CondPr)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_cond_probability</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -CondPr)</var> is <b class="det">det</b></dt><dd class="defbody">Conditional probability of P given Q, where P and Q are either vectors or formulas.
+
+<pre class="code" ext="">
+Pr(P|Q) = Pr(P&amp;Q) / Pr(Q)</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_inference_score/3"><b class="pred">dfs_inference_score</b><var class="arglist">(+Vector1, +Vector2, -Score)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_inference_score/4"><b class="pred">dfs_inference_score</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -Score)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_inference_score</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -Score)</var> is <b class="det">det</b></dt><dd class="defbody">Inference score of P from Q, where P and Q are either vectors or formulas.
+
+<pre class="code" ext="">
+           | (Pr(P|Q) - Pr(P)) / (1 - Pr(P))    iff Pr(P|Q) &gt; Pr(P)
+inf(P,Q) = |
+           | (Pr(P|Q) - Pr(P)) / Pr(P)          otherwise</pre>
+
+</dd>
+</dl>
+
+</body>
+</html>

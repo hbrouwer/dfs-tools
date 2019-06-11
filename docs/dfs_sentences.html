@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_sentences.pl -- Sentence generation</h1>
+
+<p>
+Generation of sentence-semantics (and vice versa) mappings.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentences/1"><b class="pred">dfs_sentences</b><var class="arglist">(-SenSemTuples)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>SenSemTuples</var> is a list of all sentence-semantics mappings generated.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_words/1"><b class="pred">dfs_words</b><var class="arglist">(-Words)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Words</var> is the set of all lexical items generated.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_localist_word_vectors/1"><b class="pred">dfs_localist_word_vectors</b><var class="arglist">(-WordVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>WordVectors</var> is a list of tuples (Word,Vector) where Vector is a
+localist vector representation for each Word generated.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_sentence_onto_semantics/4"><b class="pred">dfs_map_sentence_onto_semantics</b><var class="arglist">(+SenSemTuple, +WVecs, +ModelSet, -Mapping)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mapping</var> is a quadruple (Sen,Sem,[SenVecs],[SemVec]), where
+SenVecs is a word-by-word vector-based mapping of a sentence (Sen)
+onto single SemVec, a vector representation of its semantics (Sem).
+
+<p>
+Word vector representation (<var>WVecs</var>) are pre-specified (e.g., using
+<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=dfs_localist_word_vectors/2">dfs_localist_word_vectors/2</a>), and a vector representation of the
+sentence meaning, specified by the FOL formula Sem, is derived
+from <var>ModelSet</var>.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentence_semantics_mappings/3"><b class="pred">dfs_sentence_semantics_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=dfs_maps_sentence_onto_semantics/4">dfs_maps_sentence_onto_semantics/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_semantics_onto_sentence/4"><b class="pred">dfs_map_semantics_onto_sentence</b><var class="arglist">(+SenSemTuple, +WVecs, +ModelSet, -Mapping)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mapping</var> is a quadruple (Sen,Sem,[SemVec],[SenVecs]), where SemVec
+is a vector representation of a sentence semantics (Sem), and SenVecs
+a word-by-word vector-based representation of the corresponding
+sentence (Sen).
+
+<p>
+Word vector representation (<var>WVecs</var>) are pre-specified (e.g., using
+<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=dfs_localist_word_vectors/2">dfs_localist_word_vectors/2</a>), and a vector representation of the
+sentence meaning, specified by the FOL formula Sem, is derived
+from <var>ModelSet</var>.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics_sentence_mappings/3"><b class="pred">dfs_semantics_sentence_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_sentence_onto_sentence/4"><b class="pred">dfs_map_sentence_onto_sentence</b><var class="arglist">(+SenSemTuple, +InWVecs, +OutWVecs, -Mapping)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mapping</var> is a quadruple (Sen,Sem,[InSenVecs],[OutSenVecs]), where
+InSenVecs and OutSenVecs are word-by-word vector-based representations
+of the corresponding sentence (Sen).</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentence_sentence_mappings/3"><b class="pred">dfs_sentence_sentence_mappings</b><var class="arglist">(+InWVecs, +OutWVecs, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[InSenVecs],[OutSenVecs]).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_sentence_onto_sentence/4">dfs_map_sentence_onto_sentence/4</a>.</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prefix_continuations/2"><b class="pred">dfs_prefix_continuations</b><var class="arglist">(+Prefix, SemSenMappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>SemSenMappings</var> is a list of all tuples (Sen,Sem), where sentence Sen
+is a possible continuation of <var>Prefix</var>, and Sem its corresponding FOL
+semantics.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prefix_frequency/2"><b class="pred">dfs_prefix_frequency</b><var class="arglist">(+Prefix, -Frequency)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Frequency</var> is the occurence frequency of sentence <var>Prefix</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentence_frequency/2"><b class="pred">dfs_sentence_frequency</b><var class="arglist">(+Sentence, -Frequency)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Frequency</var> is is the occurrence frequency of <var>Sentence</var>.</dd>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_information_theory.pl -- Information theory</h1>
+
+<p>
+Information theoretic metrics for vectors, and for formulas given a set of
+models.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_surprisal/3"><b class="pred">dfs_surprisal</b><var class="arglist">(+Vector1, +Vector2, -Surprisal)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_surprisal/4"><b class="pred">dfs_surprisal</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -Surprisal)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_surprisal</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -Surprisal)</var> is <b class="det">det</b></dt><dd class="defbody"><var>Surprisal</var> of P given Q, where P and Q are either vectors or formulas.
+
+<pre class="code" ext="">
+surprisal(P,Q) = -log Pr(P|Q)</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entropy/2"><b class="pred">dfs_entropy</b><var class="arglist">(+Vector, -Entropy)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entropy/3"><b class="pred">dfs_entropy</b><var class="arglist">(+Formula, +ModelSet, -Entropy)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_entropy</b><var class="arglist">(+Formula, +ModelMatrix, -Entropy)</var> is <b class="det">det</b></dt><dd class="defbody"><var>Entropy</var> of P, where P is either a vector or a formula.
+
+<pre class="code" ext="">
+H(P) = - sum_{s in S} Pr(s|P) * log Pr(s|P)</pre>
+
+<p>
+where the set S consists of all possible points in the DFS space that
+are fully specified with respect to the atomic propositions; that is,
+each point s in S constitutes a unique logical combination of all
+atomic propostions.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/3"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Vector1, +Vector2, -DeltaH)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/4"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -DeltaH)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -DeltaH)</var> is <b class="det">det</b></dt><dd class="defbody">Entropy delta of P given Q, where P and Q are either vectors or formulas.
+
+<pre class="code" ext="">
+DH(P,Q) = H(Q) - H(P)</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_syntactic_surprisal/3"><b class="pred">dfs_syntactic_surprisal</b><var class="arglist">(+Word, +Prefix, -Surprisal)</var></a> is <b class="det">det</b></dt><dd class="defbody">Syntactic surprisal of a word given a prefix.
+
+<pre class="code" ext="">
+S(w_i+1) = -log(P(w_i+1|w_1...i))
+         = log(P(w_1...i)) - log(P(w_1...i+1))
+         = log(freq(w_1...i)) - log(freq(w_1...i+1))</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_syntactic_entropy/2"><b class="pred">dfs_syntactic_entropy</b><var class="arglist">(+Prefix, -Entropy)</var></a> is <b class="det">det</b></dt><dd class="defbody">Syntactic entropy for a prefix.
+
+<pre class="code" ext="">
+H(w_i) = -sum_(w_1...i,w_i+1...n)
+         Pr(w_1...i,w_i+1...n|w_1...i)
+         * log(Pr(w_1...i,w_i+1...n|w_1...i))</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_syntactic_delta_entropy/3"><b class="pred">dfs_syntactic_delta_entropy</b><var class="arglist">(+Word, +Prefix, -DeltaH)</var></a> is <b class="det">det</b></dt><dd class="defbody">Syntactic entropy delta for a word given a prefix.
+
+<pre class="code" ext="">
+DH(w_i+1) = H(w_i) - H(w_i+1)</pre>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantic_surprisal/4"><b class="pred">dfs_semantic_surprisal</b><var class="arglist">(+Word, +Prefix, +ModelSet, -Surprisal)</var></a> is <b class="det">det</b></dt><dd class="defbody">Semantic suprisal for a word given a prefix.
+
+<pre class="code" ext="">
+S(w_i+1) = -log(Pr(v(w_1...i+1)|w_1...i))</pre>
+
+<p>
+where v(w_1...i) is the disjunction of all semantics consistent with
+the prefix w_1...w_i.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantic_entropy/3"><b class="pred">dfs_semantic_entropy</b><var class="arglist">(+Prefix, +ModelSet, -Entropy)</var></a> is <b class="det">det</b></dt><dd class="defbody">Semantic entropy for a prefix.
+
+<pre class="code" ext="">
+H(w_i) = - sum_(foreach s in S) Pr(s|v(w_1...i))
+         * log(Pr(s|v(w_1...i)))</pre>
+
+<p>
+where v(w_1...i) is the disjunction of all semantics consistent with
+the prefix w_1...w_i.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantic_delta_entropy/4"><b class="pred">dfs_semantic_delta_entropy</b><var class="arglist">(+Word, +Prefix, +ModelSet, -DeltaH)</var></a> is <b class="det">det</b></dt><dd class="defbody">Semantic entropy delta for a word given a prefix.
+
+<pre class="code" ext="">
+DH(w_i+1) = H(w_i) - H(w_i+1)</pre>
+
+</dd>
+</dl>
+
+</body>
+</html>

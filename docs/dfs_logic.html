@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_logic.pl -- First-order Logic</h1>
+
+<p>
+This module implements basic first-order logic operations and properties on
+formulas and vectors.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conjoin/2"><b class="pred">dfs_conjoin</b><var class="arglist">(+FormulaSet, -Conjunction)</var></a> is <b class="det">det</b></dt><dd class="defbody">True if <var>Conjunction</var> is a logical conjunction of the formulas in
+<var>FormulaSet</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_disjoin/2"><b class="pred">dfs_disjoin</b><var class="arglist">(+FormulaSet, -Disjunction)</var></a> is <b class="det">det</b></dt><dd class="defbody">True if <var>Disjunction</var> is a logical disjunction of the formulas in
+<var>FormulaSet</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_complement/2"><b class="pred">dfs_complement</b><var class="arglist">(+Formula, +ComplementFormula)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ComplementFormula</var> specifies the falsehood conditions of <var>Formula</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conj_vector/3"><b class="pred">dfs_conj_vector</b><var class="arglist">(+Vector1, +Vector2, -ConjVector)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ConjVector</var> is the conjunction (component-wise product) of <var>Vector1</var>
+and <var>Vector2</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_validity/2"><b class="pred">dfs_validity</b><var class="arglist">(+Formula, +ModelSet)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_validity</b><var class="arglist">(+Formula, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is valid (|= P) iff P is true (not false) in all models.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_satisfiability/2"><b class="pred">dfs_satisfiability</b><var class="arglist">(+Formula, +ModelSet)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_satisfiability</b><var class="arglist">(+Formula, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is satisfiable iff P is true in at least one model M.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entailment/3"><b class="pred">dfs_entailment</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelSet)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_entailment</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P entails a formula Q (P |= Q) iff Q is true in every model
+that satisfies P.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_logical_equivalence/3"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelSet)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is logically equivalent to formula Q iff [[P]]^M,g = [[Q]]^M,g
+for all models M and variable assignments g</dd>
+</dl>
+
+</body>
+</html>

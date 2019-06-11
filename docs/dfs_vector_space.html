@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_vector_space.pl -- Vector space</h1>
+
+<p>
+Conversion between sets of models and vector space.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_model_to_vector/2"><b class="pred">dfs_model_to_vector</b><var class="arglist">(+Model, -ModelVector)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ModelVector</var> is a set of tuples (AtomicProp,State) representing
+the State of each atomic proposition AtomicProp in <var>Model</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_models_to_matrix/2"><b class="pred">dfs_models_to_matrix</b><var class="arglist">(+ModelSet, -ModelMatrix)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert a set of models into a vector space.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_vector_space.html#dfs_model_to_vector/2">dfs_model_to_vector/2</a>.</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="@&gt;#/2"><var class="arglist">+ModelSet</var> <b class="pred">@&gt;#</b> <var class="arglist">-Matrix</var></a> is <b class="det">det</b></dt><dd class="defbody">Infix operator for <a href="dfs_vector_space.html#dfs_models_to_matrix/2">dfs_models_to_matrix/2</a>.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_vector_space.html#dfs_models_to_matrix/2">dfs_models_to_matrix/2</a>.</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_vector_to_model/2"><b class="pred">dfs_vector_to_model</b><var class="arglist">(+ModelVector, -Model)</var></a></dt><dd class="defbody">Converts <var>ModelVector</var>, a set of tuples (AtomicProp,State) representing
+the State of each atomic proposition AtomicProp, into a <var>Model</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_matrix_to_models/2"><b class="pred">dfs_matrix_to_models</b><var class="arglist">(+ModelMatrix, -ModelSet)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert a vector space into a set of models.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_vector_space.html#dfs_vector_to_model/2">dfs_vector_to_model/2</a>.</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="#&gt;@/2"><var class="arglist">+Matrix</var> <b class="pred">#&gt;@</b> <var class="arglist">-ModelSet</var></a> is <b class="det">det</b></dt><dd class="defbody">Infix operator for <a href="dfs_vector_space.html#dfs_matrix_to_models/2">dfs_matrix_to_models/2</a>.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_vector_space.html#dfs_matrix_to_models/2">dfs_matrix_to_models/2</a>.</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_vector/3"><b class="pred">dfs_vector</b><var class="arglist">(+Formula, +ModelSet, -Vector)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_vector</b><var class="arglist">(+Formula, +ModelMatrix, -Vector)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is true in a model M iff [[P]]^M,g = 1 given an arbitrary
+variable assignment g</dd>
+</dl>
+
+</body>
+</html>
