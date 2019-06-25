@@ -4,9 +4,13 @@
 
 This implements the **Distributional Formal Semantics (DFS)** framework, as described in:
 
-* [Venhuizen, N. J., Hendriks, P., Crocker, M. W., and Brouwer,
-H. (in press). A Framework for Distributional Formal Semantics. In: Ruy De Queiroz, Rosalie Iemhoff, & Michael Moortgat (Eds), *Proceedings of WoLLIC 2019*, Springer.](mailto:noortjev@coli.uni-saarland.de)  
-(please cite this paper for DFS Tools)
+* [Venhuizen, N. J., Hendriks, P., Crocker, M. W., and Brouwer, H. (2019). A
+  Framework for Distributional Formal Semantics. In: Iemhoff, R., Moortgat,
+  M., and de Queiroz, R. (Eds.), *Logic, Language, Information, and
+  Computation*, Proceedings of the 26th International Workshop WoLLIC 2019,
+  LNCS 11541, pp. 633-646. doi:
+  10.1007/978-3-662-59533-6_39](https://link.springer.com/chapter/10.1007/978-3-662-59533-6_39)
+  (please cite this paper for DFS Tools)
 
 DFS Tools is written in Prolog, and tested in
 [SWI-Prolog](http://www.swi-prolog.org/) and
