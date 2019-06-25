@@ -10,6 +10,7 @@ This implements the **Distributional Formal Semantics (DFS)** framework, as desc
   Computation*, Proceedings of the 26th International Workshop WoLLIC 2019,
   LNCS 11541, pp. 633-646. doi:
   10.1007/978-3-662-59533-6_39](https://link.springer.com/chapter/10.1007/978-3-662-59533-6_39)
+  [[PDF]](http://njvenhuizen.github.io/pub/venhuizen2019framework.pdf)
   (please cite this paper for DFS Tools)
 
 DFS Tools is written in Prolog, and tested in
