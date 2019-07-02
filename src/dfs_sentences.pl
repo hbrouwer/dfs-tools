@@ -126,7 +126,7 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
 %       onto single SemVec, a vector representation of its semantics (Sem).
 %
 %       Word vector representation (WVecs) are pre-specified (e.g., using 
-%       dfs_localist_word_vectors/2), and a vector representation of the
+%       dfs_localist_word_vectors/1), and a vector representation of the
 %       sentence meaning, specified by the FOL formula Sem, is derived
 %       from ModelSet.
 
@@ -138,7 +138,7 @@ dfs_map_sentence_onto_semantics((S,P),WVs,MS,(S,P,IVs,[TV])) :-
 %
 %       Mappings is a list of quadruples (Sen,Sem,[SenVecs],[SemVec]).
 %
-%       @see dfs_maps_sentence_onto_semantics/4
+%       @see dfs_map_sentence_onto_semantics/4
 
 dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
         dfs_sentences(SPMs),

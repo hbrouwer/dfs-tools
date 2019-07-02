@@ -24,25 +24,17 @@ Model of Semantic Similarity Based on Lexical Co-Occurrence.</dd>
 <dl>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_vectors/3"><b class="pred">coals_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
 real-valued COALS vector, derived from a DCG using a <var>WindowType</var> of
-<var>WindowSize</var>.
-
-<dl class="tags">
-<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="coals.html#derive_real_coals_vectors/3">derive_real_coals_vectors/3</a></dd>
-</dl>
-
-</dd>
+<var>WindowSize</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_write_vectors/2"><b class="pred">coals_write_vectors</b><var class="arglist">(+Tuples, +File)</var></a> is <b class="det">det</b></dt><dd class="defbody">Writes a list of (Word,Vector) <var>Tuples</var> to <var>File</var> in CSV format.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_binary_vectors/3"><b class="pred">coals_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
 binary COALS vector, derived from a DCG using a <var>WindowType</var> of
 <var>WindowSize</var>. Binary COALS vectors are derived from real-valued COALS
-vectors (@see <a href="coals.html#derive_real_coals_vectors/3">derive_real_coals_vectors/3</a>), by setting positive
-correlations to hot bits (i.e., 1s).</dd>
+vectors, by setting positive correlations to hot bits (i.e., 1s).</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_padded_binary_vectors/4"><b class="pred">coals_padded_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, +NHotPaddingBits, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
-binary COALS vector (@see coals_binary_vectors), derived from a DCG
-using a <var>WindowType</var> of <var>WindowSize</var>. Binary vectors are padded with a
-a minimal binary identifier containing <var>NHotPaddingBits</var>, in such a
-way that the identifiers for similar binary vectors do not share
-any features.</dd>
+binary COALS vector, derived from a DCG using a <var>WindowType</var> of
+<var>WindowSize</var>. Binary vectors are padded with a a minimal binary
+identifier containing <var>NHotPaddingBits</var>, in such a way that the
+identifiers for similar binary vectors do not share any features.</dd>
 </dl>
 
 </body>
