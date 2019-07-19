@@ -25,7 +25,8 @@
                 dfs_pprint_model/1,
                 dfs_pprint_propositions/1,
                 dfs_pprint_matrix/1,
-                dfs_pprint_constraints/0
+                dfs_pprint_constraints/0,
+                dfs_pprint_entailments/1
         ]).
 
 :- use_module(library(aggregate)).
@@ -375,3 +376,27 @@ format_sentence([W],A) :-
 format_sentence([W|Ws],A1) :-
         format_sentence(Ws,A0),
         format(atom(A1),'~w ~a',[W,A0]).
+
+%!      dfs_pprint_entailments(+Entailments) is det.
+%
+%       Pretty print entailments.
+
+dfs_pprint_entailments(ETs) :-
+        format('%%%% < '),
+        findall(Es,member((_,Es),ETs),ESs),
+        pprint_entailments(ESs),
+        format('>~n').
+
+pprint_entailments([]).
+pprint_entailments([ES|ESs]) :-
+        format('{ '),
+        pprint_entailments_(ES),
+        format('}'),
+        ( ESs \= [] -> format(', ') ; format(' ') ),
+        pprint_entailments(ESs).
+
+pprint_entailments_([]).
+pprint_entailments_([E|Es]) :-
+        format('~w',[E]),
+        ( Es \= [] -> format(', ') ; format(' ') ), 
+        pprint_entailments_(Es).
