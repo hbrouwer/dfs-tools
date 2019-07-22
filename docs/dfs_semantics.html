@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DFS Tools</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>dfs_semantics.pl -- DFS semantics</h1>
+
+<p>
+Interpretation of (sub-)propositional meaning as a set of points in DFS space.</p>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics/3"><b class="pred">dfs_semantics</b><var class="arglist">(+Formula, +ModelSet, -Interpretation)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Derives an <var>Interpretation</var> (a set of points in DFS space) for <var>Formula</var>
+given <var>ModelSet</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entailments/3"><b class="pred">dfs_entailments</b><var class="arglist">(+Interpretation, +ModelSet, -Entailments)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Entailments</var> is a set of (Element,AtomicProps) tuples, such that
+each AtomicProps is a list of atomic propositions entailed by the
+corresponding Element in <var>Interpretation</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_coordinates/2"><b class="pred">dfs_coordinates</b><var class="arglist">(+Interpretation, -Coordinates)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Coordinates</var> designates the point in space in between the elements of
+<var>Interpretation</var>.</dd>
+</dl>
+
+</body>
+</html>
