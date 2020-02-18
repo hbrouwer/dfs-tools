@@ -35,7 +35,9 @@
                 op(900,xfx,<-),         %% probability
 
                 dfs_sample_models/2,
-                dfs_sample_model/1
+                dfs_sample_model/1,
+
+                dfs_sample_models_mt/3
         ]).
 
 :- use_module(library(debug)). % topic: dfs_sampling
@@ -64,6 +66,9 @@
         -> use_module('../yap/swi_predicates.pl'),
            use_module('../yap/yap_random.pl')
         ;  true ).
+
+% for multithreading
+:- dynamic(tmp:model_set/2).
 
 /** <module> Model sampling
 
@@ -138,6 +143,36 @@ dfs_sample_model((Um,Vm)) :-
         findall(C,constraint(C),Cs),
         optimize_constraints(Cs,OCs),
         dfs_sample_properties(Ps,Um,G,CIs,OCs,VmCs,Vm).
+
+%!      dfs_sample_models_mt(+NumThreads,+NumModels,-ModelSet) is det.
+%
+%       ModelSet is a set of NumThreads * NumModels sampled models.
+%
+%       @see dfs_sample_model.
+
+dfs_sample_models_mt(NT,NM,MS) :-
+        retractall(tmp:model_set(_,_)),
+        dfs_sample_models_mt_(NT,0,NM),
+        findall(MS,tmp:model_set(_,MS),MSs),
+        flatten(MSs,MS).
+
+dfs_sample_models_mt_(NT,NT,_) :- !.
+dfs_sample_models_mt_(NT,T,NM) :-
+        T0 is T + 1,
+        thread_create(
+                ( dfs_sample_models_mt__(NM,0,T0,MS),
+                  assert(tmp:model_set(T0,MS)) ),
+                TID,[]),
+        dfs_sample_models_mt_(NT,T0,NM),
+        thread_join(TID).
+
+dfs_sample_models_mt__(N,N,_,[]) :- !.
+dfs_sample_models_mt__(N,I,T,[M|MS]) :-
+        I0 is I + 1,
+        format('Thread: ~d => Sample: ~d / ~d~n',[T,I0,N]),
+        dfs_sample_model(M),
+        dfs_pprint_propositions(M),
+        dfs_sample_models_mt__(N,I0,T,MS).
 
 %!      constants_and_universe(-Constants,-Entities) is det.
 

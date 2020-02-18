@@ -91,7 +91,14 @@ H(w_i) = -sum_(w_1...i,w_i+1...n)
          * log(Pr(w_1...i,w_i+1...n|w_1...i))</pre>
 
 </dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_binary_vectors/3"><b class="pred">coals_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
+binary COALS vector, derived from a DCG using a <var>WindowType</var> of
+<var>WindowSize</var>. Binary COALS vectors are derived from real-valued COALS
+vectors, by setting positive correlations to hot bits (i.e., 1s).</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prefix_frequency/2"><b class="pred">dfs_prefix_frequency</b><var class="arglist">(+Prefix, -Frequency)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Frequency</var> is the occurence frequency of sentence <var>Prefix</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entailments/3"><b class="pred">dfs_entailments</b><var class="arglist">(+Interpretation, +ModelSet, -Entailments)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Entailments</var> is a set of (Element,AtomicProps) tuples, such that
+each AtomicProps is a list of atomic propositions entailed by the
+corresponding Element in <var>Interpretation</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_pprint_matrix/1"><b class="pred">dfs_pprint_matrix</b><var class="arglist">(+ModelMatrix)</var></a> is <b class="det">det</b></dt><dd class="defbody">Pretty print <var>ModelMatrix</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entropy/2"><b class="pred">dfs_entropy</b><var class="arglist">(+Vector, -Entropy)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entropy/3"><b class="pred">dfs_entropy</b><var class="arglist">(+Formula, +ModelSet, -Entropy)</var></a> is <b class="det">det</b></dt>
@@ -105,39 +112,6 @@ where the set S consists of all possible points in the DFS space that
 are fully specified with respect to the atomic propositions; that is,
 each point s in S constitutes a unique logical combination of all
 atomic propostions.</p></dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_binary_vectors/3"><b class="pred">coals_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
-binary COALS vector, derived from a DCG using a <var>WindowType</var> of
-<var>WindowSize</var>. Binary COALS vectors are derived from real-valued COALS
-vectors, by setting positive correlations to hot bits (i.e., 1s).</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_entailments/3"><b class="pred">dfs_entailments</b><var class="arglist">(+Interpretation, +ModelSet, -Entailments)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Entailments</var> is a set of (Element,AtomicProps) tuples, such that
-each AtomicProps is a list of atomic propositions entailed by the
-corresponding Element in <var>Interpretation</var>.</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_semantics_onto_discourse/4"><b class="pred">dfs_map_semantics_onto_discourse</b><var class="arglist">(+SenSemTuples, +WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]), where
-SemVec is a vector representation of a sentence semantics (Sem), and
-SenVecs a word-by-word vector-based representation of the
-corresponding sentence (Sen).
-
-<dl class="tags">
-<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
-</dl>
-
-</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_logical_equivalence/3"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelSet)</var></a> is <b class="det">det</b></dt>
-<dt class="pubdef"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is logically equivalent to formula Q iff [[P]]^M,g = [[Q]]^M,g
-for all models M and variable assignments g</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sample_model/1"><b class="pred">dfs_sample_model</b><var class="arglist">(-Model)</var></a> is <b class="det">det</b></dt><dd class="defbody">Sample a model from the world specificiations.</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_read_matrix/2"><b class="pred">dfs_read_matrix</b><var class="arglist">(+File, -ModelMatrix)</var></a> is <b class="det">det</b></dt><dd class="defbody">Read <var>ModelMatrix</var> from <var>File</var>.</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conj_vector/3"><b class="pred">dfs_conj_vector</b><var class="arglist">(+Vector1, +Vector2, -ConjVector)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ConjVector</var> is the conjunction (component-wise product) of <var>Vector1</var>
-and <var>Vector2</var>.</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics_sentence_mappings/3"><b class="pred">dfs_semantics_sentence_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]).
-
-<dl class="tags">
-<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
-</dl>
-
-</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_localist_word_vectors/1"><b class="pred">dfs_localist_word_vectors</b><var class="arglist">(-WordVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>WordVectors</var> is a list of tuples (Word,Vector) where Vector is a
-localist vector representation for each Word generated.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mesh_write_set/2"><b class="pred">mesh_write_set</b><var class="arglist">(+SentenceSemanticsMappings, +File)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><b class="pred">mesh_write_set</b><var class="arglist">(+DiscourseSemanticsMappings, +File)</var> is <b class="det">det</b></dt><dd class="defbody">Write all sentence-semantics, semantics-sentence, discourse-semantics,
 semantics-discourse, or sentence-sentence Mappings to <var>File</var> in
@@ -186,6 +160,32 @@ where 'sentence1' and 'sentence2' are sentences of a discourse, and
 'semantics1' and 'semantics2' the (possibly) varying semantics for
 the two sentences. The single '#'s are the integer units of the
 input/target vectors, and the '####' string is a sentence divider.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics_sentence_mappings/3"><b class="pred">dfs_semantics_sentence_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_semantics_onto_discourse/4"><b class="pred">dfs_map_semantics_onto_discourse</b><var class="arglist">(+SenSemTuples, +WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of quadruples (Sen,Sem,[SemVec],[SenVecs]), where
+SemVec is a vector representation of a sentence semantics (Sem), and
+SenVecs a word-by-word vector-based representation of the
+corresponding sentence (Sen).
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="dfs_sentences.html#dfs_map_semantics_onto_sentence/4">dfs_map_semantics_onto_sentence/4</a></dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_logical_equivalence/3"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelSet)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><b class="pred">dfs_logical_equivalence</b><var class="arglist">(+FormulaP, +FormulaQ, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is logically equivalent to formula Q iff [[P]]^M,g = [[Q]]^M,g
+for all models M and variable assignments g</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sample_model/1"><b class="pred">dfs_sample_model</b><var class="arglist">(-Model)</var></a> is <b class="det">det</b></dt><dd class="defbody">Sample a model from the world specificiations.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_read_matrix/2"><b class="pred">dfs_read_matrix</b><var class="arglist">(+File, -ModelMatrix)</var></a> is <b class="det">det</b></dt><dd class="defbody">Read <var>ModelMatrix</var> from <var>File</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conj_vector/3"><b class="pred">dfs_conj_vector</b><var class="arglist">(+Vector1, +Vector2, -ConjVector)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ConjVector</var> is the conjunction (component-wise product) of <var>Vector1</var>
+and <var>Vector2</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_localist_word_vectors/1"><b class="pred">dfs_localist_word_vectors</b><var class="arglist">(-WordVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>WordVectors</var> is a list of tuples (Word,Vector) where Vector is a
+localist vector representation for each Word generated.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_conjoin/2"><b class="pred">dfs_conjoin</b><var class="arglist">(+FormulaSet, -Conjunction)</var></a> is <b class="det">det</b></dt><dd class="defbody">True if <var>Conjunction</var> is a logical conjunction of the formulas in
 <var>FormulaSet</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_assign/4"><b class="pred">dfs_assign</b><var class="arglist">(+G, +Model, +Assignments, -Gprime)</var></a> is <b class="det">det</b></dt><dd class="defbody">Updates the assignment function <var>G</var> of <var>Model</var> with variable <var>Assignments</var>,
@@ -235,11 +235,8 @@ Word vector representation (<var>WVecs</var>) are pre-specified (e.g., using
 <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=dfs_localist_word_vectors/2">dfs_localist_word_vectors/2</a>), and a vector representation of the
 sentence meaning, specified by the FOL formula Sem, is derived
 from <var>ModelSet</var>.</p></dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_padded_binary_vectors/4"><b class="pred">coals_padded_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, +NHotPaddingBits, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
-binary COALS vector, derived from a DCG using a <var>WindowType</var> of
-<var>WindowSize</var>. Binary vectors are padded with a a minimal binary
-identifier containing <var>NHotPaddingBits</var>, in such a way that the
-identifiers for similar binary vectors do not share any features.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics/3"><b class="pred">dfs_semantics</b><var class="arglist">(+Formula, +ModelSet, -Interpretation)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Derives an <var>Interpretation</var> (a set of points in DFS space) for <var>Formula</var>
+given <var>ModelSet</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_prefix_continuations/2"><b class="pred">dfs_prefix_continuations</b><var class="arglist">(+Prefix, SemSenMappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>SemSenMappings</var> is a list of all tuples (Sen,Sem), where sentence Sen
 is a possible continuation of <var>Prefix</var>, and Sem its corresponding FOL
 semantics.</dd>
@@ -256,10 +253,20 @@ where the set S consists of all possible points in the DFS space that
 are fully specified with respect to the atomic propositions; that is,
 each point s in S constitutes a unique logical combination of all
 atomic propostions.</p></dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_semantics/3"><b class="pred">dfs_semantics</b><var class="arglist">(+Formula, +ModelSet, -Interpretation)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Derives an <var>Interpretation</var> (a set of points in DFS space) for <var>Formula</var>
-given <var>ModelSet</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_padded_binary_vectors/4"><b class="pred">coals_padded_binary_vectors</b><var class="arglist">(+WindowType, +WindowSize, +NHotPaddingBits, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
+binary COALS vector, derived from a DCG using a <var>WindowType</var> of
+<var>WindowSize</var>. Binary vectors are padded with a a minimal binary
+identifier containing <var>NHotPaddingBits</var>, in such a way that the
+identifiers for similar binary vectors do not share any features.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_words/1"><b class="pred">dfs_words</b><var class="arglist">(-Words)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Words</var> is the set of all lexical items generated.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_pprint_formula/1"><b class="pred">dfs_pprint_formula</b><var class="arglist">(+Formula)</var></a> is <b class="det">det</b></dt><dd class="defbody">Pretty print a first-order logic formula.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sample_models_mt/3"><b class="pred">dfs_sample_models_mt</b><var class="arglist">(+NumThreads, +NumModels, -ModelSet)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ModelSet</var> is a set of <var>NumThreads</var> * <var>NumModels</var> sampled models.
+
+<dl class="tags">
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- dfs_sample_model.</dd>
+</dl>
+
+</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_validity/2"><b class="pred">dfs_validity</b><var class="arglist">(+Formula, +ModelSet)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><b class="pred">dfs_validity</b><var class="arglist">(+Formula, +ModelMatrix)</var> is <b class="det">det</b></dt><dd class="defbody">A formula P is valid (|= P) iff P is true (not false) in all models.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_discourse_semantics_mappings/3"><b class="pred">dfs_discourse_semantics_mappings</b><var class="arglist">(+WVecs, +ModelSet, -Mappings)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mappings</var> is a list of lists of (Sen,Sem,[SenVecs],[SemVec])
@@ -339,7 +346,6 @@ surprisal(P,Q) = -log Pr(P|Q)</pre>
 </dl>
 
 </dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_write_vectors/2"><b class="pred">coals_write_vectors</b><var class="arglist">(+Tuples, +File)</var></a> is <b class="det">det</b></dt><dd class="defbody">Writes a list of (Word,Vector) <var>Tuples</var> to <var>File</var> in CSV format.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/3"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Vector1, +Vector2, -DeltaH)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/4"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -DeltaH)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -DeltaH)</var> is <b class="det">det</b></dt><dd class="defbody">Entropy delta of P given Q, where P and Q are either vectors or formulas.
@@ -405,7 +411,9 @@ Pr(P&amp;Q) = sum_i(v_i(P&amp;Q)) / |M|</pre>
 </dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_model_to_vector/2"><b class="pred">dfs_model_to_vector</b><var class="arglist">(+Model, -ModelVector)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>ModelVector</var> is a set of tuples (AtomicProp,State) representing
 the State of each atomic proposition AtomicProp in <var>Model</var>.</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentence_frequency/2"><b class="pred">dfs_sentence_frequency</b><var class="arglist">(+Sentence, -Frequency)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Frequency</var> is is the occurrence frequency of <var>Sentence</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_write_vectors/2"><b class="pred">coals_write_vectors</b><var class="arglist">(+Tuples, +File)</var></a> is <b class="det">det</b></dt><dd class="defbody">Writes a list of (Word,Vector) <var>Tuples</var> to <var>File</var> in CSV format.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_coordinates/2"><b class="pred">dfs_coordinates</b><var class="arglist">(+Interpretation, -Coordinates)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Coordinates</var> designates the point in space in between the elements of
+<var>Interpretation</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/3"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Vector1, +Vector2, -DeltaH)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_delta_entropy/4"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -DeltaH)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><b class="pred">dfs_delta_entropy</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -DeltaH)</var> is <b class="det">det</b></dt><dd class="defbody">Entropy delta of P given Q, where P and Q are either vectors or formulas.
@@ -417,8 +425,10 @@ DH(P,Q) = H(Q) - H(P)</pre>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_map_sentence_onto_sentence/4"><b class="pred">dfs_map_sentence_onto_sentence</b><var class="arglist">(+SenSemTuple, +InWVecs, +OutWVecs, -Mapping)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Mapping</var> is a quadruple (Sen,Sem,[InSenVecs],[OutSenVecs]), where
 InSenVecs and OutSenVecs are word-by-word vector-based representations
 of the corresponding sentence (Sen).</dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_coordinates/2"><b class="pred">dfs_coordinates</b><var class="arglist">(+Interpretation, -Coordinates)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"><var>Coordinates</var> designates the point in space in between the elements of
-<var>Interpretation</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_sentence_frequency/2"><b class="pred">dfs_sentence_frequency</b><var class="arglist">(+Sentence, -Frequency)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Frequency</var> is is the occurrence frequency of <var>Sentence</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_vectors/3"><b class="pred">coals_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
+real-valued COALS vector, derived from a DCG using a <var>WindowType</var> of
+<var>WindowSize</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_surprisal/3"><b class="pred">dfs_surprisal</b><var class="arglist">(+Vector1, +Vector2, -Surprisal)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_surprisal/4"><b class="pred">dfs_surprisal</b><var class="arglist">(+Formula1, +Formula2, +ModelSet, -Surprisal)</var></a> is <b class="det">det</b></dt>
 <dt class="pubdef"><b class="pred">dfs_surprisal</b><var class="arglist">(+Formula1, +Formula2, +ModelMatrix, -Surprisal)</var> is <b class="det">det</b></dt><dd class="defbody"><var>Surprisal</var> of P given Q, where P and Q are either vectors or formulas.
@@ -427,9 +437,6 @@ of the corresponding sentence (Sen).</dd>
 surprisal(P,Q) = -log Pr(P|Q)</pre>
 
 </dd>
-<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="coals_vectors/3"><b class="pred">coals_vectors</b><var class="arglist">(+WindowType, +WindowSize, -CoalsVectors)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>CoalsVectors</var> is a list of (Word,Vector) tuples, where Vector is a
-real-valued COALS vector, derived from a DCG using a <var>WindowType</var> of
-<var>WindowSize</var>.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mesh_write_atomic_prop_set/2"><b class="pred">mesh_write_atomic_prop_set</b><var class="arglist">(+ModelSet, +File)</var></a> is <b class="det">det</b></dt><dd class="defbody">Write a MESH-readable set of atomic propositions:
 
 <pre class="code" ext="">
