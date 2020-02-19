@@ -164,7 +164,7 @@ dfs_sample_models_mt_(NT,T,NM) :-
                   assert(tmp:model_set(T0,MS)) ),
                 TID,[]),
         dfs_sample_models_mt_(NT,T0,NM),
-        thread_join(TID).
+        thread_join(TID,true).
 
 dfs_sample_models_mt__(N,N,_,[]) :- !.
 dfs_sample_models_mt__(N,I,T,[M|MS]) :-
