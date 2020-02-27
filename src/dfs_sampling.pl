@@ -347,7 +347,7 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 %
 %       Optimizes a Formula for incremental, inference-driven sampling,
 %       yielding a set of optimized formulas. A number of different
-%       optimization stragegies are employed: 
+%       optimization strategies are employed: 
 %
 %       1) Simplification:
 %       -- double negation elimination: !!P => P
