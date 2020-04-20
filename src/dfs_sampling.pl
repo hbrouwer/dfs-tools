@@ -197,8 +197,7 @@ constants_and_universe(Cs,Um) :-
 %       that are false in the model. 
 %
 %       Given LVm and DVm, a set of randomly ordered properties P, and a set
-%       of constraints C, we then do the following for each non-'infer_only'
-%       property p:
+%       of constraints C, we then do the following for each property p:
 %
 %       (1) Add p to LVm, yielding LVm';
 %
@@ -218,9 +217,11 @@ constants_and_universe(Cs,Um) :-
 %
 %       (5) Depending on the outcome of (2) and (4):
 %
-%           -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'
-%           -- LT & !DT: Infer p to be true in the Light World: LVm = LVm'
-%           -- !LT & DT: Infer p to be true in the Dark World: DVm = DVm'
+%           -- LT & DT: Infer p with Pr(p): LVm = LVm', otherwise: DVm = DVm'.
+%                       If Pr(p|c) = undef, postpone the decision on p, iff
+%                       c can be satisfied;
+%           -- LT & !DT: Infer p to be true in the Light World: LVm = LVm';
+%           -- !LT & DT: Infer p to be true in the Dark World: DVm = DVm';
 %           -- !LT & !DT: The model is inconsistent, and will be discarded.
 %
 %       (6) Repeat (1) for next p. If each p is a property in either LVm or
@@ -246,7 +247,8 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         add_property(DVm0,Prop,Es,DVm1),
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
-        -> (  probability(P,infer_only,_)
+        -> (  probability(P,C,undef),
+              satisfies_constraints([C],(Um,LVm0),(Um,DVm0),G), !
            -> debug(dfs_sampling,'{postponed     }: ~w',[P]),
               append(Ps,[P],Ps1),
               dfs_sample_properties_(Ps1,Um,G,CIs,Cs,LVm0,DVm0,LVm)
@@ -321,6 +323,7 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
 
 probabilistic_choice(P,M,G) :-
         probability(P,C,Pr),
+        number(Pr),
         dfs_interpret(C,M,G),
         !,
         maybe(Pr).
