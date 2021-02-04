@@ -1,6 +1,4 @@
-/* $Id$
-
-   CSS for PlDoc, the SWI-Prolog source documentation system
+/* CSS for PlDoc, the SWI-Prolog source documentation system
    Author: Jan Wielemaker
    Copying: Public domain
 
@@ -57,6 +55,10 @@ table.arglist td,table.paramlist td
 }
 
 .pred, .det, .functor
+{ font-weight: bold;
+}
+
+span.nopredref
 { font-weight: bold;
 }
 
@@ -144,6 +146,10 @@ table.wiki td
   padding: 3px;
   vertical-align: top;
 }
+
+table.wiki td.left   { text-align: left; }
+table.wiki td.center { text-align: center; }
+table.wiki td.right  { text-align: right; }
 
 img.icon
 { border: 0;
@@ -602,3 +608,10 @@ span.pl-compound.pl-level-0 > .pl-prefix,
 span.pl-compound.pl-level-0 > .pl-infix,
 span.pl-compound.pl-level-0 > .pl-postfix
 {font-weight:bold;}
+
+blockquote
+{ border-left: 5px solid #ccc;
+  margin-left: 5px;
+  padding: 0px 14px;
+  color: #555;
+}
