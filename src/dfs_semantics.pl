@@ -315,7 +315,7 @@ vect_entails([U0|Us0],[U1|Us1]) :-
         unit_entails(U0,U1,1),
         vect_entails(Us0,Us1).
 
-%!      vect_entails(+Unit1,+Unit2) is semidet.
+%!      unit_entails(+Unit1,+Unit2) is semidet.
 %
 %       True iff Unit1 implies Unit2.
 
