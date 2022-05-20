@@ -24,6 +24,8 @@
                 dfs_init_g/2,
                 dfs_assign/4,
                 dfs_terms_to_entities/3,
+                dfs_formula_to_fol/2,
+                dfs_formulas_to_fol/2,
                 dfs_interpret/2,
                 dfs_interpret/3
         ]).
@@ -130,6 +132,25 @@ dfs_terms_to_entities([],_,[]).
 dfs_terms_to_entities([T|Ts],TIs,[E|Es]) :-
         memberchk((T,E),TIs),
         dfs_terms_to_entities(Ts,TIs,Es).
+
+%!      dfs_formula_to_fol(+Formula,-FOLFormula) is det.
+%
+%       Convert FOL and/or DRS formula into first-order logic
+%       formula.
+
+dfs_formula_to_fol(drs(UK,CK),FF) :-
+        !, drs_to_fol(drs(UK,CK),FF).
+dfs_formula_to_fol(F,F).
+
+%!      dfs_formulas_to_fol(+Formulas,-FOLFormulas) is det.
+%
+%       Convert FOL and/or DRS formulas into first-order logic
+%       formulas.
+
+dfs_formulas_to_fol([],[]).
+dfs_formulas_to_fol([F|Fs],[FF|FFs]) :-
+        dfs_formula_to_fol(F,FF),
+        dfs_formulas_to_fol(Fs,FFs).
 
 %!      dfs_interpret(+Formula,+Model) is semidet.
 %!      dfs_interpret(+FormulaSet,+Model) is semidet.

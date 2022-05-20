@@ -141,7 +141,7 @@ dfs_sample_model((Um,Vm)) :-
         dfs_constant_instantiations((_,VmCs),CIs),
         findall(P,property(P),Ps),
         findall(C,constraint(C),Cs),
-        constraints_to_fol(Cs,FCs),
+        dfs_formulas_to_fol(Cs,FCs),
         optimize_constraints(FCs,OCs),
         dfs_sample_properties(Ps,Um,G,CIs,OCs,VmCs,Vm).
 
@@ -249,7 +249,7 @@ dfs_sample_properties_([P|Ps],Um,G,CIs,Cs,LVm0,DVm0,LVm) :-
         ( satisfies_constraints(Cs,(Um,LVm0),(Um,DVm1),G) -> DT = 1 ; DT = 0 ),     %% dark world
         (  LT == 1, DT == 1             %% undecided
         -> (  probability(P,C,undef),
-              constraint_to_fol(C,FC),
+              dfs_formula_to_fol(C,FC),
               satisfies_constraints([FC],(Um,LVm0),(Um,DVm0),G), !
            -> debug(dfs_sampling,'{postponed     }: ~w',[P]),
               append(Ps,[P],Ps1),
@@ -326,28 +326,10 @@ satisfies_constraints([C|Cs],LM,DM,G) :-
 probabilistic_choice(P,M,G) :-
         probability(P,C,Pr),
         number(Pr),
-        constraint_to_fol(C,FC),
+        dfs_formula_to_fol(C,FC),
         dfs_interpret(FC,M,G),
         !,
         maybe(Pr).
-
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%% constraint conversion %%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%!      constraints_to_fol(+Constraints,-FOLConstraints) is det.
-%
-%       Convert FOL and/or DRS constraints into first-order logic
-%       constraints.
-
-constraints_to_fol([],[]).
-constraints_to_fol([C|Cs],[FC|FCs]) :-
-        constraint_to_fol(C,FC),
-        constraints_to_fol(Cs,FCs).
-
-constraint_to_fol(drs(UK,CK),FC) :-
-        !, drs_to_fol(drs(UK,CK),FC).
-constraint_to_fol(C,C).
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%% constraint optimization %%%%

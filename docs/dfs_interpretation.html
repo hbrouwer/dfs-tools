@@ -27,6 +27,10 @@ assigned by iterating over the entities in the <var>Model</var> universe.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_assign/4"><b class="pred">dfs_assign</b><var class="arglist">(+G, +Model, +Assignments, -Gprime)</var></a> is <b class="det">det</b></dt><dd class="defbody">Updates the assignment function <var>G</var> of <var>Model</var> with variable <var>Assignments</var>,
 yielding assignment function <var>G</var>'.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_terms_to_entities/3"><b class="pred">dfs_terms_to_entities</b><var class="arglist">(?Terms, +TermInstantiations, ?Entities)</var></a> is <b class="det">det</b></dt><dd class="defbody">Maps <var>Terms</var> into <var>Entities</var> (or vice versa), given their instantiations.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_formula_to_fol/2"><b class="pred">dfs_formula_to_fol</b><var class="arglist">(+Formula, -FOLFormula)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert FOL and/or DRS formula into first-order logic
+formula.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_formulas_to_fol/2"><b class="pred">dfs_formulas_to_fol</b><var class="arglist">(+Formulas, -FOLFormulas)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert FOL and/or DRS formulas into first-order logic
+formulas.</dd>
 <dt class="pubdef"><span style="float:right">&nbsp;</span><a name="dfs_interpret/2"><b class="pred">dfs_interpret</b><var class="arglist">(+Formula, +Model)</var></a> is <b class="det">semidet</b></dt>
 <dt class="pubdef"><b class="pred">dfs_interpret</b><var class="arglist">(+FormulaSet, +Model)</var> is <b class="det">semidet</b></dt><dd class="defbody">Evaluates the truth value of <var>Formula</var> in <var>Model</var>, given an initial
 assignment function G.</dd>

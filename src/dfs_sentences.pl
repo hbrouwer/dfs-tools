@@ -48,8 +48,8 @@ Generation of sentence-semantics (and vice versa) mappings.
 
 %!      sentence(-SenSemTuple)
 %
-%       SenSemTuple is a tuple (Sen,Sem) where Sem is the first-order logic
-%       meaning representation of Sen.
+%       SenSemTuple is a tuple (Sen,Sem) where Sem is the meaning
+%       representation of Sen.
 
 sentence(SPM) :-
         current_predicate(user:(@~)/1),
