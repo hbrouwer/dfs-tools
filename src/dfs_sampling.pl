@@ -361,17 +361,11 @@ optimize_constraints_([C|Cs],OCsAcc,OCs) :-
 %       3) Conjunct isolation:
 %       -- using & and | distributivity: (P & Q) | (P & Z) => P & (Q | Z)
 %       -- using de Morgan's laws: !(P | Q) => !Q & !P 
-%       -- using existential quantifier scoping:
-%               ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
-%               ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
-%       -- using universal quantifier scoping:
-%               ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
-%               ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
 %
-%       3) Conjunct splitting:
+%       4) Conjunct splitting:
 %       -- transform P & Q into a set {P,Q}
 %
-%       4) Quantifier domain restriction (see below).
+%       5) Quantifier domain restriction (see below).
 
 optimize_constraint(neg(neg(P)),Ps) :-
         !, % !!P => P
@@ -385,20 +379,6 @@ optimize_constraint(or(and(P,Q),and(P,Z)),Ps) :-
 optimize_constraint(neg(or(P,Q)),Ps) :-
         !, % !(P | Q) => !Q & !P 
         optimize_constraint(and(neg(P),neg(Q)),Ps).
-optimize_constraint(exists(X,and(P,Q)),Ps) :-
-        !, % ∃x (P & Q) => P & ∃x Q (iff x is not free in P)
-           % ∃x (P & Q) => Q & ∃x P (iff x is not free in Q)
-        vis(P,[],[],VIs),
-        (  memberchk(X=_,VIs)   %% assume x is free in either P or Q
-        -> optimize_constraint(and(P,exists(X,Q)),Ps)
-        ;  optimize_constraint(and(Q,exists(X,P)),Ps) ).
-optimize_constraint(forall(X,and(P,Q)),Ps) :-
-        !, % ∀x (P & Q) => P & ∀x Q (iff x is not free in P)
-           % ∀x (P & Q) => Q & ∀x P (iff x is not free in Q)
-        vis(P,[],[],VIs),
-        (  memberchk(X=_,VIs)   %% assume x is free in either P or Q
-        -> optimize_constraint(and(P,forall(X,Q)),Ps)
-        ;  optimize_constraint(and(Q,forall(X,P)),Ps) ).
 optimize_constraint(and(P,Q),Ps) :-
         !, % P & Q => {P,Q}
         optimize_constraint(P,P0),
@@ -449,15 +429,21 @@ fi(or(P0,Q0),   VIs,or(P1,Q1)   ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
-fi(exists(X,P0),VIs,P1) :-                                      /* +optimization */
-        !, findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
+fi(exists(X,P0),VIs,P1) :-
+        memberchk(X=_,VIs), !,
+        findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
         dfs_disjoin(FIs,P1).
-%fi(exists(X,P0),VIs,exists(X,P1)) :- !, fi(P0,VIs,P1).         /* -optimization */
+fi(exists(_,P0),VIs,P1) :-
+        !, fi(P0,VIs,P1).
 fi(forall(X,P0),VIs,P1) :-
         q_imp_chain(X,forall(X,P0)), !,
         select_vi(X,VIs,VIs0),
         fi(P0,VIs0,P1).
-fi(forall(X,P0),VIs,forall(X,P1)) :- !, fi(P0,VIs,P1).
+fi(forall(X,P0),VIs,forall(X,P1)) :-
+        memberchk(X=_, VIs), !,
+        fi(P0,VIs,P1).
+fi(forall(_,P0),VIs,P1) :-
+        !, fi(P0,VIs,P1).
 fi(top,_,top) :- !.
 fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
@@ -493,9 +479,9 @@ prop_instance_([A|As],VIs,[A|IAs]) :-
 
 %!      vis(+Formula,+VarsAcc,+VarInstsAcc,-VarInsts) is det.
 %
-%       Returns all possible instances of variables that occur in an
-%       antecedent of an implication that ends a chain of universal
-%       quantifiers.
+%       Returns all possible instances of variables that occur in the
+%       scope of an existential quantifier or in the antecedent of an
+%       implication that ends a chain of universal quantifiers.
 
 vis(neg(P),     Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).
 vis(and(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
@@ -503,8 +489,7 @@ vis(or(P,Q),    Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(exor(P,Q),  Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(imp(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
 vis(iff(P,Q),   Vs,VIs0,VIs2) :- !, vis(P,Vs,VIs0,VIs1), vis(Q,Vs,VIs1,VIs2).
-vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).    /* +optimization */
-%vis(exists(_,P),Vs,VIs0,VIs1) :- !, vis(P,Vs,VIs0,VIs1).       /* -optimization */
+vis(exists(X,P),Vs,VIs0,VIs1) :- !, vis(P,[X|Vs],VIs0,VIs1).
 vis(forall(X,P),Vs,VIs0,VIs1) :-
         !,
         (  q_imp_chain(X,forall(X,P))
