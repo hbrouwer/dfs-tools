@@ -131,7 +131,7 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
 %       ModelSet.
 
 dfs_map_sentence_onto_semantics((S,P),WVs,MS,(S,FP,IVs,[TV])) :-
-        formula_to_fol(P,FP),
+        dfs_formula_to_fol(P,FP),
         dfs_vector(FP,MS,TV),
         findall(IV,(member(W,S),memberchk((W,IV),WVs)),IVs).
 
@@ -166,7 +166,7 @@ dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
 %       ModelSet.
 
 dfs_map_semantics_onto_sentence((S,P),WVs,MS,(S,FP,[IV],TVs)) :-
-        formula_to_fol(P,FP),
+        dfs_formula_to_fol(P,FP),
         dfs_vector(FP,MS,IV),
         findall(TV,(member(W,S),memberchk((W,TV),WVs)),TVs).
 
