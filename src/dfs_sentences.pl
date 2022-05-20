@@ -127,11 +127,12 @@ distributed_vector_(N,HBs,I,[0|Us]) :-
 %
 %       Word vector representation (WVecs) are pre-specified (e.g., using 
 %       dfs_localist_word_vectors/1), and a vector representation of the
-%       sentence meaning, specified by the FOL formula Sem, is derived
-%       from ModelSet.
+%       sentence meaning, specified by the formula Sem, is derived from
+%       ModelSet.
 
-dfs_map_sentence_onto_semantics((S,P),WVs,MS,(S,P,IVs,[TV])) :-
-        dfs_vector(P,MS,TV),
+dfs_map_sentence_onto_semantics((S,P),WVs,MS,(S,FP,IVs,[TV])) :-
+        formula_to_fol(P,FP),
+        dfs_vector(FP,MS,TV),
         findall(IV,(member(W,S),memberchk((W,IV),WVs)),IVs).
 
 %!      dfs_sentence_semantics_mappings(+WVecs,+ModelSet,-Mappings) is det.
@@ -161,11 +162,12 @@ dfs_sentence_semantics_mappings(WVs,MS,WPMs) :-
 %
 %       Word vector representation (WVecs) are pre-specified (e.g., using 
 %       dfs_localist_word_vectors/2), and a vector representation of the
-%       sentence meaning, specified by the FOL formula Sem, is derived
-%       from ModelSet.
+%       sentence meaning, specified by the formula Sem, is derived from
+%       ModelSet.
 
-dfs_map_semantics_onto_sentence((S,P),WVs,MS,(S,P,[IV],TVs)) :-
-        dfs_vector(P,MS,IV),
+dfs_map_semantics_onto_sentence((S,P),WVs,MS,(S,FP,[IV],TVs)) :-
+        formula_to_fol(P,FP),
+        dfs_vector(FP,MS,IV),
         findall(TV,(member(W,S),memberchk((W,TV),WVs)),TVs).
 
 %!      dfs_semantics_sentence_mappings(+WVecs,+ModelSet,-Mappings) is det.
