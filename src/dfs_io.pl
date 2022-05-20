@@ -342,8 +342,9 @@ pprint_dfs_vector([(_,S)|Ts]) :-
 
 dfs_pprint_constraints :-
         findall(C,dfs_sampling:constraint(C),Cs),
+        dfs_sampling:constraints_to_fol(Cs,FCs),
         format('~n'),
-        dfs_pprint_constraints_(Cs,orig),
+        dfs_pprint_constraints_(FCs,orig),
         format('~n').
 
 dfs_pprint_constraints_([],_).
