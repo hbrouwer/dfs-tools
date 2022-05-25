@@ -399,6 +399,8 @@ optimize_constraint(P,Ps) :-
 %       Optimizes constraints that involve existential and universal
 %       quantifiers by domain restriction.
 %
+%       Quantifiers that do not bind free variables in their scope are removed.
+%
 %       Existential quantification: given an existentially quantified formula,
 %       e.g., exists(x,p(x)), the model-theoretic interpreter implemented by
 %       dfs_interpret/3 will evaluate its truth by filling in each entity in
@@ -433,7 +435,7 @@ fi(exor(P0,Q0), VIs,exor(P1,Q1) ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(imp(P0,Q0),  VIs,imp(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(iff(P0,Q0),  VIs,iff(P1,Q1)  ) :- !, fi(P0,VIs,P1), fi(Q0,VIs,Q1).
 fi(exists(X,P0),VIs,P1) :-
-        memberchk(X=_,VIs), !,
+        free_variable(X,P0), !,
         findall(FI,(select_vi(X,VIs,VIs0),fi(P0,VIs0,FI)),FIs),
         dfs_disjoin(FIs,P1).
 fi(exists(_,P0),VIs,P1) :-
@@ -443,7 +445,8 @@ fi(forall(X,P0),VIs,P1) :-
         select_vi(X,VIs,VIs0),
         fi(P0,VIs0,P1).
 fi(forall(X,P0),VIs,forall(X,P1)) :-
-        memberchk(X=_, VIs), !,
+        free_variable(X,P0), !,
+        !,
         fi(P0,VIs,P1).
 fi(forall(_,P0),VIs,P1) :-
         !, fi(P0,VIs,P1).
@@ -451,6 +454,30 @@ fi(top,_,top) :- !.
 fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
         prop_instance(P0,VIs,P1).
+
+%!      free_variable(+Variable,+Formula) is det.
+%
+%       True iff Variable occurs free in Formula.
+
+free_variable(V,neg(P)) :-
+        !, free_variable(V,P).
+free_variable(V,and(P1,P2)) :-
+        !, ( free_variable(V,P1), ! ; free_variable(V,P2) ).
+free_variable(V,or(P1,P2)) :-
+        !, ( free_variable(V,P1), ! ; free_variable(V,P2) ).
+free_variable(V,exor(P1,P2)) :-
+        !, ( free_variable(V,P1), ! ; free_variable(V,P2) ).
+free_variable(V,imp(P1,P2)) :-
+        !, ( free_variable(V,P1), ! ; free_variable(V,P2) ).
+free_variable(V,exists(QV,P)) :-
+        !, QV \= V,
+        free_variable(V,P).
+free_variable(V,forall(QV,P)) :-
+        !, QV \= V,
+        free_variable(V,P).
+free_variable(V,P) :-
+        P =.. [_|Args],
+        memberchk(V,Args).
 
 %!      select_vi(+Var,+OldVarInsts,-NewVarInsts) is nondet.
 %

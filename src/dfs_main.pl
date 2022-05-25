@@ -72,7 +72,7 @@ dfs_version_minor(2).
 %
 %       Patch version number.
 
-dfs_version_patch(0).
+dfs_version_patch(1).
 
 %!      dfs_main
 %
