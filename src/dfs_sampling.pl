@@ -455,7 +455,7 @@ fi(bottom,_,bottom) :- !.
 fi(P0,VIs,P1) :-
         prop_instance(P0,VIs,P1).
 
-%!      free_variable(+Variable,+Formula) is det.
+%!      free_variable(+Variable,+Formula) is semidet.
 %
 %       True iff Variable occurs free in Formula.
 
@@ -476,8 +476,8 @@ free_variable(V,forall(QV,P)) :-
         !, QV \= V,
         free_variable(V,P).
 free_variable(V,P) :-
-        P =.. [_|Args],
-        memberchk(V,Args).
+        P =.. [_|As],
+        memberchk(V,As).
 
 %!      select_vi(+Var,+OldVarInsts,-NewVarInsts) is nondet.
 %
