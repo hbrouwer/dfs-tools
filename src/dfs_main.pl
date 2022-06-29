@@ -82,4 +82,4 @@ dfs_main :-
         dfs_version_major(Vmaj),
         dfs_version_minor(Vmin),
         dfs_version_patch(Vpat),
-        format('%%%% DFS Tools ~d.~d.~d | http://hbrouwer.github.io/dfs/\n\n',[Vmaj,Vmin,Vpat]).
+        format('%%%% DFS Tools ~d.~d.~d | https://github.com/hbrouwer/dfs-tools\n\n',[Vmaj,Vmin,Vpat]).
