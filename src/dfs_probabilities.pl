@@ -66,7 +66,6 @@ dfs_prior_probability(P,Ms,Pr) :-
 %       Pr(P&Q) = sum_i(v_i(P&Q)) / |M|
 %       ==
 
-
 dfs_conj_probability(VP,VQ,Pr) :-
         dfs_conj_vector(VP,VQ,VPaQ),
         dfs_prior_probability(VPaQ,Pr).
